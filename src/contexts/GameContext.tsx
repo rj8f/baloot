@@ -133,15 +133,39 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     let team1FinalBaloot: number;
     let team2FinalBaloot: number;
 
+    // في حالة المضاعفات (غير عادي) - الفائز ياخذ كل النقاط
+    const hasMultiplier = multiplier !== 'عادي';
+
     if (buyingTeamSucceeded) {
-      // المشتري نجح - كل فريق يأخذ نقاطه
+      // المشتري نجح
       winningTeam = buyingTeam;
-      team1FinalRaw = team1TotalRaw;
-      team2FinalRaw = team2TotalRaw;
-      team1FinalProjects = team1ProjectsWithoutBaloot;
-      team2FinalProjects = team2ProjectsWithoutBaloot;
-      team1FinalBaloot = team1Baloot;
-      team2FinalBaloot = team2Baloot;
+      
+      if (hasMultiplier) {
+        // في المضاعفات: الفائز ياخذ كل البنط والمشاريع
+        if (winningTeam === 1) {
+          team1FinalRaw = totalRaw;
+          team2FinalRaw = 0;
+          team1FinalProjects = team1ProjectsWithoutBaloot + team2ProjectsWithoutBaloot;
+          team2FinalProjects = 0;
+          team1FinalBaloot = team1Baloot + team2Baloot;
+          team2FinalBaloot = 0;
+        } else {
+          team1FinalRaw = 0;
+          team2FinalRaw = totalRaw;
+          team1FinalProjects = 0;
+          team2FinalProjects = team1ProjectsWithoutBaloot + team2ProjectsWithoutBaloot;
+          team1FinalBaloot = 0;
+          team2FinalBaloot = team1Baloot + team2Baloot;
+        }
+      } else {
+        // عادي: كل فريق يأخذ نقاطه
+        team1FinalRaw = team1TotalRaw;
+        team2FinalRaw = team2TotalRaw;
+        team1FinalProjects = team1ProjectsWithoutBaloot;
+        team2FinalProjects = team2ProjectsWithoutBaloot;
+        team1FinalBaloot = team1Baloot;
+        team2FinalBaloot = team2Baloot;
+      }
     } else {
       // المشتري خسر - الخصم يأخذ كل البنط والمشاريع
       winningTeam = otherTeam;
