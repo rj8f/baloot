@@ -362,7 +362,7 @@ const AddRound = () => {
                       key={p.key}
                       onClick={() => cycleProject(p.key)}
                       className={cn(
-                        "flex flex-col items-center justify-center gap-1 rounded-xl p-3 transition-all active:scale-95",
+                        "flex flex-col items-center justify-center rounded-xl p-3 h-16 transition-all active:scale-95",
                         count > 0 
                           ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30" 
                           : "bg-muted/50 text-muted-foreground hover:bg-muted"
@@ -370,7 +370,7 @@ const AddRound = () => {
                     >
                       <span className="text-sm font-medium">{p.label}</span>
                       {count > 0 && (
-                        <span className="text-xl font-bold">{count}</span>
+                        <span className="text-sm font-bold">x{count}</span>
                       )}
                     </button>
                   );
