@@ -72,9 +72,11 @@ const AddRound = () => {
       ];
 
   const cycleProject = (project: ProjectKey) => {
+    // بلوت يمكن اختياره مرة واحدة فقط (0 أو 1)
+    const maxCount = project === 'بلوت' ? 1 : 4;
     setProjects(prev => ({
       ...prev,
-      [project]: prev[project] >= 4 ? 0 : prev[project] + 1,
+      [project]: prev[project] >= maxCount ? 0 : prev[project] + 1,
     }));
   };
 
