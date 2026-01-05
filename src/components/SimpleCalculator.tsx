@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowUp, RotateCcw, Home, History } from 'lucide-react';
+import { ArrowUp, RotateCcw, Home, History, Trophy, Crown, Star } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -11,7 +11,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import MatchHistory from './MatchHistory';
+import confetti from 'canvas-confetti';
+import { cn } from '@/lib/utils';
 
 interface SimpleCalculatorProps {
   onBack: () => void;
@@ -41,6 +49,9 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const [history, setHistory] = useState<RoundEntry[]>([]);
   const [arrowRotation, setArrowRotation] = useState(0);
 
+  const [winner, setWinner] = useState<1 | 2 | null>(null);
+  const WINNING_SCORE = 152;
+
   const handleInputChange = (value: string, setter: (val: string) => void) => {
     const converted = arabicToEnglish(value);
     const cleaned = converted.replace(/[^0-9]/g, '');
@@ -50,6 +61,26 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const rotateArrow = () => {
     setArrowRotation(prev => prev - 90);
   };
+
+  // Check for winner and trigger celebration
+  useEffect(() => {
+    if (winner) {
+      const colors = winner === 1 
+        ? ['#3b82f6', '#60a5fa', '#93c5fd']
+        : ['#f43f5e', '#fb7185', '#fda4af'];
+
+      confetti({
+        particleCount: 100,
+        spread: 100,
+        origin: { y: 0.6 },
+        colors,
+      });
+
+      if (navigator.vibrate) {
+        navigator.vibrate([100, 50, 100, 50, 200]);
+      }
+    }
+  }, [winner]);
 
   const handleAddPoints = () => {
     const t1 = parseInt(team1Input) || 0;
@@ -72,6 +103,13 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     setTeam1Input('');
     setTeam2Input('');
     rotateArrow();
+
+    // Check for winner
+    if (newTeam1Score >= WINNING_SCORE) {
+      setWinner(1);
+    } else if (newTeam2Score >= WINNING_SCORE) {
+      setWinner(2);
+    }
   };
 
   const handleUndo = () => {
@@ -108,10 +146,78 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     setTeam2Input('');
     setHistory([]);
     setArrowRotation(0);
+    setWinner(null);
   };
 
   return (
     <div className="h-screen overflow-hidden flex flex-col bg-background text-foreground">
+      {/* Winner Modal */}
+      <Dialog open={winner !== null}>
+        <DialogContent className="text-center max-w-sm border-2 overflow-hidden">
+          <div className={cn(
+            "absolute inset-0 opacity-20 animate-pulse",
+            winner === 1 
+              ? "bg-gradient-to-br from-blue-500 via-blue-400 to-blue-600" 
+              : "bg-gradient-to-br from-rose-500 via-rose-400 to-rose-600"
+          )} />
+          
+          <DialogHeader className="relative">
+            <div className="flex justify-center mb-2">
+              <div className={cn(
+                "p-4 rounded-full",
+                winner === 1 ? "bg-blue-500/20" : "bg-rose-500/20"
+              )}>
+                <Trophy className={cn(
+                  "h-12 w-12 animate-bounce",
+                  winner === 1 ? "text-blue-400" : "text-rose-400"
+                )} />
+              </div>
+            </div>
+            <DialogTitle className="text-2xl flex items-center justify-center gap-2">
+              <Crown className="h-6 w-6 text-amber-400" />
+              <span>مبروك الفوز!</span>
+              <Crown className="h-6 w-6 text-amber-400" />
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="py-6 relative">
+            <div className={cn(
+              "text-4xl font-bold mb-4 flex items-center justify-center gap-2",
+              winner === 1 ? "text-blue-400" : "text-rose-400"
+            )}>
+              <Star className="h-6 w-6 fill-current" />
+              {winner === 1 ? 'لنا' : 'لهم'}
+              <Star className="h-6 w-6 fill-current" />
+            </div>
+            
+            <div className={cn(
+              "text-7xl font-bold mb-2 tabular-nums",
+              winner === 1 ? "text-blue-400" : "text-rose-400"
+            )}>
+              {winner === 1 ? team1Score : team2Score}
+            </div>
+            
+            <div className="text-muted-foreground text-lg">
+              vs {winner === 1 ? team2Score : team1Score}
+            </div>
+          </div>
+
+          <div className="flex gap-3 relative">
+            <Button 
+              onClick={saveAndReset} 
+              className={cn(
+                "flex-1 text-lg py-6 font-bold",
+                winner === 1 
+                  ? "bg-blue-600 hover:bg-blue-700" 
+                  : "bg-rose-600 hover:bg-rose-700"
+              )}
+            >
+              صكة جديدة
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Header */}
       <div className="flex justify-between items-center p-4">
         <ThemeToggle />
