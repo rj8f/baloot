@@ -283,12 +283,15 @@ const CardScanner = ({ gameType, buyingTeam, multiplier, onClose, onSuccess }: C
                         </p>
 
                         <div className="flex gap-2 pt-2">
-                          <Button onClick={confirmResult} className="flex-1 py-5 text-lg">
-                            <Check className="h-5 w-5 ml-2" />
-                            تأكيد الإدخال
+                          <Button 
+                            onClick={confirmResult} 
+                            className="flex-1 py-6 text-lg bg-green-600 hover:bg-green-700"
+                          >
+                            <Check className="h-6 w-6 ml-2" />
+                            تأكيد
                           </Button>
-                          <Button variant="outline" onClick={resetScan} className="flex-1 py-5">
-                            إعادة التصوير
+                          <Button variant="outline" onClick={resetScan} className="py-6">
+                            إعادة
                           </Button>
                         </div>
                       </CardContent>
