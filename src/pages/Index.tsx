@@ -1,10 +1,23 @@
 import { GameProvider, useGame } from '@/contexts/GameContext';
 import GameSetup from '@/components/GameSetup';
 import GameDashboard from '@/components/GameDashboard';
+import SimpleCalculator from '@/components/SimpleCalculator';
 
 const GameContent = () => {
-  const { game } = useGame();
-  return game ? <GameDashboard /> : <GameSetup />;
+  const { game, calculatorMode, resetGame } = useGame();
+  
+  // الحاسبة المختصرة
+  if (calculatorMode === 'simple') {
+    return <SimpleCalculator onBack={() => resetGame()} />;
+  }
+  
+  // الحاسبة المتقدمة
+  if (calculatorMode === 'advanced' && game) {
+    return <GameDashboard />;
+  }
+  
+  // شاشة الاختيار
+  return <GameSetup />;
 };
 
 const Index = () => {
