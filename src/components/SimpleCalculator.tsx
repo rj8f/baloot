@@ -1,8 +1,17 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowUp, RotateCcw, Home } from 'lucide-react';
+import { ArrowUp, RotateCcw, Home, History } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
+import { supabase } from '@/integrations/supabase/client';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import MatchHistory from './MatchHistory';
 
 interface SimpleCalculatorProps {
   onBack: () => void;
@@ -30,13 +39,16 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const [team1Input, setTeam1Input] = useState('');
   const [team2Input, setTeam2Input] = useState('');
   const [history, setHistory] = useState<RoundEntry[]>([]);
+  const [arrowRotation, setArrowRotation] = useState(0);
 
   const handleInputChange = (value: string, setter: (val: string) => void) => {
-    // تحويل الأرقام العربية للإنجليزية
     const converted = arabicToEnglish(value);
-    // السماح فقط بالأرقام
     const cleaned = converted.replace(/[^0-9]/g, '');
     setter(cleaned);
+  };
+
+  const rotateArrow = () => {
+    setArrowRotation(prev => prev - 90);
   };
 
   const handleAddPoints = () => {
@@ -51,11 +63,15 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
       team2: t2,
     };
     
-    setTeam1Score(prev => prev + t1);
-    setTeam2Score(prev => prev + t2);
+    const newTeam1Score = team1Score + t1;
+    const newTeam2Score = team2Score + t2;
+    
+    setTeam1Score(newTeam1Score);
+    setTeam2Score(newTeam2Score);
     setHistory(prev => [newEntry, ...prev]);
     setTeam1Input('');
     setTeam2Input('');
+    rotateArrow();
   };
 
   const handleUndo = () => {
@@ -66,12 +82,32 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     setHistory(prev => prev.slice(1));
   };
 
-  const handleReset = () => {
+  const saveAndReset = async () => {
+    // حفظ المباراة إذا كان هناك نقاط
+    if (team1Score > 0 || team2Score > 0) {
+      const winner = team1Score >= 152 ? 1 : team2Score >= 152 ? 2 : null;
+      try {
+        await supabase.from('games').insert([{
+          team1_name: 'لنا',
+          team2_name: 'لهم',
+          team1_score: team1Score,
+          team2_score: team2Score,
+          winner: winner,
+          rounds: JSON.parse(JSON.stringify(history.reverse())),
+          finished_at: new Date().toISOString(),
+        }]);
+      } catch (error) {
+        console.error('Error saving game:', error);
+      }
+    }
+    
+    // إعادة تعيين
     setTeam1Score(0);
     setTeam2Score(0);
     setTeam1Input('');
     setTeam2Input('');
     setHistory([]);
+    setArrowRotation(0);
   };
 
   return (
@@ -79,9 +115,27 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
       {/* Header */}
       <div className="flex justify-between items-center p-4">
         <ThemeToggle />
-        <Button variant="ghost" size="icon" onClick={onBack}>
-          <Home className="h-5 w-5" />
-        </Button>
+        <div className="flex items-center gap-1">
+          {/* Match History Sheet */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" title="سجل المباريات">
+                <History className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="top" className="h-[70vh]">
+              <SheetHeader>
+                <SheetTitle>سجل المباريات</SheetTitle>
+              </SheetHeader>
+              <div className="mt-4 overflow-auto h-full pb-8">
+                <MatchHistory />
+              </div>
+            </SheetContent>
+          </Sheet>
+          <Button variant="ghost" size="icon" onClick={onBack}>
+            <Home className="h-5 w-5" />
+          </Button>
+        </div>
       </div>
 
       {/* Scores Display */}
@@ -90,7 +144,15 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
           <div className="text-2xl font-bold text-muted-foreground">لنا</div>
           <div className="text-6xl font-bold">{team1Score}</div>
         </div>
-        <ArrowUp className="h-8 w-8 text-muted-foreground" />
+        <button 
+          onClick={rotateArrow}
+          className="p-2 hover:bg-muted rounded-full transition-colors"
+        >
+          <ArrowUp 
+            className="h-8 w-8 text-muted-foreground transition-transform duration-300" 
+            style={{ transform: `rotate(${arrowRotation}deg)` }}
+          />
+        </button>
         <div className="text-center">
           <div className="text-2xl font-bold text-muted-foreground">لهم</div>
           <div className="text-6xl font-bold">{team2Score}</div>
@@ -136,7 +198,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
         <Button variant="outline" onClick={handleUndo} disabled={history.length === 0}>
           تراجع
         </Button>
-        <Button variant="outline" onClick={handleReset}>
+        <Button variant="outline" onClick={saveAndReset}>
           <RotateCcw className="h-4 w-4 ml-2" />
           صكة جديدة
         </Button>
