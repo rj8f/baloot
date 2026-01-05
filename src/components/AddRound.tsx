@@ -31,12 +31,14 @@ const AddRound = () => {
   const [team2Projects, setTeam2Projects] = useState<TeamProjects>(createEmptyProjects());
   const [multiplier, setMultiplier] = useState<Multiplier>('عادي');
   const [showScanner, setShowScanner] = useState(false);
+  const [kabootTeam, setKabootTeam] = useState<1 | 2 | null>(null);
 
   // Reset projects when game type changes
   useEffect(() => {
     setTeam1Projects(createEmptyProjects());
     setTeam2Projects(createEmptyProjects());
     setEntryTeamCardsRaw('');
+    setKabootTeam(null);
   }, [gameType]);
 
   if (!game) return null;
@@ -107,11 +109,11 @@ const AddRound = () => {
   const totals = calculateTotalRaw();
 
   const handleSubmit = () => {
-    if ((totals.team1Cards === 0 && totals.team2Cards === 0) && multiplier !== 'قهوة') return;
+    if ((totals.team1Cards === 0 && totals.team2Cards === 0) && multiplier !== 'قهوة' && !kabootTeam) return;
 
     // الأرض تضاف للبنط الخام
-    const team1Raw = totals.team1Cards + (groundTeam === 1 ? 10 : 0);
-    const team2Raw = totals.team2Cards + (groundTeam === 2 ? 10 : 0);
+    const team1Raw = kabootTeam ? 0 : totals.team1Cards + (groundTeam === 1 ? 10 : 0);
+    const team2Raw = kabootTeam ? 0 : totals.team2Cards + (groundTeam === 2 ? 10 : 0);
 
     addRound({
       gameType,
@@ -121,6 +123,7 @@ const AddRound = () => {
       team1Projects,
       team2Projects,
       multiplier,
+      kabootTeam,
     });
 
     // Reset form
@@ -129,6 +132,7 @@ const AddRound = () => {
     setTeam1Projects(createEmptyProjects());
     setTeam2Projects(createEmptyProjects());
     setMultiplier('عادي');
+    setKabootTeam(null);
   };
 
   const handleScanSuccess = (totalPoints: number) => {
@@ -227,61 +231,99 @@ const AddRound = () => {
             </div>
           </div>
 
-          {/* Raw Points Input - Choose which team */}
+          {/* Kaboot - كبوت */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">بنط الأكلات</label>
-            
-            {/* Team selector for entry */}
-            <div className="grid grid-cols-2 gap-2 mb-2">
+            <label className="text-sm font-medium text-muted-foreground">
+              كبوت ({gameType === 'حكم' ? '25' : '44'} نقطة + المشاريع)
+            </label>
+            <div className="grid grid-cols-3 gap-2">
               <Button
-                variant={entryTeam === 1 ? 'default' : 'outline'}
-                onClick={() => setEntryTeam(1)}
+                variant={kabootTeam === null ? 'default' : 'outline'}
+                onClick={() => setKabootTeam(null)}
+                size="sm"
+              >
+                لا يوجد
+              </Button>
+              <Button
+                variant={kabootTeam === 1 ? 'default' : 'outline'}
+                onClick={() => setKabootTeam(1)}
                 size="sm"
                 className={cn(
-                  entryTeam === 1 && "bg-blue-600 hover:bg-blue-700"
+                  kabootTeam === 1 && "bg-blue-600 hover:bg-blue-700"
                 )}
               >
                 {game.team1Name}
               </Button>
               <Button
-                variant={entryTeam === 2 ? 'default' : 'outline'}
-                onClick={() => setEntryTeam(2)}
+                variant={kabootTeam === 2 ? 'default' : 'outline'}
+                onClick={() => setKabootTeam(2)}
                 size="sm"
                 className={cn(
-                  entryTeam === 2 && "bg-rose-600 hover:bg-rose-700"
+                  kabootTeam === 2 && "bg-rose-600 hover:bg-rose-700"
                 )}
               >
                 {game.team2Name}
               </Button>
             </div>
-            
-            <div className="flex items-center gap-2">
-              <Input
-                type="tel"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={entryTeamCardsRaw}
-                onChange={(e) => setEntryTeamCardsRaw(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
-                placeholder={`من 0 إلى ${totalCardsWithoutGround}`}
-                className="text-center text-xl h-14 flex-1"
-                disabled={multiplier === 'قهوة'}
-              />
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setShowScanner(true)}
-                disabled={multiplier === 'قهوة'}
-                className="h-14 w-14 shrink-0 border-2 hover:bg-primary/10 hover:border-primary transition-colors"
-              >
-                <Camera className="h-6 w-6" />
-              </Button>
-            </div>
-            {entryTeamCardsRaw && (
-              <p className="text-xs text-muted-foreground text-center">
-                {entryTeam === 1 ? game.team2Name : game.team1Name}: {totals.otherCards} بنط
-              </p>
-            )}
           </div>
+
+          {/* Raw Points Input - Choose which team */}
+          {!kabootTeam && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">بنط الأكلات</label>
+              
+              {/* Team selector for entry */}
+              <div className="grid grid-cols-2 gap-2 mb-2">
+                <Button
+                  variant={entryTeam === 1 ? 'default' : 'outline'}
+                  onClick={() => setEntryTeam(1)}
+                  size="sm"
+                  className={cn(
+                    entryTeam === 1 && "bg-blue-600 hover:bg-blue-700"
+                  )}
+                >
+                  {game.team1Name}
+                </Button>
+                <Button
+                  variant={entryTeam === 2 ? 'default' : 'outline'}
+                  onClick={() => setEntryTeam(2)}
+                  size="sm"
+                  className={cn(
+                    entryTeam === 2 && "bg-rose-600 hover:bg-rose-700"
+                  )}
+                >
+                  {game.team2Name}
+                </Button>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Input
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={entryTeamCardsRaw}
+                  onChange={(e) => setEntryTeamCardsRaw(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
+                  placeholder={`من 0 إلى ${totalCardsWithoutGround}`}
+                  className="text-center text-xl h-14 flex-1"
+                  disabled={multiplier === 'قهوة'}
+                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setShowScanner(true)}
+                  disabled={multiplier === 'قهوة'}
+                  className="h-14 w-14 shrink-0 border-2 hover:bg-primary/10 hover:border-primary transition-colors"
+                >
+                  <Camera className="h-6 w-6" />
+                </Button>
+              </div>
+              {entryTeamCardsRaw && (
+                <p className="text-xs text-muted-foreground text-center">
+                  {entryTeam === 1 ? game.team2Name : game.team1Name}: {totals.otherCards} بنط
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Projects Selection */}
           <div className="space-y-3">
@@ -315,76 +357,97 @@ const AddRound = () => {
           </div>
 
           {/* Ground Selection - الأرض */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">الأرض (الأكلة الأخيرة = 10 نقاط)</label>
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                variant={groundTeam === 1 ? 'default' : 'outline'}
-                onClick={() => setGroundTeam(1)}
-                className={cn(
-                  "text-base py-4",
-                  groundTeam === 1 && "bg-blue-600 hover:bg-blue-700"
-                )}
-              >
-                {game.team1Name}
-              </Button>
-              <Button
-                variant={groundTeam === 2 ? 'default' : 'outline'}
-                onClick={() => setGroundTeam(2)}
-                className={cn(
-                  "text-base py-4",
-                  groundTeam === 2 && "bg-rose-600 hover:bg-rose-700"
-                )}
-              >
-                {game.team2Name}
-              </Button>
+          {!kabootTeam && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">الأرض (الأكلة الأخيرة = 10 نقاط)</label>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant={groundTeam === 1 ? 'default' : 'outline'}
+                  onClick={() => setGroundTeam(1)}
+                  className={cn(
+                    "text-base py-4",
+                    groundTeam === 1 && "bg-blue-600 hover:bg-blue-700"
+                  )}
+                >
+                  {game.team1Name}
+                </Button>
+                <Button
+                  variant={groundTeam === 2 ? 'default' : 'outline'}
+                  onClick={() => setGroundTeam(2)}
+                  className={cn(
+                    "text-base py-4",
+                    groundTeam === 2 && "bg-rose-600 hover:bg-rose-700"
+                  )}
+                >
+                  {game.team2Name}
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Total Raw Points Display */}
-          <div className="p-3 bg-muted/50 rounded-lg">
-            <div className="text-sm font-medium text-muted-foreground text-center mb-2">إجمالي البنط</div>
-            <div className="grid grid-cols-2 gap-4 text-center">
-              <div>
-                <span className="text-blue-400 font-medium">{game.team1Name}</span>
-                <div className="text-2xl font-bold">{totals.team1Total}</div>
-              </div>
-              <div>
-                <span className="text-rose-400 font-medium">{game.team2Name}</span>
-                <div className="text-2xl font-bold">{totals.team2Total}</div>
+          {!kabootTeam && (
+            <div className="p-3 bg-muted/50 rounded-lg">
+              <div className="text-sm font-medium text-muted-foreground text-center mb-2">إجمالي البنط</div>
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div>
+                  <span className="text-blue-400 font-medium">{game.team1Name}</span>
+                  <div className="text-2xl font-bold">{totals.team1Total}</div>
+                </div>
+                <div>
+                  <span className="text-rose-400 font-medium">{game.team2Name}</span>
+                  <div className="text-2xl font-bold">{totals.team2Total}</div>
+                </div>
               </div>
             </div>
-          </div>
+          )}
+
+          {/* Kaboot Points Display */}
+          {kabootTeam && (
+            <div className="p-3 bg-amber-500/20 border border-amber-500/50 rounded-lg">
+              <div className="text-sm font-medium text-amber-400 text-center mb-2">نقاط الكبوت</div>
+              <div className="text-center">
+                <span className={kabootTeam === 1 ? "text-blue-400" : "text-rose-400"}>
+                  {kabootTeam === 1 ? game.team1Name : game.team2Name}
+                </span>
+                <div className="text-2xl font-bold text-amber-400">
+                  {gameType === 'حكم' ? '25' : '44'} + المشاريع
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Multiplier */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">المضاعفة</label>
-            <div className="flex flex-wrap gap-2">
-              {availableMultipliers.map((m) => {
-                const isDisabled = gameType === 'صن' && m === 'دبل' && !canDouble;
-                return (
-                  <Button
-                    key={m}
-                    variant={multiplier === m ? 'default' : 'outline'}
-                    onClick={() => setMultiplier(m)}
-                    disabled={isDisabled}
-                    className={cn(
-                      "flex-1 min-w-[60px]",
-                      m === 'قهوة' && multiplier === m && "bg-amber-600 hover:bg-amber-700"
-                    )}
-                    size="sm"
-                  >
-                    {m}
-                  </Button>
-                );
-              })}
+          {!kabootTeam && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">المضاعفة</label>
+              <div className="flex flex-wrap gap-2">
+                {availableMultipliers.map((m) => {
+                  const isDisabled = gameType === 'صن' && m === 'دبل' && !canDouble;
+                  return (
+                    <Button
+                      key={m}
+                      variant={multiplier === m ? 'default' : 'outline'}
+                      onClick={() => setMultiplier(m)}
+                      disabled={isDisabled}
+                      className={cn(
+                        "flex-1 min-w-[60px]",
+                        m === 'قهوة' && multiplier === m && "bg-amber-600 hover:bg-amber-700"
+                      )}
+                      size="sm"
+                    >
+                      {m}
+                    </Button>
+                  );
+                })}
+              </div>
+              {gameType === 'صن' && !canDouble && (
+                <p className="text-xs text-muted-foreground">
+                  الدبل متاح فقط إذا أحد الفرق ≤100 والآخر ≥101
+                </p>
+              )}
             </div>
-            {gameType === 'صن' && !canDouble && (
-              <p className="text-xs text-muted-foreground">
-                الدبل متاح فقط إذا أحد الفرق ≤100 والآخر ≥101
-              </p>
-            )}
-          </div>
+          )}
 
           {/* Submit */}
           <Button 

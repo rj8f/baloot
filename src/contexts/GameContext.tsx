@@ -17,6 +17,7 @@ interface RoundInput {
   team1Projects: TeamProjects;
   team2Projects: TeamProjects;
   multiplier: Multiplier;
+  kabootTeam?: 1 | 2 | null; // الفريق الذي حصل على كبوت (إن وجد)
 }
 
 interface GameContextType {
@@ -92,8 +93,26 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const calculateRoundResult = (
     roundData: RoundInput
   ): { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number } => {
-    const { gameType, buyingTeam, team1RawPoints, team2RawPoints, team1Projects, team2Projects, multiplier } = roundData;
+    const { gameType, buyingTeam, team1RawPoints, team2RawPoints, team1Projects, team2Projects, multiplier, kabootTeam } = roundData;
     const otherTeam: 1 | 2 = buyingTeam === 1 ? 2 : 1;
+
+    // كبوت: الفريق الفائز يحصل على 25 في الحكم أو 44 في الصن + مشاريعه
+    if (kabootTeam) {
+      const kabootPoints = gameType === 'حكم' ? 25 : 44;
+      const kabootTeamProjects = kabootTeam === 1 ? team1Projects : team2Projects;
+      const projectPoints = calculateProjectsWithoutBaloot(kabootTeamProjects, gameType);
+      const balootPoints = calculateBalootPoints(kabootTeamProjects, gameType);
+      
+      // في الصن المشاريع تُضرب في 2 أيضاً
+      const sunFactor = gameType === 'صن' ? 2 : 1;
+      const finalPoints = kabootPoints + (projectPoints * sunFactor) + balootPoints;
+      
+      return {
+        winningTeam: kabootTeam,
+        finalTeam1Points: kabootTeam === 1 ? finalPoints : 0,
+        finalTeam2Points: kabootTeam === 2 ? finalPoints : 0,
+      };
+    }
 
     // قهوة: من يربح يأخذ اللعبة كلها (152 نقطة)
     if (multiplier === 'قهوة') {
