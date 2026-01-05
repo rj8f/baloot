@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { 
   Game, 
   Round, 
@@ -8,6 +8,7 @@ import {
   calculateProjectsWithoutBaloot,
   calculateBalootPoints,
 } from '@/types/baloot';
+import { supabase } from '@/integrations/supabase/client';
 
 interface RoundInput {
   gameType: GameType;
@@ -259,13 +260,36 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     if (newTeam1Score >= game.winningScore) winner = 1;
     else if (newTeam2Score >= game.winningScore) winner = 2;
 
-    setGame({
+    const updatedGame = {
       ...game,
       team1Score: newTeam1Score,
       team2Score: newTeam2Score,
       rounds: [...game.rounds, newRound],
       winner,
-    });
+    };
+
+    setGame(updatedGame);
+
+    // حفظ المباراة عند انتهائها
+    if (winner) {
+      saveGameToHistory(updatedGame);
+    }
+  };
+
+  const saveGameToHistory = async (gameData: Game) => {
+    try {
+      await supabase.from('games').insert([{
+        team1_name: gameData.team1Name,
+        team2_name: gameData.team2Name,
+        team1_score: gameData.team1Score,
+        team2_score: gameData.team2Score,
+        winner: gameData.winner,
+        rounds: JSON.parse(JSON.stringify(gameData.rounds)),
+        finished_at: new Date().toISOString(),
+      }]);
+    } catch (error) {
+      console.error('Error saving game:', error);
+    }
   };
 
   const deleteRound = (roundId: string) => {
