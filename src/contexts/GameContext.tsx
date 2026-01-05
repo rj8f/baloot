@@ -199,10 +199,13 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       multiplier === 'دبل' ? 2 :
       multiplier === '×3' ? 2.5 : 4; // ×3 = 16+16+8=40 يعني 2.5
 
-    // النقاط النهائية = (بنط ÷ 10 + مشاريع) × المضاعف + بلوت
+    // في الصن: النقاط تُضرب في 2 (قبل أي مضاعفات أخرى)
+    const sunFactor = gameType === 'صن' ? 2 : 1;
+
+    // النقاط النهائية = (بنط ÷ 10 + مشاريع) × مضاعف الصن × المضاعف + بلوت
     // البلوت لا يتضاعف
-    const finalTeam1Points = Math.round((team1RawScore + team1FinalProjects) * multiplierFactor) + team1FinalBaloot;
-    const finalTeam2Points = Math.round((team2RawScore + team2FinalProjects) * multiplierFactor) + team2FinalBaloot;
+    const finalTeam1Points = Math.round((team1RawScore + team1FinalProjects) * sunFactor * multiplierFactor) + team1FinalBaloot;
+    const finalTeam2Points = Math.round((team2RawScore + team2FinalProjects) * sunFactor * multiplierFactor) + team2FinalBaloot;
 
     return {
       winningTeam,
