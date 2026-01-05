@@ -81,7 +81,7 @@ const AddRound = () => {
   // حكم: 162 - 10 = 152
   const totalCardsWithoutGround = gameType === 'صن' ? 250 : 152;
 
-  // حساب الأبناط الكلية لكل فريق (أكلات + مشاريع + أرض)
+  // حساب بنط الأكلات لكل فريق (أكلات + أرض فقط - بدون المشاريع)
   const calculateTotalRaw = () => {
     const entryCards = parseInt(entryTeamCardsRaw) || 0;
     const otherCards = totalCardsWithoutGround - entryCards;
@@ -89,21 +89,14 @@ const AddRound = () => {
     const team1Cards = entryTeam === 1 ? entryCards : otherCards;
     const team2Cards = entryTeam === 2 ? entryCards : otherCards;
     
-    // المشاريع × 10 = بنط
-    const team1ProjectsRaw = availableProjects.reduce((sum, p) => {
-      return sum + (team1Projects[p.key] * p.value * 10);
-    }, 0);
-    const team2ProjectsRaw = availableProjects.reduce((sum, p) => {
-      return sum + (team2Projects[p.key] * p.value * 10);
-    }, 0);
-    
-    // الأرض = 10 نقاط
+    // الأرض = 10 بنط
     const team1Ground = groundTeam === 1 ? 10 : 0;
     const team2Ground = groundTeam === 2 ? 10 : 0;
     
+    // إجمالي البنط = أكلات + أرض (بدون المشاريع)
     return {
-      team1Total: team1Cards + team1ProjectsRaw + team1Ground,
-      team2Total: team2Cards + team2ProjectsRaw + team2Ground,
+      team1Total: team1Cards + team1Ground,
+      team2Total: team2Cards + team2Ground,
       team1Cards,
       team2Cards,
       entryCards,
