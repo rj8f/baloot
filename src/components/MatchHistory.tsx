@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect, forwardRef } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { History, Trophy, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
@@ -18,7 +18,7 @@ interface GameRecord {
   finished_at: string | null;
 }
 
-const MatchHistory = () => {
+const MatchHistory = forwardRef<HTMLDivElement>((_, ref) => {
   const [games, setGames] = useState<GameRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
@@ -117,6 +117,8 @@ const MatchHistory = () => {
       </CollapsibleContent>
     </Collapsible>
   );
-};
+});
+
+MatchHistory.displayName = 'MatchHistory';
 
 export default MatchHistory;
