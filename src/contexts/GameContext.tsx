@@ -30,6 +30,8 @@ interface GameContextType {
   resetGame: () => void;
   canDoubleSun: () => boolean;
   previewRoundResult: (round: RoundInput) => { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number };
+  setScores: (team1Score: number, team2Score: number) => void;
+  initGameIfNeeded: () => void;
 }
 
 export type { RoundInput };
@@ -329,8 +331,37 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     return calculateRoundResult(roundData);
   };
 
+  // تحديث النتيجة مباشرة (للمزامنة بين الحاسبتين)
+  const setScores = (team1Score: number, team2Score: number) => {
+    if (!game) return;
+    
+    let winner: 1 | 2 | null = null;
+    if (team1Score >= game.winningScore) winner = 1;
+    else if (team2Score >= game.winningScore) winner = 2;
+
+    const updatedGame = {
+      ...game,
+      team1Score,
+      team2Score,
+      winner,
+    };
+
+    setGame(updatedGame);
+
+    if (winner) {
+      saveGameToHistory(updatedGame);
+    }
+  };
+
+  // تهيئة اللعبة إذا لم تكن موجودة
+  const initGameIfNeeded = () => {
+    if (!game) {
+      startGame('لنا', 'لهم', 152);
+    }
+  };
+
   return (
-    <GameContext.Provider value={{ game, startGame, addRound, deleteRound, undoLastRound, resetGame, canDoubleSun, previewRoundResult }}>
+    <GameContext.Provider value={{ game, startGame, addRound, deleteRound, undoLastRound, resetGame, canDoubleSun, previewRoundResult, setScores, initGameIfNeeded }}>
       {children}
     </GameContext.Provider>
   );
