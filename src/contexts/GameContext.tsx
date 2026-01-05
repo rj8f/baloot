@@ -104,58 +104,70 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       };
     }
 
-    // حساب نقاط المشاريع (بالنقاط - تضرب في 10 للحصول على البنط)
+    // حساب نقاط المشاريع (كنقاط - لا تُضرب في 10)
     const team1ProjectsWithoutBaloot = calculateProjectsWithoutBaloot(team1Projects, gameType);
     const team2ProjectsWithoutBaloot = calculateProjectsWithoutBaloot(team2Projects, gameType);
     const team1Baloot = calculateBalootPoints(team1Projects, gameType);
     const team2Baloot = calculateBalootPoints(team2Projects, gameType);
 
-    // المشاريع تُضرب في 10 وتُضاف للبنط الخام
-    const team1ProjectsRaw = team1ProjectsWithoutBaloot * 10;
-    const team2ProjectsRaw = team2ProjectsWithoutBaloot * 10;
-    const team1BalootRaw = team1Baloot * 10;
-    const team2BalootRaw = team2Baloot * 10;
+    // البنط الخام لكل فريق (أكلات + أرض فقط)
+    const team1TotalRaw = team1RawPoints;
+    const team2TotalRaw = team2RawPoints;
 
-    // البنط الخام لكل فريق (أكلات + أرض مدخلة من المستخدم + مشاريع)
-    const team1TotalRaw = team1RawPoints + team1ProjectsRaw + team1BalootRaw;
-    const team2TotalRaw = team2RawPoints + team2ProjectsRaw + team2BalootRaw;
-
-    // المجموع الكلي للبنط
-    const totalRawWithProjects = team1TotalRaw + team2TotalRaw;
+    // المجموع الكلي للبنط (بدون المشاريع - المشاريع تُحسب منفصلة)
+    const totalRaw = team1TotalRaw + team2TotalRaw;
 
     // التحقق من نجاح المشتري
-    // يجب أن يحصل على نصف البنط الكلي أو أكثر ويتفوق أو يتساوى مع الخصم
-    const buyingTeamTotalRaw = buyingTeam === 1 ? team1TotalRaw : team2TotalRaw;
-    const otherTeamTotalRaw = buyingTeam === 1 ? team2TotalRaw : team1TotalRaw;
+    // يجب أن يحصل على نصف البنط الكلي أو أكثر
+    const buyingTeamRaw = buyingTeam === 1 ? team1TotalRaw : team2TotalRaw;
+    const otherTeamRaw = buyingTeam === 1 ? team2TotalRaw : team1TotalRaw;
 
-    const halfTotalRaw = totalRawWithProjects / 2;
-    const buyingTeamSucceeded = buyingTeamTotalRaw >= halfTotalRaw && buyingTeamTotalRaw >= otherTeamTotalRaw;
+    const halfTotalRaw = totalRaw / 2;
+    const buyingTeamSucceeded = buyingTeamRaw >= halfTotalRaw && buyingTeamRaw >= otherTeamRaw;
 
     let winningTeam: 1 | 2;
     let team1FinalRaw: number;
     let team2FinalRaw: number;
+    let team1FinalProjects: number;
+    let team2FinalProjects: number;
+    let team1FinalBaloot: number;
+    let team2FinalBaloot: number;
 
     if (buyingTeamSucceeded) {
       // المشتري نجح - كل فريق يأخذ نقاطه
       winningTeam = buyingTeam;
       team1FinalRaw = team1TotalRaw;
       team2FinalRaw = team2TotalRaw;
+      team1FinalProjects = team1ProjectsWithoutBaloot;
+      team2FinalProjects = team2ProjectsWithoutBaloot;
+      team1FinalBaloot = team1Baloot;
+      team2FinalBaloot = team2Baloot;
     } else {
-      // المشتري خسر - الخصم يأخذ كل البنط (بما فيها مشاريع المشتري)
+      // المشتري خسر - الخصم يأخذ كل البنط والمشاريع
       winningTeam = otherTeam;
+      const totalProjects = team1ProjectsWithoutBaloot + team2ProjectsWithoutBaloot;
+      const totalBaloot = team1Baloot + team2Baloot;
       
       if (winningTeam === 1) {
-        team1FinalRaw = totalRawWithProjects;
+        team1FinalRaw = totalRaw;
         team2FinalRaw = 0;
+        team1FinalProjects = totalProjects;
+        team2FinalProjects = 0;
+        team1FinalBaloot = totalBaloot;
+        team2FinalBaloot = 0;
       } else {
         team1FinalRaw = 0;
-        team2FinalRaw = totalRawWithProjects;
+        team2FinalRaw = totalRaw;
+        team1FinalProjects = 0;
+        team2FinalProjects = totalProjects;
+        team1FinalBaloot = 0;
+        team2FinalBaloot = totalBaloot;
       }
     }
 
     // تحويل البنط للنقاط (÷ 10 مع التقريب)
-    let team1Score = rawToScore(team1FinalRaw, gameType);
-    let team2Score = rawToScore(team2FinalRaw, gameType);
+    let team1RawScore = rawToScore(team1FinalRaw, gameType);
+    let team2RawScore = rawToScore(team2FinalRaw, gameType);
 
     // تطبيق المضاعفة
     const multiplierFactor =
@@ -163,9 +175,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       multiplier === 'دبل' ? 2 :
       multiplier === '×3' ? 2.5 : 4; // ×3 = 16+16+8=40 يعني 2.5
 
-    // ملاحظة: البلوت يتضاعف مع باقي النقاط لأنه أصبح جزء من البنط الخام
-    const finalTeam1Points = Math.round(team1Score * multiplierFactor);
-    const finalTeam2Points = Math.round(team2Score * multiplierFactor);
+    // النقاط النهائية = (بنط ÷ 10 + مشاريع) × المضاعف + بلوت
+    // البلوت لا يتضاعف
+    const finalTeam1Points = Math.round((team1RawScore + team1FinalProjects) * multiplierFactor) + team1FinalBaloot;
+    const finalTeam2Points = Math.round((team2RawScore + team2FinalProjects) * multiplierFactor) + team2FinalBaloot;
 
     return {
       winningTeam,
