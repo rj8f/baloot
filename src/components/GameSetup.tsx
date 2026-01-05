@@ -8,13 +8,11 @@ const GameSetup = () => {
   const { startGame } = useGame();
   const [team1Name, setTeam1Name] = useState('');
   const [team2Name, setTeam2Name] = useState('');
-  const [winningScore, setWinningScore] = useState('152');
 
   const handleStart = () => {
-    const t1 = team1Name.trim() || 'فريق ١';
-    const t2 = team2Name.trim() || 'فريق ٢';
-    const score = parseInt(winningScore) || 152;
-    startGame(t1, t2, score);
+    const t1 = team1Name.trim() || 'لنا';
+    const t2 = team2Name.trim() || 'لهم';
+    startGame(t1, t2, 152);
   };
 
   return (
@@ -29,7 +27,7 @@ const GameSetup = () => {
             <Input
               value={team1Name}
               onChange={(e) => setTeam1Name(e.target.value)}
-              placeholder="فريق ١"
+              placeholder="لنا"
               className="text-center text-lg"
             />
           </div>
@@ -39,18 +37,7 @@ const GameSetup = () => {
             <Input
               value={team2Name}
               onChange={(e) => setTeam2Name(e.target.value)}
-              placeholder="فريق ٢"
-              className="text-center text-lg"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">نقاط الفوز</label>
-            <Input
-              type="number"
-              value={winningScore}
-              onChange={(e) => setWinningScore(e.target.value)}
-              placeholder="152"
+              placeholder="لهم"
               className="text-center text-lg"
             />
           </div>
