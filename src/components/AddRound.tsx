@@ -51,8 +51,8 @@ const AddRound = () => {
 
   if (!game) return null;
 
-  const hokmMultipliers: Multiplier[] = ['عادي', 'دبل', '×3', '×4', 'قهوة'];
-  const sunMultipliers: Multiplier[] = ['عادي', 'دبل'];
+  const hokmMultipliers: Multiplier[] = ['دبل', '×3', '×4', 'قهوة'];
+  const sunMultipliers: Multiplier[] = ['دبل'];
 
   const availableMultipliers = gameType === 'حكم' ? hokmMultipliers : sunMultipliers;
   const canDouble = gameType === 'حكم' || canDoubleSun();
@@ -398,7 +398,7 @@ const AddRound = () => {
                   return (
                     <button
                       key={m}
-                      onClick={() => setMultiplier(m)}
+                      onClick={() => setMultiplier(multiplier === m ? 'عادي' : m)}
                       disabled={isDisabled}
                       className={cn(
                         "px-5 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95",
