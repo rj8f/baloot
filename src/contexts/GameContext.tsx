@@ -28,7 +28,10 @@ interface GameContextType {
   undoLastRound: () => void;
   resetGame: () => void;
   canDoubleSun: () => boolean;
+  previewRoundResult: (round: RoundInput) => { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number };
 }
+
+export type { RoundInput };
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
@@ -90,6 +93,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // دالة حساب نتيجة الجولة - متاحة للاستخدام الخارجي للمعاينة
   const calculateRoundResult = (
     roundData: RoundInput
   ): { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number } => {
@@ -297,8 +301,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setGame(null);
   };
 
+  const previewRoundResult = (roundData: RoundInput) => {
+    return calculateRoundResult(roundData);
+  };
+
   return (
-    <GameContext.Provider value={{ game, startGame, addRound, deleteRound, undoLastRound, resetGame, canDoubleSun }}>
+    <GameContext.Provider value={{ game, startGame, addRound, deleteRound, undoLastRound, resetGame, canDoubleSun, previewRoundResult }}>
       {children}
     </GameContext.Provider>
   );
