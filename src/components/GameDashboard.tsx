@@ -5,8 +5,16 @@ import AddRound from './AddRound';
 import RoundHistory from './RoundHistory';
 import WinnerModal from './WinnerModal';
 import ThemeToggle from './ThemeToggle';
-import { RotateCcw, Undo2 } from 'lucide-react';
+import MatchHistory from './MatchHistory';
+import { RotateCcw, Undo2, History } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 const GameDashboard = () => {
   const { game, resetGame, undoLastRound } = useGame();
@@ -31,6 +39,24 @@ const GameDashboard = () => {
           <span className="text-sm text-muted-foreground ml-2">
             الجولة {game.rounds.length + 1}
           </span>
+          
+          {/* Match History Sheet */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" title="سجل المباريات">
+                <History className="h-4 w-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="top" className="h-[70vh]">
+              <SheetHeader>
+                <SheetTitle>سجل المباريات</SheetTitle>
+              </SheetHeader>
+              <div className="mt-4 overflow-auto h-full pb-8">
+                <MatchHistory />
+              </div>
+            </SheetContent>
+          </Sheet>
+          
           <Button 
             variant="ghost" 
             size="icon" 
