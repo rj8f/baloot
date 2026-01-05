@@ -51,33 +51,17 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     team2Points: number,
     multiplier: Multiplier
   ): { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number } => {
-    const totalPoints = team1Points + team2Points;
-    const halfPoints = totalPoints / 2;
-    
-    // Determine round winner based on buying team logic
-    const buyingTeamPoints = buyingTeam === 1 ? team1Points : team2Points;
-    const otherTeamPoints = buyingTeam === 1 ? team2Points : team1Points;
-    
-    // If buying team got less than half, they lose and other team takes all
-    let winningTeam: 1 | 2;
-    let pointsToAward: number;
-    
-    if (buyingTeamPoints < halfPoints) {
-      // Buying team lost - other team takes all points
-      winningTeam = buyingTeam === 1 ? 2 : 1;
-      pointsToAward = totalPoints;
-    } else {
-      // Buying team won - they take their points (or all if other team got less than half)
-      winningTeam = buyingTeam;
-      if (otherTeamPoints < halfPoints) {
-        pointsToAward = totalPoints;
-      } else {
-        pointsToAward = buyingTeamPoints;
-      }
-    }
+    // NOTE: team1Points/team2Points are the round points the user enters ("أكلات + مشاريع")
+    // If the buying team fails, the other team takes ALL points for that round.
 
-    // Apply multiplier
+    const t1 = Number.isFinite(team1Points) ? Math.max(0, Math.trunc(team1Points)) : 0;
+    const t2 = Number.isFinite(team2Points) ? Math.max(0, Math.trunc(team2Points)) : 0;
+
+    const otherTeam: 1 | 2 = buyingTeam === 1 ? 2 : 1;
+
+    // قهوة: من يربح يأخذ اللعبة كلها (حالياً نعتمد المشتري كفائز، لأن الإدخال يكون معطّل)
     if (multiplier === 'قهوة') {
+      const winningTeam: 1 | 2 = buyingTeam;
       return {
         winningTeam,
         finalTeam1Points: winningTeam === 1 ? 152 : 0,
@@ -85,13 +69,59 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       };
     }
 
-    const multiplierValue = multiplier === 'عادي' ? 1 : multiplier === 'دبل' ? 2 : multiplier === '×3' ? 3 : 4;
-    const finalPoints = pointsToAward * multiplierValue;
+    const totalPoints = t1 + t2;
+    if (totalPoints <= 0) {
+      return { winningTeam: buyingTeam, finalTeam1Points: 0, finalTeam2Points: 0 };
+    }
+
+    const buyingTeamPoints = buyingTeam === 1 ? t1 : t2;
+    const otherTeamPoints = buyingTeam === 1 ? t2 : t1;
+
+    // نجاح اللعب: المشتري لازم يجيب نصف المجموع أو أكثر (يعني يتعادل أو يفوز على الخصم)
+    const buyingTeamSucceeded = buyingTeamPoints >= otherTeamPoints;
+
+    let baseFinalTeam1Points: number;
+    let baseFinalTeam2Points: number;
+    let winningTeam: 1 | 2;
+
+    if (buyingTeamSucceeded) {
+      winningTeam = buyingTeam;
+      baseFinalTeam1Points = t1;
+      baseFinalTeam2Points = t2;
+    } else {
+      winningTeam = otherTeam;
+      baseFinalTeam1Points = winningTeam === 1 ? totalPoints : 0;
+      baseFinalTeam2Points = winningTeam === 2 ? totalPoints : 0;
+    }
+
+    const multiplierFactor =
+      multiplier === 'عادي'
+        ? 1
+        : multiplier === 'دبل'
+          ? 2
+          : multiplier === '×3'
+            ? 2.5
+            : 4;
+
+    const roundByRules = (value: number) => {
+      if (Number.isInteger(value)) return value;
+      const floored = Math.floor(value);
+      const frac = value - floored;
+
+      // العدد المناصف: في الحكم يُكسر، وفي الصن يتبع التقريب الطبيعي
+      if (Math.abs(frac - 0.5) < 1e-9) {
+        return gameType === 'حكم' ? floored : Math.round(value);
+      }
+
+      return Math.round(value);
+    };
+
+    const applyMultiplier = (points: number) => roundByRules(points * multiplierFactor);
 
     return {
       winningTeam,
-      finalTeam1Points: winningTeam === 1 ? finalPoints : 0,
-      finalTeam2Points: winningTeam === 2 ? finalPoints : 0,
+      finalTeam1Points: applyMultiplier(baseFinalTeam1Points),
+      finalTeam2Points: applyMultiplier(baseFinalTeam2Points),
     };
   };
 
