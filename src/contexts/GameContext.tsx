@@ -107,9 +107,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       const projectPoints = calculateProjectsWithoutBaloot(kabootTeamProjects, gameType);
       const balootPoints = calculateBalootPoints(kabootTeamProjects, gameType);
       
-      // في الصن المشاريع تُضرب في 2 أيضاً
-      const sunFactor = gameType === 'صن' ? 2 : 1;
-      const finalPoints = kabootPoints + (projectPoints * sunFactor) + balootPoints;
+      // PROJECT_VALUES للصن مضاعفة مسبقاً، لا حاجة للضرب في sunFactor
+      const finalPoints = kabootPoints + projectPoints + balootPoints;
       
       return {
         winningTeam: kabootTeam,
@@ -222,13 +221,14 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       multiplier === 'دبل' ? 2 :
       multiplier === '×3' ? 2.5 : 4; // ×3 = 16+16+8=40 يعني 2.5
 
-    // في الصن: النقاط تُضرب في 2 (قبل أي مضاعفات أخرى)
+    // في الصن: البنط يُضرب في 2 (قبل أي مضاعفات أخرى)
+    // المشاريع لا تُضرب في sunFactor لأن قيمها في PROJECT_VALUES مضاعفة مسبقاً
     const sunFactor = gameType === 'صن' ? 2 : 1;
 
-    // النقاط النهائية = (بنط ÷ 10 + مشاريع) × مضاعف الصن × المضاعف + بلوت
+    // النقاط النهائية = (بنط ÷ 10 × مضاعف الصن + مشاريع) × المضاعف + بلوت
     // البلوت لا يتضاعف
-    const finalTeam1Points = Math.round((team1RawScore + team1FinalProjects) * sunFactor * multiplierFactor) + team1FinalBaloot;
-    const finalTeam2Points = Math.round((team2RawScore + team2FinalProjects) * sunFactor * multiplierFactor) + team2FinalBaloot;
+    const finalTeam1Points = Math.round((team1RawScore * sunFactor + team1FinalProjects) * multiplierFactor) + team1FinalBaloot;
+    const finalTeam2Points = Math.round((team2RawScore * sunFactor + team2FinalProjects) * multiplierFactor) + team2FinalBaloot;
 
     return {
       winningTeam,
