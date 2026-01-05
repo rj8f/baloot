@@ -44,84 +44,91 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     return (team1Score <= 100 && team2Score >= 101) || (team2Score <= 100 && team1Score >= 101);
   };
 
+  // تحويل البنط الخام إلى نقاط الجولة (القسمة على 10 مع التقريب)
+  const rawToFinalScore = (rawPoints: number, gameType: GameType): number => {
+    const divided = rawPoints / 10;
+    const floored = Math.floor(divided);
+    const decimal = divided - floored;
+
+    // قواعد التقريب:
+    // أقل من 0.5 = يكسر (floor)
+    // أكثر من 0.5 = يجبر (ceil)
+    // بالضبط 0.5:
+    //   - في الصن: يضاعف (3.5 → 7)
+    //   - في الحكم: يكسر (4.5 → 4)
+    if (decimal < 0.5) {
+      return floored;
+    } else if (decimal > 0.5) {
+      return floored + 1;
+    } else {
+      // decimal === 0.5
+      if (gameType === 'صن') {
+        return Math.round(divided * 2) / 2 * 2; // 3.5 * 2 = 7
+      } else {
+        return floored; // في الحكم يكسر
+      }
+    }
+  };
+
   const calculateRoundResult = (
     gameType: GameType,
     buyingTeam: 1 | 2,
-    team1Points: number,
-    team2Points: number,
+    team1RawPoints: number,
+    team2RawPoints: number,
     multiplier: Multiplier
   ): { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number } => {
-    // NOTE: team1Points/team2Points are the round points the user enters ("أكلات + مشاريع")
-    // If the buying team fails, the other team takes ALL points for that round.
-
-    const t1 = Number.isFinite(team1Points) ? Math.max(0, Math.trunc(team1Points)) : 0;
-    const t2 = Number.isFinite(team2Points) ? Math.max(0, Math.trunc(team2Points)) : 0;
-
     const otherTeam: 1 | 2 = buyingTeam === 1 ? 2 : 1;
 
-    // قهوة: من يربح يأخذ اللعبة كلها (حالياً نعتمد المشتري كفائز، لأن الإدخال يكون معطّل)
+    // قهوة: من يربح يأخذ اللعبة كلها
     if (multiplier === 'قهوة') {
-      const winningTeam: 1 | 2 = buyingTeam;
       return {
-        winningTeam,
-        finalTeam1Points: winningTeam === 1 ? 152 : 0,
-        finalTeam2Points: winningTeam === 2 ? 152 : 0,
+        winningTeam: buyingTeam,
+        finalTeam1Points: buyingTeam === 1 ? 152 : 0,
+        finalTeam2Points: buyingTeam === 2 ? 152 : 0,
       };
     }
 
-    const totalPoints = t1 + t2;
-    if (totalPoints <= 0) {
-      return { winningTeam: buyingTeam, finalTeam1Points: 0, finalTeam2Points: 0 };
-    }
+    // المجموع الكلي للبنط
+    const totalRaw = gameType === 'صن' ? 260 : 162;
+    
+    // تأكد من صحة القيم المدخلة
+    const t1Raw = Math.max(0, Math.min(team1RawPoints, totalRaw));
+    const t2Raw = Math.max(0, Math.min(team2RawPoints, totalRaw));
 
-    const buyingTeamPoints = buyingTeam === 1 ? t1 : t2;
-    const otherTeamPoints = buyingTeam === 1 ? t2 : t1;
+    const buyingTeamRaw = buyingTeam === 1 ? t1Raw : t2Raw;
+    const otherTeamRaw = buyingTeam === 1 ? t2Raw : t1Raw;
 
-    // نجاح اللعب: المشتري لازم يجيب نصف المجموع أو أكثر (يعني يتعادل أو يفوز على الخصم)
-    const buyingTeamSucceeded = buyingTeamPoints >= otherTeamPoints;
+    // تحويل البنط لنقاط الجولة
+    let team1Score = rawToFinalScore(t1Raw, gameType);
+    let team2Score = rawToFinalScore(t2Raw, gameType);
 
-    let baseFinalTeam1Points: number;
-    let baseFinalTeam2Points: number;
+    // نجاح المشتري: يجب أن يحصل على نصف البنط أو أكثر (ويتفوق أو يتساوى مع الخصم)
+    const halfRaw = totalRaw / 2;
+    const buyingTeamSucceeded = buyingTeamRaw >= halfRaw && buyingTeamRaw >= otherTeamRaw;
+
     let winningTeam: 1 | 2;
 
     if (buyingTeamSucceeded) {
+      // المشتري نجح - كل فريق يأخذ نقاطه
       winningTeam = buyingTeam;
-      baseFinalTeam1Points = t1;
-      baseFinalTeam2Points = t2;
     } else {
+      // المشتري خسر - الخصم يأخذ كل النقاط (بما فيها مشاريع المشتري)
       winningTeam = otherTeam;
-      baseFinalTeam1Points = winningTeam === 1 ? totalPoints : 0;
-      baseFinalTeam2Points = winningTeam === 2 ? totalPoints : 0;
+      const totalScore = team1Score + team2Score;
+      team1Score = winningTeam === 1 ? totalScore : 0;
+      team2Score = winningTeam === 2 ? totalScore : 0;
     }
 
+    // تطبيق المضاعفة (البلوت لا يتضاعف لكن هنا نفترض المدخل شامل المشاريع بعد الحساب)
     const multiplierFactor =
-      multiplier === 'عادي'
-        ? 1
-        : multiplier === 'دبل'
-          ? 2
-          : multiplier === '×3'
-            ? 2.5
-            : 4;
-
-    const roundByRules = (value: number) => {
-      if (Number.isInteger(value)) return value;
-      const floored = Math.floor(value);
-      const frac = value - floored;
-
-      // العدد المناصف: في الحكم يُكسر، وفي الصن يتبع التقريب الطبيعي
-      if (Math.abs(frac - 0.5) < 1e-9) {
-        return gameType === 'حكم' ? floored : Math.round(value);
-      }
-
-      return Math.round(value);
-    };
-
-    const applyMultiplier = (points: number) => roundByRules(points * multiplierFactor);
+      multiplier === 'عادي' ? 1 :
+      multiplier === 'دبل' ? 2 :
+      multiplier === '×3' ? 3 : 4;
 
     return {
       winningTeam,
-      finalTeam1Points: applyMultiplier(baseFinalTeam1Points),
-      finalTeam2Points: applyMultiplier(baseFinalTeam2Points),
+      finalTeam1Points: team1Score * multiplierFactor,
+      finalTeam2Points: team2Score * multiplierFactor,
     };
   };
 
