@@ -1,10 +1,28 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Game, Round, GameType, Multiplier } from '@/types/baloot';
+import { 
+  Game, 
+  Round, 
+  GameType, 
+  Multiplier, 
+  TeamProjects,
+  calculateProjectsWithoutBaloot,
+  calculateBalootPoints,
+} from '@/types/baloot';
+
+interface RoundInput {
+  gameType: GameType;
+  buyingTeam: 1 | 2;
+  team1RawPoints: number;
+  team2RawPoints: number;
+  team1Projects: TeamProjects;
+  team2Projects: TeamProjects;
+  multiplier: Multiplier;
+}
 
 interface GameContextType {
   game: Game | null;
   startGame: (team1Name: string, team2Name: string, winningScore: number) => void;
-  addRound: (round: Omit<Round, 'id' | 'roundNumber' | 'winningTeam' | 'finalTeam1Points' | 'finalTeam2Points'>) => void;
+  addRound: (round: RoundInput) => void;
   deleteRound: (roundId: string) => void;
   undoLastRound: () => void;
   resetGame: () => void;
@@ -44,8 +62,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     return (team1Score <= 100 && team2Score >= 101) || (team2Score <= 100 && team1Score >= 101);
   };
 
-  // تحويل البنط الخام إلى نقاط الجولة (القسمة على 10 مع التقريب)
-  const rawToFinalScore = (rawPoints: number, gameType: GameType): number => {
+  // تحويل البنط الخام إلى نقاط (القسمة على 10 مع التقريب)
+  const rawToScore = (rawPoints: number, gameType: GameType): number => {
     const divided = rawPoints / 10;
     const floored = Math.floor(divided);
     const decimal = divided - floored;
@@ -54,7 +72,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     // أقل من 0.5 = يكسر (floor)
     // أكثر من 0.5 = يجبر (ceil)
     // بالضبط 0.5:
-    //   - في الصن: يضاعف (3.5 → 7)
+    //   - في الصن: يضاعف (3.5 × 2 = 7)
     //   - في الحكم: يكسر (4.5 → 4)
     if (decimal < 0.5) {
       return floored;
@@ -63,7 +81,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     } else {
       // decimal === 0.5
       if (gameType === 'صن') {
-        return Math.round(divided * 2) / 2 * 2; // 3.5 * 2 = 7
+        // في الصن: 3.5 × 2 = 7
+        return floored * 2 + 1;
       } else {
         return floored; // في الحكم يكسر
       }
@@ -71,15 +90,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const calculateRoundResult = (
-    gameType: GameType,
-    buyingTeam: 1 | 2,
-    team1RawPoints: number,
-    team2RawPoints: number,
-    multiplier: Multiplier
+    roundData: RoundInput
   ): { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number } => {
+    const { gameType, buyingTeam, team1RawPoints, team2RawPoints, team1Projects, team2Projects, multiplier } = roundData;
     const otherTeam: 1 | 2 = buyingTeam === 1 ? 2 : 1;
 
-    // قهوة: من يربح يأخذ اللعبة كلها
+    // قهوة: من يربح يأخذ اللعبة كلها (152 نقطة)
     if (multiplier === 'قهوة') {
       return {
         winningTeam: buyingTeam,
@@ -88,66 +104,95 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       };
     }
 
-    // المجموع الكلي للبنط
-    const totalRaw = gameType === 'صن' ? 260 : 162;
-    
-    // تأكد من صحة القيم المدخلة
-    const t1Raw = Math.max(0, Math.min(team1RawPoints, totalRaw));
-    const t2Raw = Math.max(0, Math.min(team2RawPoints, totalRaw));
+    // المجموع الكلي للبنط (مع الأرض)
+    // صن: 130 × 2 = 260
+    // حكم: 152 + 10 = 162
+    const totalRawCards = gameType === 'صن' ? 260 : 162;
 
-    const buyingTeamRaw = buyingTeam === 1 ? t1Raw : t2Raw;
-    const otherTeamRaw = buyingTeam === 1 ? t2Raw : t1Raw;
+    // حساب نقاط الأكلات (البنط ÷ 10)
+    const team1CardsScore = rawToScore(team1RawPoints, gameType);
+    const team2CardsScore = rawToScore(team2RawPoints, gameType);
 
-    // تحويل البنط لنقاط الجولة
-    let team1Score = rawToFinalScore(t1Raw, gameType);
-    let team2Score = rawToFinalScore(t2Raw, gameType);
+    // حساب نقاط المشاريع
+    const team1ProjectsWithoutBaloot = calculateProjectsWithoutBaloot(team1Projects, gameType);
+    const team2ProjectsWithoutBaloot = calculateProjectsWithoutBaloot(team2Projects, gameType);
+    const team1Baloot = calculateBalootPoints(team1Projects, gameType);
+    const team2Baloot = calculateBalootPoints(team2Projects, gameType);
 
-    // نجاح المشتري: يجب أن يحصل على نصف البنط أو أكثر (ويتفوق أو يتساوى مع الخصم)
-    const halfRaw = totalRaw / 2;
-    const buyingTeamSucceeded = buyingTeamRaw >= halfRaw && buyingTeamRaw >= otherTeamRaw;
+    // المجموع الكلي لكل فريق (أكلات + مشاريع)
+    let team1Total = team1CardsScore + team1ProjectsWithoutBaloot + team1Baloot;
+    let team2Total = team2CardsScore + team2ProjectsWithoutBaloot + team2Baloot;
+
+    // التحقق من نجاح المشتري
+    // يجب أن يحصل على نصف البنط أو أكثر ويتفوق أو يتساوى مع الخصم
+    const buyingTeamRaw = buyingTeam === 1 ? team1RawPoints : team2RawPoints;
+    const buyingTeamTotal = buyingTeam === 1 ? team1Total : team2Total;
+    const otherTeamTotal = buyingTeam === 1 ? team2Total : team1Total;
+
+    const halfRaw = totalRawCards / 2;
+    const buyingTeamSucceeded = buyingTeamRaw >= halfRaw && buyingTeamTotal >= otherTeamTotal;
 
     let winningTeam: 1 | 2;
+    let finalTeam1Base: number;
+    let finalTeam2Base: number;
+    let team1BalootFinal = team1Baloot;
+    let team2BalootFinal = team2Baloot;
 
     if (buyingTeamSucceeded) {
       // المشتري نجح - كل فريق يأخذ نقاطه
       winningTeam = buyingTeam;
+      finalTeam1Base = team1CardsScore + team1ProjectsWithoutBaloot;
+      finalTeam2Base = team2CardsScore + team2ProjectsWithoutBaloot;
     } else {
       // المشتري خسر - الخصم يأخذ كل النقاط (بما فيها مشاريع المشتري)
       winningTeam = otherTeam;
-      const totalScore = team1Score + team2Score;
-      team1Score = winningTeam === 1 ? totalScore : 0;
-      team2Score = winningTeam === 2 ? totalScore : 0;
+      
+      // مجموع نقاط الأكلات الكلي
+      const totalCardsScore = gameType === 'صن' ? 26 : 16;
+      
+      // مجموع المشاريع (بدون البلوت لأنه يضاف بدون مضاعفة)
+      const totalProjectsWithoutBaloot = team1ProjectsWithoutBaloot + team2ProjectsWithoutBaloot;
+      const totalBaloot = team1Baloot + team2Baloot;
+      
+      if (winningTeam === 1) {
+        finalTeam1Base = totalCardsScore + totalProjectsWithoutBaloot;
+        finalTeam2Base = 0;
+        team1BalootFinal = totalBaloot;
+        team2BalootFinal = 0;
+      } else {
+        finalTeam1Base = 0;
+        finalTeam2Base = totalCardsScore + totalProjectsWithoutBaloot;
+        team1BalootFinal = 0;
+        team2BalootFinal = totalBaloot;
+      }
     }
 
-    // تطبيق المضاعفة (البلوت لا يتضاعف لكن هنا نفترض المدخل شامل المشاريع بعد الحساب)
+    // تطبيق المضاعفة (البلوت لا يتضاعف)
     const multiplierFactor =
       multiplier === 'عادي' ? 1 :
       multiplier === 'دبل' ? 2 :
-      multiplier === '×3' ? 3 : 4;
+      multiplier === '×3' ? 2.5 : 4; // ×3 = 16+16+8=40 يعني 2.5
 
     return {
       winningTeam,
-      finalTeam1Points: team1Score * multiplierFactor,
-      finalTeam2Points: team2Score * multiplierFactor,
+      finalTeam1Points: Math.round(finalTeam1Base * multiplierFactor) + team1BalootFinal,
+      finalTeam2Points: Math.round(finalTeam2Base * multiplierFactor) + team2BalootFinal,
     };
   };
 
-  const addRound = (roundData: Omit<Round, 'id' | 'roundNumber' | 'winningTeam' | 'finalTeam1Points' | 'finalTeam2Points'>) => {
+  const addRound = (roundData: RoundInput) => {
     if (!game) return;
 
-    const result = calculateRoundResult(
-      roundData.gameType,
-      roundData.buyingTeam,
-      roundData.team1Points,
-      roundData.team2Points,
-      roundData.multiplier
-    );
+    const result = calculateRoundResult(roundData);
 
     const newRound: Round = {
       ...roundData,
       id: crypto.randomUUID(),
       roundNumber: game.rounds.length + 1,
       ...result,
+      // للتوافق مع الكود القديم
+      team1Points: roundData.team1RawPoints,
+      team2Points: roundData.team2RawPoints,
     };
 
     const newTeam1Score = game.team1Score + result.finalTeam1Points;
