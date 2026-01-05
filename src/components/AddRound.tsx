@@ -290,6 +290,37 @@ const AddRound = () => {
             )}
           </div>
 
+          {/* Projects Selection */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-muted-foreground">المشاريع</label>
+            
+            {/* Team 1 Projects */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                <span className="text-sm font-medium text-blue-400">{game.team1Name}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {availableProjects.map((p) => (
+                  <ProjectCounter key={`t1-${p.key}`} team={1} project={p.key} value={p.value} />
+                ))}
+              </div>
+            </div>
+
+            {/* Team 2 Projects */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-rose-500"></div>
+                <span className="text-sm font-medium text-rose-400">{game.team2Name}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {availableProjects.map((p) => (
+                  <ProjectCounter key={`t2-${p.key}`} team={2} project={p.key} value={p.value} />
+                ))}
+              </div>
+            </div>
+          </div>
+
           {/* Ground Selection - الأرض */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">الأرض (الأكلة الأخيرة = 10 نقاط)</label>
@@ -328,37 +359,6 @@ const AddRound = () => {
               <div>
                 <span className="text-rose-400 font-medium">{game.team2Name}</span>
                 <div className="text-2xl font-bold">{totals.team2Total}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Projects Selection */}
-          <div className="space-y-3">
-            <label className="text-sm font-medium text-muted-foreground">المشاريع</label>
-            
-            {/* Team 1 Projects */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                <span className="text-sm font-medium text-blue-400">{game.team1Name}</span>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {availableProjects.map((p) => (
-                  <ProjectCounter key={`t1-${p.key}`} team={1} project={p.key} value={p.value} />
-                ))}
-              </div>
-            </div>
-
-            {/* Team 2 Projects */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-rose-500"></div>
-                <span className="text-sm font-medium text-rose-400">{game.team2Name}</span>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {availableProjects.map((p) => (
-                  <ProjectCounter key={`t2-${p.key}`} team={2} project={p.key} value={p.value} />
-                ))}
               </div>
             </div>
           </div>
