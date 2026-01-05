@@ -6,7 +6,7 @@ import RoundHistory from './RoundHistory';
 import WinnerModal from './WinnerModal';
 import ThemeToggle from './ThemeToggle';
 import MatchHistory from './MatchHistory';
-import { RotateCcw, Undo2, History } from 'lucide-react';
+import { RotateCcw, Undo2, History, Calculator, Home } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Sheet,
@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/sheet';
 
 const GameDashboard = () => {
-  const { game, resetGame, undoLastRound } = useGame();
+  const { game, resetGame, undoLastRound, switchToSimple, goToSelection } = useGame();
 
   if (!game) return null;
 
@@ -58,6 +58,15 @@ const GameDashboard = () => {
               </SheetContent>
             </Sheet>
             
+            {/* زر التبديل للحاسبة المختصرة */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={switchToSimple}
+              title="الحاسبة المختصرة"
+            >
+              <Calculator className="h-4 w-4" />
+            </Button>
             <Button 
               variant="ghost" 
               size="icon" 
@@ -68,6 +77,9 @@ const GameDashboard = () => {
               <Undo2 className="h-4 w-4" />
             </Button>
             <ThemeToggle />
+            <Button variant="ghost" size="icon" onClick={goToSelection} title="الرئيسية">
+              <Home className="h-4 w-4" />
+            </Button>
             <Button variant="ghost" size="icon" onClick={resetGame} title="إعادة تعيين">
               <RotateCcw className="h-4 w-4" />
             </Button>

@@ -4,11 +4,11 @@ import GameDashboard from '@/components/GameDashboard';
 import SimpleCalculator from '@/components/SimpleCalculator';
 
 const GameContent = () => {
-  const { game, calculatorMode, resetGame } = useGame();
+  const { game, calculatorMode, goToSelection } = useGame();
   
   // الحاسبة المختصرة
   if (calculatorMode === 'simple') {
-    return <SimpleCalculator onBack={() => resetGame()} />;
+    return <SimpleCalculator onBack={goToSelection} />;
   }
   
   // الحاسبة المتقدمة

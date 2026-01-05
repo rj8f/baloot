@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowUp, RotateCcw, Home, History, Trophy, Crown, Star } from 'lucide-react';
+import { ArrowUp, RotateCcw, Home, History, Trophy, Crown, Star, Settings2 } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -43,7 +43,18 @@ const arabicToEnglish = (str: string): string => {
 };
 
 const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
-  const { game, setScores, startSimpleMode, resetGame, calculatorMode } = useGame();
+  const { 
+    game, 
+    setScores, 
+    startSimpleMode, 
+    resetGame, 
+    calculatorMode,
+    switchToAdvanced,
+    simpleHistory,
+    addSimpleHistoryEntry,
+    undoSimpleHistory,
+    clearSimpleHistory,
+  } = useGame();
   
   // تهيئة اللعبة عند الفتح
   useEffect(() => {
@@ -59,7 +70,6 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
 
   const [team1Input, setTeam1Input] = useState('');
   const [team2Input, setTeam2Input] = useState('');
-  const [history, setHistory] = useState<RoundEntry[]>([]);
   const [arrowRotation, setArrowRotation] = useState(0);
 
   const handleInputChange = (value: string, setter: (val: string) => void) => {
@@ -98,7 +108,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     
     if (t1 === 0 && t2 === 0) return;
     
-    const newEntry: RoundEntry = {
+    const newEntry = {
       id: crypto.randomUUID(),
       team1: t1,
       team2: t2,
@@ -109,19 +119,15 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     
     // تحديث النتيجة عبر GameContext
     setScores(newTeam1Score, newTeam2Score);
-    setHistory(prev => [newEntry, ...prev]);
+    addSimpleHistoryEntry(newEntry);
     setTeam1Input('');
     setTeam2Input('');
     rotateArrow();
   };
 
   const handleUndo = () => {
-    if (history.length === 0) return;
-    const lastEntry = history[0];
-    const newTeam1Score = team1Score - lastEntry.team1;
-    const newTeam2Score = team2Score - lastEntry.team2;
-    setScores(newTeam1Score, newTeam2Score);
-    setHistory(prev => prev.slice(1));
+    if (simpleHistory.length === 0) return;
+    undoSimpleHistory();
   };
 
   const saveAndReset = async () => {
@@ -134,7 +140,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
           team1_score: team1Score,
           team2_score: team2Score,
           winner: null,
-          rounds: JSON.parse(JSON.stringify([...history].reverse())),
+          rounds: JSON.parse(JSON.stringify([...simpleHistory].reverse())),
           finished_at: new Date().toISOString(),
         }]);
       } catch (error) {
@@ -146,7 +152,6 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     resetGame();
     setTeam1Input('');
     setTeam2Input('');
-    setHistory([]);
     setArrowRotation(0);
     
     // إعادة تهيئة لعبة جديدة
@@ -226,6 +231,15 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
       <div className="flex justify-between items-center p-4">
         <ThemeToggle />
         <div className="flex items-center gap-1">
+          {/* زر التبديل للحاسبة المتقدمة */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={switchToAdvanced}
+            title="الحاسبة المتقدمة"
+          >
+            <Settings2 className="h-5 w-5" />
+          </Button>
           {/* Match History Sheet */}
           <Sheet>
             <SheetTrigger asChild>
@@ -305,7 +319,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
 
       {/* Action Buttons */}
       <div className="flex-shrink-0 flex justify-center items-center gap-4 py-4">
-        <Button variant="outline" onClick={handleUndo} disabled={history.length === 0}>
+        <Button variant="outline" onClick={handleUndo} disabled={simpleHistory.length === 0}>
           تراجع
         </Button>
         <Button variant="outline" onClick={saveAndReset}>
@@ -316,7 +330,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
 
       {/* History */}
       <div className="flex-1 overflow-auto min-h-0 border-t border-border">
-        {history.map((entry) => (
+        {simpleHistory.map((entry) => (
           <div key={entry.id} className="flex justify-between items-center px-8 py-3 border-b border-border/50">
             <span className="text-lg">{entry.team1}</span>
             <span className="text-lg">{entry.team2}</span>

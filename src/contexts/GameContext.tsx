@@ -24,8 +24,12 @@ interface RoundInput {
 interface GameContextType {
   game: Game | null;
   calculatorMode: 'simple' | 'advanced' | null;
+  simpleHistory: { id: string; team1: number; team2: number }[];
   startGame: (team1Name: string, team2Name: string, winningScore: number) => void;
   startSimpleMode: () => void;
+  switchToAdvanced: () => void;
+  switchToSimple: () => void;
+  goToSelection: () => void;
   addRound: (round: RoundInput) => void;
   deleteRound: (roundId: string) => void;
   undoLastRound: () => void;
@@ -33,6 +37,9 @@ interface GameContextType {
   canDoubleSun: () => boolean;
   previewRoundResult: (round: RoundInput) => { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number };
   setScores: (team1Score: number, team2Score: number) => void;
+  addSimpleHistoryEntry: (entry: { id: string; team1: number; team2: number }) => void;
+  undoSimpleHistory: () => void;
+  clearSimpleHistory: () => void;
 }
 
 export type { RoundInput };
@@ -48,8 +55,62 @@ export const useGame = () => {
 };
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
-  const [game, setGame] = useState<Game | null>(null);
-  const [calculatorMode, setCalculatorMode] = useState<'simple' | 'advanced' | null>(null);
+  // تحميل البيانات من localStorage عند البدء
+  const [game, setGame] = useState<Game | null>(() => {
+    const saved = localStorage.getItem('baloot_game');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return { ...parsed, createdAt: new Date(parsed.createdAt) };
+      } catch { return null; }
+    }
+    return null;
+  });
+  
+  const [calculatorMode, setCalculatorMode] = useState<'simple' | 'advanced' | null>(() => {
+    return localStorage.getItem('baloot_mode') as 'simple' | 'advanced' | null;
+  });
+
+  const [simpleHistory, setSimpleHistory] = useState<{ id: string; team1: number; team2: number }[]>(() => {
+    const saved = localStorage.getItem('baloot_simple_history');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { return []; }
+    }
+    return [];
+  });
+
+  // حفظ البيانات في localStorage عند التغيير
+  useEffect(() => {
+    if (game) {
+      localStorage.setItem('baloot_game', JSON.stringify(game));
+    } else {
+      localStorage.removeItem('baloot_game');
+    }
+  }, [game]);
+
+  useEffect(() => {
+    if (calculatorMode) {
+      localStorage.setItem('baloot_mode', calculatorMode);
+    } else {
+      localStorage.removeItem('baloot_mode');
+    }
+  }, [calculatorMode]);
+
+  useEffect(() => {
+    localStorage.setItem('baloot_simple_history', JSON.stringify(simpleHistory));
+  }, [simpleHistory]);
+
+  const createNewGame = () => ({
+    id: crypto.randomUUID(),
+    team1Name: 'لنا',
+    team2Name: 'لهم',
+    team1Score: 0,
+    team2Score: 0,
+    winningScore: 152,
+    rounds: [],
+    winner: null,
+    createdAt: new Date(),
+  });
 
   const startGame = (team1Name: string, team2Name: string, winningScore: number) => {
     setCalculatorMode('advanced');
@@ -69,18 +130,39 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const startSimpleMode = () => {
     setCalculatorMode('simple');
     if (!game) {
-      setGame({
-        id: crypto.randomUUID(),
-        team1Name: 'لنا',
-        team2Name: 'لهم',
-        team1Score: 0,
-        team2Score: 0,
-        winningScore: 152,
-        rounds: [],
-        winner: null,
-        createdAt: new Date(),
-      });
+      setGame(createNewGame());
     }
+  };
+
+  const switchToAdvanced = () => {
+    setCalculatorMode('advanced');
+  };
+
+  const switchToSimple = () => {
+    setCalculatorMode('simple');
+  };
+
+  const goToSelection = () => {
+    setCalculatorMode(null);
+  };
+
+  const addSimpleHistoryEntry = (entry: { id: string; team1: number; team2: number }) => {
+    setSimpleHistory(prev => [entry, ...prev]);
+  };
+
+  const undoSimpleHistory = () => {
+    if (simpleHistory.length === 0) return;
+    const lastEntry = simpleHistory[0];
+    if (game) {
+      const newTeam1Score = game.team1Score - lastEntry.team1;
+      const newTeam2Score = game.team2Score - lastEntry.team2;
+      setScores(newTeam1Score, newTeam2Score);
+    }
+    setSimpleHistory(prev => prev.slice(1));
+  };
+
+  const clearSimpleHistory = () => {
+    setSimpleHistory([]);
   };
 
   const canDoubleSun = (): boolean => {
@@ -346,6 +428,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const resetGame = () => {
     setGame(null);
     setCalculatorMode(null);
+    setSimpleHistory([]);
+    localStorage.removeItem('baloot_game');
+    localStorage.removeItem('baloot_mode');
+    localStorage.removeItem('baloot_simple_history');
   };
 
   const previewRoundResult = (roundData: RoundInput) => {
@@ -375,7 +461,26 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <GameContext.Provider value={{ game, calculatorMode, startGame, startSimpleMode, addRound, deleteRound, undoLastRound, resetGame, canDoubleSun, previewRoundResult, setScores }}>
+    <GameContext.Provider value={{ 
+      game, 
+      calculatorMode, 
+      simpleHistory,
+      startGame, 
+      startSimpleMode, 
+      switchToAdvanced,
+      switchToSimple,
+      goToSelection,
+      addRound, 
+      deleteRound, 
+      undoLastRound, 
+      resetGame, 
+      canDoubleSun, 
+      previewRoundResult, 
+      setScores,
+      addSimpleHistoryEntry,
+      undoSimpleHistory,
+      clearSimpleHistory,
+    }}>
       {children}
     </GameContext.Provider>
   );
