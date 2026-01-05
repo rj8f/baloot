@@ -60,14 +60,14 @@ const AddRound = () => {
   const availableProjects: { key: ProjectKey; label: string }[] = gameType === 'صن'
     ? [
         { key: 'سرا', label: 'سرا' },
-        { key: 'خمسين', label: '٥٠' },
-        { key: 'مية', label: '١٠٠' },
-        { key: 'أربعمية', label: '٤٠٠' },
+        { key: 'خمسين', label: '50' },
+        { key: 'مية', label: '100' },
+        { key: 'أربعمية', label: '400' },
       ]
     : [
         { key: 'سرا', label: 'سرا' },
-        { key: 'خمسين', label: '٥٠' },
-        { key: 'مية', label: '١٠٠' },
+        { key: 'خمسين', label: '50' },
+        { key: 'مية', label: '100' },
         { key: 'بلوت', label: 'بلوت' },
       ];
 

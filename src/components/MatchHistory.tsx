@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { History, Trophy, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { format } from 'date-fns';
-import { ar } from 'date-fns/locale';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface GameRecord {
@@ -49,7 +48,7 @@ const MatchHistory = forwardRef<HTMLDivElement>((_, ref) => {
   };
 
   const formatDate = (dateStr: string) => {
-    return format(new Date(dateStr), 'd MMM yyyy - h:mm a', { locale: ar });
+    return format(new Date(dateStr), 'd MMM yyyy - h:mm a');
   };
 
   return (
