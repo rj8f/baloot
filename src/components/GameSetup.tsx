@@ -1,26 +1,16 @@
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useGame } from '@/contexts/GameContext';
 import ThemeToggle from './ThemeToggle';
 import MatchHistory from './MatchHistory';
-import SimpleCalculator from './SimpleCalculator';
 import { Calculator, Settings2 } from 'lucide-react';
 
-type CalculatorMode = 'select' | 'simple';
-
 const GameSetup = () => {
-  const { startGame } = useGame();
-  const [mode, setMode] = useState<CalculatorMode>('select');
+  const { startGame, startSimpleMode } = useGame();
 
   const handleStartAdvanced = () => {
     startGame('لنا', 'لهم', 152);
   };
-
-  // Simple Calculator Mode
-  if (mode === 'simple') {
-    return <SimpleCalculator onBack={() => setMode('select')} />;
-  }
 
   // Mode Selection Screen
   return (
@@ -39,7 +29,7 @@ const GameSetup = () => {
           <Button
             variant="outline"
             className="w-full h-24 flex flex-col items-center justify-center gap-2 hover:bg-primary/10 hover:border-primary transition-all flex-shrink-0"
-            onClick={() => setMode('simple')}
+            onClick={() => startSimpleMode()}
           >
             <Calculator className="h-8 w-8 text-primary" />
             <div className="text-center">

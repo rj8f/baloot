@@ -23,7 +23,9 @@ interface RoundInput {
 
 interface GameContextType {
   game: Game | null;
+  calculatorMode: 'simple' | 'advanced' | null;
   startGame: (team1Name: string, team2Name: string, winningScore: number) => void;
+  startSimpleMode: () => void;
   addRound: (round: RoundInput) => void;
   deleteRound: (roundId: string) => void;
   undoLastRound: () => void;
@@ -31,7 +33,6 @@ interface GameContextType {
   canDoubleSun: () => boolean;
   previewRoundResult: (round: RoundInput) => { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number };
   setScores: (team1Score: number, team2Score: number) => void;
-  initGameIfNeeded: () => void;
 }
 
 export type { RoundInput };
@@ -48,8 +49,10 @@ export const useGame = () => {
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [game, setGame] = useState<Game | null>(null);
+  const [calculatorMode, setCalculatorMode] = useState<'simple' | 'advanced' | null>(null);
 
   const startGame = (team1Name: string, team2Name: string, winningScore: number) => {
+    setCalculatorMode('advanced');
     setGame({
       id: crypto.randomUUID(),
       team1Name,
@@ -61,6 +64,23 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       winner: null,
       createdAt: new Date(),
     });
+  };
+
+  const startSimpleMode = () => {
+    setCalculatorMode('simple');
+    if (!game) {
+      setGame({
+        id: crypto.randomUUID(),
+        team1Name: 'لنا',
+        team2Name: 'لهم',
+        team1Score: 0,
+        team2Score: 0,
+        winningScore: 152,
+        rounds: [],
+        winner: null,
+        createdAt: new Date(),
+      });
+    }
   };
 
   const canDoubleSun = (): boolean => {
@@ -325,6 +345,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
   const resetGame = () => {
     setGame(null);
+    setCalculatorMode(null);
   };
 
   const previewRoundResult = (roundData: RoundInput) => {
@@ -353,15 +374,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // تهيئة اللعبة إذا لم تكن موجودة
-  const initGameIfNeeded = () => {
-    if (!game) {
-      startGame('لنا', 'لهم', 152);
-    }
-  };
-
   return (
-    <GameContext.Provider value={{ game, startGame, addRound, deleteRound, undoLastRound, resetGame, canDoubleSun, previewRoundResult, setScores, initGameIfNeeded }}>
+    <GameContext.Provider value={{ game, calculatorMode, startGame, startSimpleMode, addRound, deleteRound, undoLastRound, resetGame, canDoubleSun, previewRoundResult, setScores }}>
       {children}
     </GameContext.Provider>
   );

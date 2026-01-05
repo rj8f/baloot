@@ -43,11 +43,13 @@ const arabicToEnglish = (str: string): string => {
 };
 
 const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
-  const { game, setScores, initGameIfNeeded, resetGame } = useGame();
+  const { game, setScores, startSimpleMode, resetGame, calculatorMode } = useGame();
   
   // تهيئة اللعبة عند الفتح
   useEffect(() => {
-    initGameIfNeeded();
+    if (calculatorMode !== 'simple') {
+      startSimpleMode();
+    }
   }, []);
 
   const team1Score = game?.team1Score ?? 0;
@@ -148,7 +150,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     setArrowRotation(0);
     
     // إعادة تهيئة لعبة جديدة
-    setTimeout(() => initGameIfNeeded(), 0);
+    setTimeout(() => startSimpleMode(), 0);
   };
 
   return (
