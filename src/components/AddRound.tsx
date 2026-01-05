@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { useGame } from '@/contexts/GameContext';
-import { GameType, Multiplier } from '@/types/baloot';
+import { GameType, Multiplier, TeamProjects, createEmptyProjects, PROJECT_VALUES } from '@/types/baloot';
 import { cn } from '@/lib/utils';
-import { Camera } from 'lucide-react';
+import { Camera, Plus, Minus } from 'lucide-react';
 import CardScanner from './CardScanner';
 
 // Convert Arabic numerals to Western numerals
@@ -18,14 +18,23 @@ const arabicToWestern = (str: string): string => {
   return result;
 };
 
+type ProjectKey = keyof TeamProjects;
+
 const AddRound = () => {
   const { game, addRound, canDoubleSun } = useGame();
   const [gameType, setGameType] = useState<GameType>('حكم');
   const [buyingTeam, setBuyingTeam] = useState<1 | 2>(1);
-  const [team1Points, setTeam1Points] = useState('');
-  const [team2Points, setTeam2Points] = useState('');
+  const [buyingTeamRawPoints, setBuyingTeamRawPoints] = useState('');
+  const [team1Projects, setTeam1Projects] = useState<TeamProjects>(createEmptyProjects());
+  const [team2Projects, setTeam2Projects] = useState<TeamProjects>(createEmptyProjects());
   const [multiplier, setMultiplier] = useState<Multiplier>('عادي');
   const [showScanner, setShowScanner] = useState(false);
+
+  // Reset projects when game type changes
+  useEffect(() => {
+    setTeam1Projects(createEmptyProjects());
+    setTeam2Projects(createEmptyProjects());
+  }, [gameType]);
 
   if (!game) return null;
 
@@ -35,38 +44,100 @@ const AddRound = () => {
   const availableMultipliers = gameType === 'حكم' ? hokmMultipliers : sunMultipliers;
   const canDouble = gameType === 'حكم' || canDoubleSun();
 
+  // المشاريع المتاحة حسب نوع اللعب
+  const availableProjects: { key: ProjectKey; label: string; value: number }[] = gameType === 'صن'
+    ? [
+        { key: 'سرا', label: 'سرا', value: PROJECT_VALUES.صن.سرا },
+        { key: 'خمسين', label: 'خمسين', value: PROJECT_VALUES.صن.خمسين },
+        { key: 'مية', label: 'مية', value: PROJECT_VALUES.صن.مية },
+        { key: 'أربعمية', label: 'أربعمية', value: PROJECT_VALUES.صن.أربعمية },
+      ]
+    : [
+        { key: 'سرا', label: 'سرا', value: PROJECT_VALUES.حكم.سرا },
+        { key: 'خمسين', label: 'خمسين', value: PROJECT_VALUES.حكم.خمسين },
+        { key: 'مية', label: 'مية', value: PROJECT_VALUES.حكم.مية },
+        { key: 'بلوت', label: 'بلوت', value: PROJECT_VALUES.حكم.بلوت },
+      ];
+
+  const updateProject = (team: 1 | 2, project: ProjectKey, delta: number) => {
+    if (team === 1) {
+      setTeam1Projects(prev => ({
+        ...prev,
+        [project]: Math.max(0, prev[project] + delta),
+      }));
+    } else {
+      setTeam2Projects(prev => ({
+        ...prev,
+        [project]: Math.max(0, prev[project] + delta),
+      }));
+    }
+  };
+
   const handleSubmit = () => {
-    const t1 = parseInt(team1Points) || 0;
-    const t2 = parseInt(team2Points) || 0;
+    const rawPoints = parseInt(buyingTeamRawPoints) || 0;
     
-    if (t1 === 0 && t2 === 0 && multiplier !== 'قهوة') return;
+    if (rawPoints === 0 && multiplier !== 'قهوة') return;
+
+    // حساب نقاط الخصم من المجموع الكلي
+    const totalRaw = gameType === 'صن' ? 260 : 162;
+    const otherTeamRaw = totalRaw - rawPoints;
+
+    const team1Raw = buyingTeam === 1 ? rawPoints : otherTeamRaw;
+    const team2Raw = buyingTeam === 2 ? rawPoints : otherTeamRaw;
 
     addRound({
       gameType,
       buyingTeam,
-      team1Points: t1,
-      team2Points: t2,
+      team1RawPoints: team1Raw,
+      team2RawPoints: team2Raw,
+      team1Projects,
+      team2Projects,
       multiplier,
     });
 
     // Reset form
-    setTeam1Points('');
-    setTeam2Points('');
+    setBuyingTeamRawPoints('');
+    setTeam1Projects(createEmptyProjects());
+    setTeam2Projects(createEmptyProjects());
     setMultiplier('عادي');
   };
 
   const handleScanSuccess = (totalPoints: number) => {
-    // Scanned points are for the buying team
-    const totalGamePoints = gameType === 'صن' ? 130 : 162;
-    const otherTeamPoints = totalGamePoints - totalPoints;
+    setBuyingTeamRawPoints(totalPoints.toString());
+  };
+
+  const ProjectCounter = ({ team, project, value }: { team: 1 | 2; project: ProjectKey; value: number }) => {
+    const projects = team === 1 ? team1Projects : team2Projects;
+    const count = projects[project];
     
-    if (buyingTeam === 1) {
-      setTeam1Points(totalPoints.toString());
-      setTeam2Points(otherTeamPoints.toString());
-    } else {
-      setTeam1Points(otherTeamPoints.toString());
-      setTeam2Points(totalPoints.toString());
-    }
+    return (
+      <div className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium">{project}</span>
+          <span className="text-xs text-muted-foreground">({value})</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => updateProject(team, project, -1)}
+            disabled={count === 0}
+          >
+            <Minus className="h-3 w-3" />
+          </Button>
+          <span className="w-6 text-center font-bold">{count}</span>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => updateProject(team, project, 1)}
+          >
+            <Plus className="h-3 w-3" />
+          </Button>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -138,35 +209,60 @@ const AddRound = () => {
             📷 تصوير الأوراق
           </Button>
 
-          {/* Points Input */}
+          {/* Raw Points Input - Only for buying team */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">النقاط (أكلات + مشاريع)</label>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <span className="text-xs text-blue-400">{game.team1Name}</span>
-                <Input
-                  type="tel"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={team1Points}
-                  onChange={(e) => setTeam1Points(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
-                  placeholder="0"
-                  className="text-center text-xl h-14"
-                  disabled={multiplier === 'قهوة'}
-                />
+            <label className="text-sm font-medium text-muted-foreground">
+              البنط (الأكلات) - {buyingTeam === 1 ? game.team1Name : game.team2Name}
+            </label>
+            <div className="flex items-center gap-2">
+              <Input
+                type="tel"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={buyingTeamRawPoints}
+                onChange={(e) => setBuyingTeamRawPoints(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
+                placeholder={gameType === 'صن' ? 'من 0 إلى 260' : 'من 0 إلى 162'}
+                className="text-center text-xl h-14 flex-1"
+                disabled={multiplier === 'قهوة'}
+              />
+              <div className="text-sm text-muted-foreground whitespace-nowrap">
+                من {gameType === 'صن' ? '260' : '162'}
               </div>
-              <div className="space-y-1">
-                <span className="text-xs text-rose-400">{game.team2Name}</span>
-                <Input
-                  type="tel"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={team2Points}
-                  onChange={(e) => setTeam2Points(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
-                  placeholder="0"
-                  className="text-center text-xl h-14"
-                  disabled={multiplier === 'قهوة'}
-                />
+            </div>
+            {buyingTeamRawPoints && (
+              <p className="text-xs text-muted-foreground text-center">
+                الخصم: {(gameType === 'صن' ? 260 : 162) - (parseInt(buyingTeamRawPoints) || 0)} بنط
+              </p>
+            )}
+          </div>
+
+          {/* Projects Selection */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-muted-foreground">المشاريع</label>
+            
+            {/* Team 1 Projects */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                <span className="text-sm font-medium text-blue-400">{game.team1Name}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {availableProjects.map((p) => (
+                  <ProjectCounter key={`t1-${p.key}`} team={1} project={p.key} value={p.value} />
+                ))}
+              </div>
+            </div>
+
+            {/* Team 2 Projects */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-rose-500"></div>
+                <span className="text-sm font-medium text-rose-400">{game.team2Name}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {availableProjects.map((p) => (
+                  <ProjectCounter key={`t2-${p.key}`} team={2} project={p.key} value={p.value} />
+                ))}
               </div>
             </div>
           </div>

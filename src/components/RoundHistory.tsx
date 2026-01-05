@@ -44,16 +44,20 @@ const RoundHistory = () => {
             </div>
             
             <div className="flex items-center gap-3">
-              <div className="text-left">
-                <span className={cn(
-                  "font-bold",
-                  round.winningTeam === 1 ? "text-blue-400" : "text-rose-400"
-                )}>
-                  +{round.winningTeam === 1 ? round.finalTeam1Points : round.finalTeam2Points}
-                </span>
-                <span className="text-xs text-muted-foreground block">
-                  {round.winningTeam === 1 ? game.team1Name : game.team2Name}
-                </span>
+              <div className="text-left flex gap-3">
+                <div className="text-center">
+                  <span className="text-blue-400 font-bold text-lg">
+                    {round.finalTeam1Points}
+                  </span>
+                  <span className="text-xs text-muted-foreground block">{game.team1Name}</span>
+                </div>
+                <span className="text-muted-foreground self-center">-</span>
+                <div className="text-center">
+                  <span className="text-rose-400 font-bold text-lg">
+                    {round.finalTeam2Points}
+                  </span>
+                  <span className="text-xs text-muted-foreground block">{game.team2Name}</span>
+                </div>
               </div>
               <Button
                 variant="ghost"
