@@ -104,7 +104,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       };
     }
 
-    // حساب نقاط المشاريع (بالأبناط - تضرب في 10)
+    // حساب نقاط المشاريع (بالنقاط - تضرب في 10 للحصول على البنط)
     const team1ProjectsWithoutBaloot = calculateProjectsWithoutBaloot(team1Projects, gameType);
     const team2ProjectsWithoutBaloot = calculateProjectsWithoutBaloot(team2Projects, gameType);
     const team1Baloot = calculateBalootPoints(team1Projects, gameType);
@@ -116,18 +116,15 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     const team1BalootRaw = team1Baloot * 10;
     const team2BalootRaw = team2Baloot * 10;
 
-    // المجموع الكلي للبنط مع المشاريع
-    // صن: 260 + مشاريع
-    // حكم: 162 + مشاريع
-    const baseRawCards = gameType === 'صن' ? 260 : 162;
-    const totalRawWithProjects = baseRawCards + team1ProjectsRaw + team2ProjectsRaw + team1BalootRaw + team2BalootRaw;
-
-    // البنط الخام لكل فريق مع المشاريع
+    // البنط الخام لكل فريق (أكلات + أرض مدخلة من المستخدم + مشاريع)
     const team1TotalRaw = team1RawPoints + team1ProjectsRaw + team1BalootRaw;
     const team2TotalRaw = team2RawPoints + team2ProjectsRaw + team2BalootRaw;
 
+    // المجموع الكلي للبنط
+    const totalRawWithProjects = team1TotalRaw + team2TotalRaw;
+
     // التحقق من نجاح المشتري
-    // يجب أن يحصل على نصف البنط الكلي (مع المشاريع) أو أكثر ويتفوق أو يتساوى مع الخصم
+    // يجب أن يحصل على نصف البنط الكلي أو أكثر ويتفوق أو يتساوى مع الخصم
     const buyingTeamTotalRaw = buyingTeam === 1 ? team1TotalRaw : team2TotalRaw;
     const otherTeamTotalRaw = buyingTeam === 1 ? team2TotalRaw : team1TotalRaw;
 

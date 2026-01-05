@@ -24,7 +24,9 @@ const AddRound = () => {
   const { game, addRound, canDoubleSun } = useGame();
   const [gameType, setGameType] = useState<GameType>('حكم');
   const [buyingTeam, setBuyingTeam] = useState<1 | 2>(1);
-  const [buyingTeamRawPoints, setBuyingTeamRawPoints] = useState('');
+  const [team1CardsRaw, setTeam1CardsRaw] = useState('');
+  const [team2CardsRaw, setTeam2CardsRaw] = useState('');
+  const [groundTeam, setGroundTeam] = useState<1 | 2>(1); // الأرض (100 بنط)
   const [team1Projects, setTeam1Projects] = useState<TeamProjects>(createEmptyProjects());
   const [team2Projects, setTeam2Projects] = useState<TeamProjects>(createEmptyProjects());
   const [multiplier, setMultiplier] = useState<Multiplier>('عادي');
@@ -34,6 +36,8 @@ const AddRound = () => {
   useEffect(() => {
     setTeam1Projects(createEmptyProjects());
     setTeam2Projects(createEmptyProjects());
+    setTeam1CardsRaw('');
+    setTeam2CardsRaw('');
   }, [gameType]);
 
   if (!game) return null;
@@ -73,17 +77,43 @@ const AddRound = () => {
     }
   };
 
-  const handleSubmit = () => {
-    const rawPoints = parseInt(buyingTeamRawPoints) || 0;
+  // حساب الأبناط الكلية لكل فريق (أكلات + مشاريع + أرض)
+  const calculateTotalRaw = () => {
+    const team1Cards = parseInt(team1CardsRaw) || 0;
+    const team2Cards = parseInt(team2CardsRaw) || 0;
     
-    if (rawPoints === 0 && multiplier !== 'قهوة') return;
+    // المشاريع × 10 = بنط
+    const team1ProjectsRaw = availableProjects.reduce((sum, p) => {
+      return sum + (team1Projects[p.key] * p.value * 10);
+    }, 0);
+    const team2ProjectsRaw = availableProjects.reduce((sum, p) => {
+      return sum + (team2Projects[p.key] * p.value * 10);
+    }, 0);
+    
+    // الأرض = 10 نقاط = 100 بنط
+    const groundRaw = 10;
+    const team1Ground = groundTeam === 1 ? groundRaw : 0;
+    const team2Ground = groundTeam === 2 ? groundRaw : 0;
+    
+    return {
+      team1Total: team1Cards + team1ProjectsRaw + team1Ground,
+      team2Total: team2Cards + team2ProjectsRaw + team2Ground,
+      team1Cards,
+      team2Cards,
+    };
+  };
 
-    // حساب نقاط الخصم من المجموع الكلي
-    const totalRaw = gameType === 'صن' ? 260 : 162;
-    const otherTeamRaw = totalRaw - rawPoints;
+  const totals = calculateTotalRaw();
 
-    const team1Raw = buyingTeam === 1 ? rawPoints : otherTeamRaw;
-    const team2Raw = buyingTeam === 2 ? rawPoints : otherTeamRaw;
+  const handleSubmit = () => {
+    const { team1Cards, team2Cards } = totals;
+    
+    if ((team1Cards === 0 && team2Cards === 0) && multiplier !== 'قهوة') return;
+
+    // الأرض تضاف للبنط الخام
+    const groundRaw = 10;
+    const team1Raw = team1Cards + (groundTeam === 1 ? groundRaw : 0);
+    const team2Raw = team2Cards + (groundTeam === 2 ? groundRaw : 0);
 
     addRound({
       gameType,
@@ -96,14 +126,20 @@ const AddRound = () => {
     });
 
     // Reset form
-    setBuyingTeamRawPoints('');
+    setTeam1CardsRaw('');
+    setTeam2CardsRaw('');
+    setGroundTeam(1);
     setTeam1Projects(createEmptyProjects());
     setTeam2Projects(createEmptyProjects());
     setMultiplier('عادي');
   };
 
   const handleScanSuccess = (totalPoints: number) => {
-    setBuyingTeamRawPoints(totalPoints.toString());
+    if (buyingTeam === 1) {
+      setTeam1CardsRaw(totalPoints.toString());
+    } else {
+      setTeam2CardsRaw(totalPoints.toString());
+    }
   };
 
   const ProjectCounter = ({ team, project, value }: { team: 1 | 2; project: ProjectKey; value: number }) => {
@@ -209,31 +245,87 @@ const AddRound = () => {
             📷 تصوير الأوراق
           </Button>
 
-          {/* Raw Points Input - Only for buying team */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">
-              البنط (الأكلات) - {buyingTeam === 1 ? game.team1Name : game.team2Name}
-            </label>
-            <div className="flex items-center gap-2">
+          {/* Raw Points Input - Both teams */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-muted-foreground">البنط (الأكلات)</label>
+            
+            {/* Team 1 Cards */}
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                <span className="text-sm font-medium text-blue-400">{game.team1Name}</span>
+              </div>
               <Input
                 type="tel"
                 inputMode="numeric"
                 pattern="[0-9]*"
-                value={buyingTeamRawPoints}
-                onChange={(e) => setBuyingTeamRawPoints(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
-                placeholder={gameType === 'صن' ? 'من 0 إلى 260' : 'من 0 إلى 162'}
-                className="text-center text-xl h-14 flex-1"
+                value={team1CardsRaw}
+                onChange={(e) => setTeam1CardsRaw(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
+                placeholder="بنط الأكلات"
+                className="text-center text-lg h-12"
                 disabled={multiplier === 'قهوة'}
               />
-              <div className="text-sm text-muted-foreground whitespace-nowrap">
-                من {gameType === 'صن' ? '260' : '162'}
+            </div>
+
+            {/* Team 2 Cards */}
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-rose-500"></div>
+                <span className="text-sm font-medium text-rose-400">{game.team2Name}</span>
+              </div>
+              <Input
+                type="tel"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={team2CardsRaw}
+                onChange={(e) => setTeam2CardsRaw(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
+                placeholder="بنط الأكلات"
+                className="text-center text-lg h-12"
+                disabled={multiplier === 'قهوة'}
+              />
+            </div>
+          </div>
+
+          {/* Ground Selection - الأرض */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-muted-foreground">الأرض (الأكلة الأخيرة = 10 نقاط)</label>
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant={groundTeam === 1 ? 'default' : 'outline'}
+                onClick={() => setGroundTeam(1)}
+                className={cn(
+                  "text-base py-4",
+                  groundTeam === 1 && "bg-blue-600 hover:bg-blue-700"
+                )}
+              >
+                {game.team1Name}
+              </Button>
+              <Button
+                variant={groundTeam === 2 ? 'default' : 'outline'}
+                onClick={() => setGroundTeam(2)}
+                className={cn(
+                  "text-base py-4",
+                  groundTeam === 2 && "bg-rose-600 hover:bg-rose-700"
+                )}
+              >
+                {game.team2Name}
+              </Button>
+            </div>
+          </div>
+
+          {/* Total Raw Points Display */}
+          <div className="p-3 bg-muted/50 rounded-lg">
+            <div className="text-sm font-medium text-muted-foreground text-center mb-2">إجمالي البنط</div>
+            <div className="grid grid-cols-2 gap-4 text-center">
+              <div>
+                <span className="text-blue-400 font-medium">{game.team1Name}</span>
+                <div className="text-2xl font-bold">{totals.team1Total}</div>
+              </div>
+              <div>
+                <span className="text-rose-400 font-medium">{game.team2Name}</span>
+                <div className="text-2xl font-bold">{totals.team2Total}</div>
               </div>
             </div>
-            {buyingTeamRawPoints && (
-              <p className="text-xs text-muted-foreground text-center">
-                الخصم: {(gameType === 'صن' ? 260 : 162) - (parseInt(buyingTeamRawPoints) || 0)} بنط
-              </p>
-            )}
           </div>
 
           {/* Projects Selection */}
