@@ -24,9 +24,8 @@ const AddRound = () => {
   const { game, addRound, canDoubleSun } = useGame();
   const [gameType, setGameType] = useState<GameType>('حكم');
   const [buyingTeam, setBuyingTeam] = useState<1 | 2>(1);
-  const [team1CardsRaw, setTeam1CardsRaw] = useState('');
-  const [team2CardsRaw, setTeam2CardsRaw] = useState('');
-  const [groundTeam, setGroundTeam] = useState<1 | 2>(1); // الأرض (100 بنط)
+  const [buyingTeamCardsRaw, setBuyingTeamCardsRaw] = useState('');
+  const [groundTeam, setGroundTeam] = useState<1 | 2>(1);
   const [team1Projects, setTeam1Projects] = useState<TeamProjects>(createEmptyProjects());
   const [team2Projects, setTeam2Projects] = useState<TeamProjects>(createEmptyProjects());
   const [multiplier, setMultiplier] = useState<Multiplier>('عادي');
@@ -36,8 +35,7 @@ const AddRound = () => {
   useEffect(() => {
     setTeam1Projects(createEmptyProjects());
     setTeam2Projects(createEmptyProjects());
-    setTeam1CardsRaw('');
-    setTeam2CardsRaw('');
+    setBuyingTeamCardsRaw('');
   }, [gameType]);
 
   if (!game) return null;
@@ -77,10 +75,18 @@ const AddRound = () => {
     }
   };
 
+  // مجموع الأوراق بدون الأرض
+  // صن: 260 - 10 = 250
+  // حكم: 162 - 10 = 152
+  const totalCardsWithoutGround = gameType === 'صن' ? 250 : 152;
+
   // حساب الأبناط الكلية لكل فريق (أكلات + مشاريع + أرض)
   const calculateTotalRaw = () => {
-    const team1Cards = parseInt(team1CardsRaw) || 0;
-    const team2Cards = parseInt(team2CardsRaw) || 0;
+    const buyingCards = parseInt(buyingTeamCardsRaw) || 0;
+    const otherCards = totalCardsWithoutGround - buyingCards;
+    
+    const team1Cards = buyingTeam === 1 ? buyingCards : otherCards;
+    const team2Cards = buyingTeam === 2 ? buyingCards : otherCards;
     
     // المشاريع × 10 = بنط
     const team1ProjectsRaw = availableProjects.reduce((sum, p) => {
@@ -90,30 +96,28 @@ const AddRound = () => {
       return sum + (team2Projects[p.key] * p.value * 10);
     }, 0);
     
-    // الأرض = 10 نقاط = 100 بنط
-    const groundRaw = 10;
-    const team1Ground = groundTeam === 1 ? groundRaw : 0;
-    const team2Ground = groundTeam === 2 ? groundRaw : 0;
+    // الأرض = 10 نقاط
+    const team1Ground = groundTeam === 1 ? 10 : 0;
+    const team2Ground = groundTeam === 2 ? 10 : 0;
     
     return {
       team1Total: team1Cards + team1ProjectsRaw + team1Ground,
       team2Total: team2Cards + team2ProjectsRaw + team2Ground,
       team1Cards,
       team2Cards,
+      buyingCards,
+      otherCards,
     };
   };
 
   const totals = calculateTotalRaw();
 
   const handleSubmit = () => {
-    const { team1Cards, team2Cards } = totals;
-    
-    if ((team1Cards === 0 && team2Cards === 0) && multiplier !== 'قهوة') return;
+    if (totals.buyingCards === 0 && multiplier !== 'قهوة') return;
 
     // الأرض تضاف للبنط الخام
-    const groundRaw = 10;
-    const team1Raw = team1Cards + (groundTeam === 1 ? groundRaw : 0);
-    const team2Raw = team2Cards + (groundTeam === 2 ? groundRaw : 0);
+    const team1Raw = totals.team1Cards + (groundTeam === 1 ? 10 : 0);
+    const team2Raw = totals.team2Cards + (groundTeam === 2 ? 10 : 0);
 
     addRound({
       gameType,
@@ -126,8 +130,7 @@ const AddRound = () => {
     });
 
     // Reset form
-    setTeam1CardsRaw('');
-    setTeam2CardsRaw('');
+    setBuyingTeamCardsRaw('');
     setGroundTeam(1);
     setTeam1Projects(createEmptyProjects());
     setTeam2Projects(createEmptyProjects());
@@ -135,11 +138,7 @@ const AddRound = () => {
   };
 
   const handleScanSuccess = (totalPoints: number) => {
-    if (buyingTeam === 1) {
-      setTeam1CardsRaw(totalPoints.toString());
-    } else {
-      setTeam2CardsRaw(totalPoints.toString());
-    }
+    setBuyingTeamCardsRaw(totalPoints.toString());
   };
 
   const ProjectCounter = ({ team, project, value }: { team: 1 | 2; project: ProjectKey; value: number }) => {
@@ -245,45 +244,31 @@ const AddRound = () => {
             📷 تصوير الأوراق
           </Button>
 
-          {/* Raw Points Input - Both teams */}
-          <div className="space-y-3">
-            <label className="text-sm font-medium text-muted-foreground">البنط (الأكلات)</label>
-            
-            {/* Team 1 Cards */}
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                <span className="text-sm font-medium text-blue-400">{game.team1Name}</span>
-              </div>
+          {/* Raw Points Input - Buying team only */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-muted-foreground">
+              بنط الأكلات - {buyingTeam === 1 ? game.team1Name : game.team2Name} (المشتري)
+            </label>
+            <div className="flex items-center gap-2">
               <Input
                 type="tel"
                 inputMode="numeric"
                 pattern="[0-9]*"
-                value={team1CardsRaw}
-                onChange={(e) => setTeam1CardsRaw(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
-                placeholder="بنط الأكلات"
-                className="text-center text-lg h-12"
+                value={buyingTeamCardsRaw}
+                onChange={(e) => setBuyingTeamCardsRaw(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
+                placeholder={`من 0 إلى ${totalCardsWithoutGround}`}
+                className="text-center text-xl h-14 flex-1"
                 disabled={multiplier === 'قهوة'}
               />
-            </div>
-
-            {/* Team 2 Cards */}
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-rose-500"></div>
-                <span className="text-sm font-medium text-rose-400">{game.team2Name}</span>
+              <div className="text-sm text-muted-foreground whitespace-nowrap">
+                من {totalCardsWithoutGround}
               </div>
-              <Input
-                type="tel"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={team2CardsRaw}
-                onChange={(e) => setTeam2CardsRaw(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
-                placeholder="بنط الأكلات"
-                className="text-center text-lg h-12"
-                disabled={multiplier === 'قهوة'}
-              />
             </div>
+            {buyingTeamCardsRaw && (
+              <p className="text-xs text-muted-foreground text-center">
+                الخصم: {totals.otherCards} بنط
+              </p>
+            )}
           </div>
 
           {/* Ground Selection - الأرض */}
