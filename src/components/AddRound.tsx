@@ -41,6 +41,14 @@ const AddRound = () => {
     setMultiplier('عادي');
   }, [gameType]);
 
+  // Auto-set projects team when kaboot is selected
+  useEffect(() => {
+    if (kabootTeam) {
+      setProjectsTeam(kabootTeam);
+      setProjects(createEmptyProjects());
+    }
+  }, [kabootTeam]);
+
   if (!game) return null;
 
   const hokmMultipliers: Multiplier[] = ['عادي', 'دبل', '×3', '×4', 'قهوة'];
