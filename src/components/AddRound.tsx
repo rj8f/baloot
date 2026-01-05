@@ -145,8 +145,9 @@ const AddRound = () => {
               <div className="space-y-1">
                 <span className="text-xs text-blue-400">{game.team1Name}</span>
                 <Input
-                  type="text"
+                  type="tel"
                   inputMode="numeric"
+                  pattern="[0-9]*"
                   value={team1Points}
                   onChange={(e) => setTeam1Points(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
                   placeholder="0"
@@ -157,8 +158,9 @@ const AddRound = () => {
               <div className="space-y-1">
                 <span className="text-xs text-rose-400">{game.team2Name}</span>
                 <Input
-                  type="text"
+                  type="tel"
                   inputMode="numeric"
+                  pattern="[0-9]*"
                   value={team2Points}
                   onChange={(e) => setTeam2Points(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
                   placeholder="0"
