@@ -14,7 +14,7 @@ const RoundHistory = () => {
       <CardHeader className="pb-2">
         <CardTitle className="text-center text-lg">سجل الجولات</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-2">
+      <CardContent className="space-y-2 flex flex-col-reverse">
         {game.rounds.map((round) => (
           <div
             key={round.id}
