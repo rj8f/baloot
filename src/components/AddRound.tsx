@@ -98,8 +98,8 @@ const AddRound = () => {
   const totalProjectsCount = Object.values(projects).reduce((sum, count) => sum + count, 0);
 
   // Get team1 and team2 projects based on selected projectsTeam
-  const team1Projects = projectsTeam === 1 ? projects : createEmptyProjects();
-  const team2Projects = projectsTeam === 2 ? projects : createEmptyProjects();
+  const team1Projects: TeamProjects = projectsTeam === 1 ? projects : createEmptyProjects();
+  const team2Projects: TeamProjects = projectsTeam === 2 ? projects : createEmptyProjects();
 
   const handleSubmit = () => {
     if ((totals.team1Cards === 0 && totals.team2Cards === 0) && multiplier !== 'قهوة' && !kabootTeam) return;
