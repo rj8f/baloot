@@ -17,10 +17,14 @@ interface GameRecord {
   finished_at: string | null;
 }
 
-const MatchHistory = forwardRef<HTMLDivElement>((_, ref) => {
+interface MatchHistoryProps {
+  expandedByDefault?: boolean;
+}
+
+const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedByDefault = false }, ref) => {
   const [games, setGames] = useState<GameRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(expandedByDefault);
 
   const fetchGames = async () => {
     setLoading(true);
@@ -37,7 +41,14 @@ const MatchHistory = forwardRef<HTMLDivElement>((_, ref) => {
   };
 
   useEffect(() => {
-    if (isOpen) {
+    // Fetch immediately if expanded by default
+    if (expandedByDefault) {
+      fetchGames();
+    }
+  }, [expandedByDefault]);
+
+  useEffect(() => {
+    if (isOpen && !expandedByDefault) {
       fetchGames();
     }
   }, [isOpen]);
@@ -50,6 +61,61 @@ const MatchHistory = forwardRef<HTMLDivElement>((_, ref) => {
   const formatDate = (dateStr: string) => {
     return format(new Date(dateStr), 'd MMM yyyy - h:mm a');
   };
+
+  // If expanded by default, show content directly without collapsible
+  if (expandedByDefault) {
+    return (
+      <div className="w-full space-y-2">
+        {loading ? (
+          <div className="text-center py-4 text-muted-foreground">جاري التحميل...</div>
+        ) : games.length === 0 ? (
+          <div className="text-center py-4 text-muted-foreground">لا توجد مباريات سابقة</div>
+        ) : (
+          <div className="space-y-2">
+            {games.map((game) => (
+              <Card key={game.id} className="bg-muted/30">
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className={game.winner === 1 ? "font-bold text-blue-500" : ""}>
+                          {game.team1_name}
+                        </span>
+                        <span className="text-xl font-bold">
+                          {game.team1_score}
+                        </span>
+                        <span className="text-muted-foreground">-</span>
+                        <span className="text-xl font-bold">
+                          {game.team2_score}
+                        </span>
+                        <span className={game.winner === 2 ? "font-bold text-rose-500" : ""}>
+                          {game.team2_name}
+                        </span>
+                        {game.winner && (
+                          <Trophy className="h-4 w-4 text-amber-500" />
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {formatDate(game.created_at)}
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-destructive/50 hover:text-destructive"
+                      onClick={() => deleteGame(game.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">

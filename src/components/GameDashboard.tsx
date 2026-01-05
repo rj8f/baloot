@@ -52,9 +52,9 @@ const GameDashboard = () => {
                 <SheetHeader>
                   <SheetTitle>سجل المباريات</SheetTitle>
                 </SheetHeader>
-                <div className="mt-4 overflow-auto h-full pb-8">
-                  <MatchHistory />
-                </div>
+              <div className="mt-4 overflow-auto h-full pb-8">
+                <MatchHistory expandedByDefault />
+              </div>
               </SheetContent>
             </Sheet>
             
