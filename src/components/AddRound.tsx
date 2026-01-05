@@ -140,8 +140,9 @@ const AddRound = () => {
     setShowAdvanced(false);
   };
 
-  const handleScanSuccess = (totalPoints: number) => {
+  const handleScanSuccess = (totalPoints: number, ground: 1 | 2) => {
     setEntryTeamCardsRaw(totalPoints.toString());
+    setGroundTeam(ground);
   };
 
   const CompactProjectCounter = ({ team, project, value }: { team: 1 | 2; project: ProjectKey; value: number }) => {
@@ -351,28 +352,6 @@ const AddRound = () => {
                 </Button>
               </div>
 
-              {/* Ground Selection - Inline */}
-              <div className="flex items-center justify-between bg-muted/50 rounded-lg p-2">
-                <span className="text-xs text-muted-foreground">الأرض (+10)</span>
-                <div className="flex gap-1">
-                  <Button
-                    variant={groundTeam === 1 ? 'default' : 'ghost'}
-                    onClick={() => setGroundTeam(1)}
-                    size="sm"
-                    className={cn("h-7 text-xs", groundTeam === 1 && "bg-blue-600 hover:bg-blue-700")}
-                  >
-                    {game.team1Name}
-                  </Button>
-                  <Button
-                    variant={groundTeam === 2 ? 'default' : 'ghost'}
-                    onClick={() => setGroundTeam(2)}
-                    size="sm"
-                    className={cn("h-7 text-xs", groundTeam === 2 && "bg-rose-600 hover:bg-rose-700")}
-                  >
-                    {game.team2Name}
-                  </Button>
-                </div>
-              </div>
 
               {/* Summary with Preview */}
               {entryTeamCardsRaw && (() => {
