@@ -24,11 +24,11 @@ interface AnalysisResult {
 
 type TrumpSuit = 'hearts' | 'diamonds' | 'clubs' | 'spades';
 
-const TRUMP_SUITS: { value: TrumpSuit; label: string; icon: string }[] = [
-  { value: 'hearts', label: 'هارت', icon: '♥️' },
-  { value: 'diamonds', label: 'دينار', icon: '♦️' },
-  { value: 'clubs', label: 'كلب', icon: '♣️' },
-  { value: 'spades', label: 'بستوني', icon: '♠️' },
+const TRUMP_SUITS: { value: TrumpSuit; label: string; icon: string; color: string }[] = [
+  { value: 'hearts', label: 'هاص', icon: '♥', color: 'text-red-500' },
+  { value: 'diamonds', label: 'ديمن', icon: '♦', color: 'text-red-500' },
+  { value: 'clubs', label: 'شيريا', icon: '♣', color: 'text-foreground' },
+  { value: 'spades', label: 'سبيت', icon: '♠', color: 'text-foreground' },
 ];
 
 const CardScanner = ({ gameType, buyingTeam, multiplier, onClose, onSuccess }: CardScannerProps) => {
@@ -146,9 +146,9 @@ const CardScanner = ({ gameType, buyingTeam, multiplier, onClose, onSuccess }: C
         <div className="space-y-4">
           {/* Trump Suit Selector for حكم */}
           {gameType === 'حكم' && showTrumpSelector && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">اختر نوع الحكم (الطرنيب)</label>
-              <div className="grid grid-cols-4 gap-2">
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-center block">اختر نوع الحكم (الطرنيب)</label>
+              <div className="grid grid-cols-4 gap-3">
                 {TRUMP_SUITS.map((suit) => (
                   <Button
                     key={suit.value}
@@ -157,10 +157,10 @@ const CardScanner = ({ gameType, buyingTeam, multiplier, onClose, onSuccess }: C
                       setTrumpSuit(suit.value);
                       setShowTrumpSelector(false);
                     }}
-                    className="flex flex-col items-center py-4 text-lg"
+                    className="flex flex-col items-center py-6 h-auto"
                   >
-                    <span className="text-2xl">{suit.icon}</span>
-                    <span className="text-xs mt-1">{suit.label}</span>
+                    <span className={`text-4xl ${suit.color}`}>{suit.icon}</span>
+                    <span className="text-sm mt-2 font-medium">{suit.label}</span>
                   </Button>
                 ))}
               </div>
