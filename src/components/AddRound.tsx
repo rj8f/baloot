@@ -392,17 +392,11 @@ const AddRound = () => {
                   <div className="grid grid-cols-2 gap-2 text-center">
                     <div className="bg-blue-500/10 rounded-lg p-2">
                       <div className="text-xs text-blue-400">{game.team1Name}</div>
-                      <div className="text-xl font-bold">{totals.team1Total}</div>
-                      <div className="text-xs text-blue-400/70 mt-1 border-t border-blue-500/20 pt-1">
-                        {game.team1Score} + {preview.finalTeam1Points} = <span className="font-bold">{game.team1Score + preview.finalTeam1Points}</span>
-                      </div>
+                      <div className="text-2xl font-bold">{game.team1Score + preview.finalTeam1Points}</div>
                     </div>
                     <div className="bg-rose-500/10 rounded-lg p-2">
                       <div className="text-xs text-rose-400">{game.team2Name}</div>
-                      <div className="text-xl font-bold">{totals.team2Total}</div>
-                      <div className="text-xs text-rose-400/70 mt-1 border-t border-rose-500/20 pt-1">
-                        {game.team2Score} + {preview.finalTeam2Points} = <span className="font-bold">{game.team2Score + preview.finalTeam2Points}</span>
-                      </div>
+                      <div className="text-2xl font-bold">{game.team2Score + preview.finalTeam2Points}</div>
                     </div>
                   </div>
                 );
