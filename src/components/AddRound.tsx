@@ -365,7 +365,7 @@ const AddRound = () => {
           {/* Multiplier - Compact Pills */}
           {!kabootTeam && (
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-muted-foreground">المضاعفة</span>
+              <span className="text-xs text-muted-foreground">الدبل</span>
               <div className="flex flex-wrap gap-1">
                 {availableMultipliers.map((m) => {
                   const isDisabled = gameType === 'صن' && m === 'دبل' && !canDouble;
