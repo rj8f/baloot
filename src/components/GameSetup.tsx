@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useGame } from '@/contexts/GameContext';
+import ThemeToggle from './ThemeToggle';
+import MatchHistory from './MatchHistory';
 
 const GameSetup = () => {
   const { startGame } = useGame();
@@ -16,7 +18,12 @@ const GameSetup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+      {/* Theme Toggle */}
+      <div className="absolute top-4 left-4">
+        <ThemeToggle />
+      </div>
+
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold text-primary">🃏 حاسبة البلوت</CardTitle>
@@ -49,6 +56,9 @@ const GameSetup = () => {
           >
             ابدأ اللعبة
           </Button>
+
+          {/* Match History */}
+          <MatchHistory />
         </CardContent>
       </Card>
     </div>
