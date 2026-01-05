@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowUp, RotateCcw, Plus, Home } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ArrowUp, RotateCcw, Home } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
 interface SimpleCalculatorProps {
@@ -13,32 +14,48 @@ interface RoundEntry {
   team2: number;
 }
 
+// تحويل الأرقام العربية إلى إنجليزية
+const arabicToEnglish = (str: string): string => {
+  const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+  let result = str;
+  arabicDigits.forEach((digit, index) => {
+    result = result.replace(new RegExp(digit, 'g'), index.toString());
+  });
+  return result;
+};
+
 const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const [team1Score, setTeam1Score] = useState(0);
   const [team2Score, setTeam2Score] = useState(0);
-  const [team1Input, setTeam1Input] = useState(0);
-  const [team2Input, setTeam2Input] = useState(0);
+  const [team1Input, setTeam1Input] = useState('');
+  const [team2Input, setTeam2Input] = useState('');
   const [history, setHistory] = useState<RoundEntry[]>([]);
 
-  const toArabicNumerals = (num: number): string => {
-    const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-    return num.toString().split('').map(d => arabicDigits[parseInt(d)] || d).join('');
+  const handleInputChange = (value: string, setter: (val: string) => void) => {
+    // تحويل الأرقام العربية للإنجليزية
+    const converted = arabicToEnglish(value);
+    // السماح فقط بالأرقام
+    const cleaned = converted.replace(/[^0-9]/g, '');
+    setter(cleaned);
   };
 
   const handleAddPoints = () => {
-    if (team1Input === 0 && team2Input === 0) return;
+    const t1 = parseInt(team1Input) || 0;
+    const t2 = parseInt(team2Input) || 0;
+    
+    if (t1 === 0 && t2 === 0) return;
     
     const newEntry: RoundEntry = {
       id: crypto.randomUUID(),
-      team1: team1Input,
-      team2: team2Input,
+      team1: t1,
+      team2: t2,
     };
     
-    setTeam1Score(prev => prev + team1Input);
-    setTeam2Score(prev => prev + team2Input);
+    setTeam1Score(prev => prev + t1);
+    setTeam2Score(prev => prev + t2);
     setHistory(prev => [newEntry, ...prev]);
-    setTeam1Input(0);
-    setTeam2Input(0);
+    setTeam1Input('');
+    setTeam2Input('');
   };
 
   const handleUndo = () => {
@@ -52,25 +69,9 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const handleReset = () => {
     setTeam1Score(0);
     setTeam2Score(0);
-    setTeam1Input(0);
-    setTeam2Input(0);
+    setTeam1Input('');
+    setTeam2Input('');
     setHistory([]);
-  };
-
-  const incrementTeam = (team: 1 | 2) => {
-    if (team === 1) {
-      setTeam1Input(prev => prev + 1);
-    } else {
-      setTeam2Input(prev => prev + 1);
-    }
-  };
-
-  const decrementTeam = (team: 1 | 2) => {
-    if (team === 1) {
-      setTeam1Input(prev => Math.max(0, prev - 1));
-    } else {
-      setTeam2Input(prev => Math.max(0, prev - 1));
-    }
   };
 
   return (
@@ -87,55 +88,47 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
       <div className="flex-shrink-0 flex justify-center items-center gap-8 py-6">
         <div className="text-center">
           <div className="text-2xl font-bold text-muted-foreground">لنا</div>
-          <div className="text-6xl font-bold">{toArabicNumerals(team1Score)}</div>
+          <div className="text-6xl font-bold">{team1Score}</div>
         </div>
         <ArrowUp className="h-8 w-8 text-muted-foreground" />
         <div className="text-center">
           <div className="text-2xl font-bold text-muted-foreground">لهم</div>
-          <div className="text-6xl font-bold">{toArabicNumerals(team2Score)}</div>
+          <div className="text-6xl font-bold">{team2Score}</div>
         </div>
       </div>
 
       {/* Input Controls */}
-      <div className="flex-shrink-0 flex justify-center items-center gap-4 py-6">
-        {/* Team 2 Circle */}
-        <div className="flex flex-col items-center gap-2">
-          <button
-            onClick={() => incrementTeam(2)}
-            className="w-20 h-20 rounded-full border-4 border-primary/30 bg-muted flex items-center justify-center text-2xl font-bold hover:bg-primary/20 transition-colors"
-          >
-            {team2Input > 0 ? toArabicNumerals(team2Input) : <Plus className="h-6 w-6 text-muted-foreground" />}
-          </button>
-          {team2Input > 0 && (
-            <Button variant="ghost" size="sm" onClick={() => decrementTeam(2)} className="text-xs">
-              −
-            </Button>
-          )}
-        </div>
+      <div className="flex-shrink-0 flex justify-center items-center gap-4 py-6 px-4">
+        {/* Team 2 Input */}
+        <Input
+          type="tel"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          value={team2Input}
+          onChange={(e) => handleInputChange(e.target.value, setTeam2Input)}
+          placeholder="لهم"
+          className="w-24 h-16 text-center text-2xl font-bold"
+        />
 
         {/* Calculate Button */}
         <button
           onClick={handleAddPoints}
-          disabled={team1Input === 0 && team2Input === 0}
-          className="w-24 h-24 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold hover:bg-primary/90 transition-colors disabled:opacity-50"
+          disabled={!team1Input && !team2Input}
+          className="w-20 h-20 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold hover:bg-primary/90 transition-colors disabled:opacity-50"
         >
           احسب
         </button>
 
-        {/* Team 1 Circle */}
-        <div className="flex flex-col items-center gap-2">
-          <button
-            onClick={() => incrementTeam(1)}
-            className="w-20 h-20 rounded-full border-4 border-primary/30 bg-muted flex items-center justify-center text-2xl font-bold hover:bg-primary/20 transition-colors"
-          >
-            {team1Input > 0 ? toArabicNumerals(team1Input) : <Plus className="h-6 w-6 text-muted-foreground" />}
-          </button>
-          {team1Input > 0 && (
-            <Button variant="ghost" size="sm" onClick={() => decrementTeam(1)} className="text-xs">
-              −
-            </Button>
-          )}
-        </div>
+        {/* Team 1 Input */}
+        <Input
+          type="tel"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          value={team1Input}
+          onChange={(e) => handleInputChange(e.target.value, setTeam1Input)}
+          placeholder="لنا"
+          className="w-24 h-16 text-center text-2xl font-bold"
+        />
       </div>
 
       {/* Action Buttons */}
@@ -151,10 +144,10 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
 
       {/* History */}
       <div className="flex-1 overflow-auto min-h-0 border-t border-border">
-        {history.map((entry, index) => (
+        {history.map((entry) => (
           <div key={entry.id} className="flex justify-between items-center px-8 py-3 border-b border-border/50">
-            <span className="text-lg">{toArabicNumerals(entry.team2)}</span>
-            <span className="text-lg">{toArabicNumerals(entry.team1)}</span>
+            <span className="text-lg">{entry.team2}</span>
+            <span className="text-lg">{entry.team1}</span>
           </div>
         ))}
       </div>
