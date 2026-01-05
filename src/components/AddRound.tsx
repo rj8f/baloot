@@ -234,17 +234,6 @@ const AddRound = () => {
             </div>
           </div>
 
-          {/* Camera Scan Button */}
-          <Button
-            variant="outline"
-            onClick={() => setShowScanner(true)}
-            className="w-full py-5 border-dashed border-2"
-            disabled={multiplier === 'قهوة'}
-          >
-            <Camera className="h-5 w-5 ml-2" />
-            📷 تصوير الأوراق
-          </Button>
-
           {/* Raw Points Input - Choose which team */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">بنط الأكلات</label>
@@ -284,9 +273,15 @@ const AddRound = () => {
                 className="text-center text-xl h-14 flex-1"
                 disabled={multiplier === 'قهوة'}
               />
-              <div className="text-sm text-muted-foreground whitespace-nowrap">
-                من {totalCardsWithoutGround}
-              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setShowScanner(true)}
+                disabled={multiplier === 'قهوة'}
+                className="h-14 w-14 shrink-0 border-2 hover:bg-primary/10 hover:border-primary transition-colors"
+              >
+                <Camera className="h-6 w-6" />
+              </Button>
             </div>
             {entryTeamCardsRaw && (
               <p className="text-xs text-muted-foreground text-center">
