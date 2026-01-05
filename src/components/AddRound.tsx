@@ -374,24 +374,10 @@ const AddRound = () => {
                 </div>
               </div>
 
-              {/* Summary */}
-              {entryTeamCardsRaw && (
-                <div className="grid grid-cols-2 gap-2 text-center">
-                  <div className="bg-blue-500/10 rounded-lg p-2">
-                    <div className="text-xs text-blue-400">{game.team1Name}</div>
-                    <div className="text-xl font-bold">{totals.team1Total}</div>
-                  </div>
-                  <div className="bg-rose-500/10 rounded-lg p-2">
-                    <div className="text-xs text-rose-400">{game.team2Name}</div>
-                    <div className="text-xl font-bold">{totals.team2Total}</div>
-                  </div>
-                </div>
-              )}
-
-              {/* Preview of final scores */}
-              {(entryTeamCardsRaw || kabootTeam) && (() => {
-                const team1Raw = kabootTeam ? 0 : totals.team1Cards + (groundTeam === 1 ? 10 : 0);
-                const team2Raw = kabootTeam ? 0 : totals.team2Cards + (groundTeam === 2 ? 10 : 0);
+              {/* Summary with Preview */}
+              {entryTeamCardsRaw && (() => {
+                const team1Raw = totals.team1Cards + (groundTeam === 1 ? 10 : 0);
+                const team2Raw = totals.team2Cards + (groundTeam === 2 ? 10 : 0);
                 const preview = previewRoundResult({
                   gameType,
                   buyingTeam,
@@ -403,17 +389,19 @@ const AddRound = () => {
                   kabootTeam,
                 });
                 return (
-                  <div className="grid grid-cols-2 gap-2 text-center border-t pt-2 mt-2 border-border/30">
-                    <div className="bg-blue-600/20 rounded-lg p-2 border border-blue-500/30">
-                      <div className="text-xs text-blue-400">النتيجة المتوقعة</div>
-                      <div className="text-2xl font-bold text-blue-300">
-                        {game.team1Score} + {preview.finalTeam1Points} = {game.team1Score + preview.finalTeam1Points}
+                  <div className="grid grid-cols-2 gap-2 text-center">
+                    <div className="bg-blue-500/10 rounded-lg p-2">
+                      <div className="text-xs text-blue-400">{game.team1Name}</div>
+                      <div className="text-xl font-bold">{totals.team1Total}</div>
+                      <div className="text-xs text-blue-400/70 mt-1 border-t border-blue-500/20 pt-1">
+                        {game.team1Score} + {preview.finalTeam1Points} = <span className="font-bold">{game.team1Score + preview.finalTeam1Points}</span>
                       </div>
                     </div>
-                    <div className="bg-rose-600/20 rounded-lg p-2 border border-rose-500/30">
-                      <div className="text-xs text-rose-400">النتيجة المتوقعة</div>
-                      <div className="text-2xl font-bold text-rose-300">
-                        {game.team2Score} + {preview.finalTeam2Points} = {game.team2Score + preview.finalTeam2Points}
+                    <div className="bg-rose-500/10 rounded-lg p-2">
+                      <div className="text-xs text-rose-400">{game.team2Name}</div>
+                      <div className="text-xl font-bold">{totals.team2Total}</div>
+                      <div className="text-xs text-rose-400/70 mt-1 border-t border-rose-500/20 pt-1">
+                        {game.team2Score} + {preview.finalTeam2Points} = <span className="font-bold">{game.team2Score + preview.finalTeam2Points}</span>
                       </div>
                     </div>
                   </div>
