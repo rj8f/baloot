@@ -62,10 +62,7 @@ const AddRound = () => {
   return (
     <>
       <Card className="mx-4 mb-4">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-center text-lg">جولة جديدة</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 pt-4">
           {/* Game Type */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">نوع اللعب</label>

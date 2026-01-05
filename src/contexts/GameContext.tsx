@@ -6,6 +6,7 @@ interface GameContextType {
   startGame: (team1Name: string, team2Name: string, winningScore: number) => void;
   addRound: (round: Omit<Round, 'id' | 'roundNumber' | 'winningTeam' | 'finalTeam1Points' | 'finalTeam2Points'>) => void;
   deleteRound: (roundId: string) => void;
+  undoLastRound: () => void;
   resetGame: () => void;
   canDoubleSun: () => boolean;
 }
@@ -151,12 +152,18 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const undoLastRound = () => {
+    if (!game || game.rounds.length === 0) return;
+    const lastRound = game.rounds[game.rounds.length - 1];
+    deleteRound(lastRound.id);
+  };
+
   const resetGame = () => {
     setGame(null);
   };
 
   return (
-    <GameContext.Provider value={{ game, startGame, addRound, deleteRound, resetGame, canDoubleSun }}>
+    <GameContext.Provider value={{ game, startGame, addRound, deleteRound, undoLastRound, resetGame, canDoubleSun }}>
       {children}
     </GameContext.Provider>
   );
