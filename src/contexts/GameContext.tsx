@@ -104,79 +104,76 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       };
     }
 
-    // المجموع الكلي للبنط (مع الأرض)
-    // صن: 130 × 2 = 260
-    // حكم: 152 + 10 = 162
-    const totalRawCards = gameType === 'صن' ? 260 : 162;
-
-    // حساب نقاط الأكلات (البنط ÷ 10)
-    const team1CardsScore = rawToScore(team1RawPoints, gameType);
-    const team2CardsScore = rawToScore(team2RawPoints, gameType);
-
-    // حساب نقاط المشاريع
+    // حساب نقاط المشاريع (بالأبناط - تضرب في 10)
     const team1ProjectsWithoutBaloot = calculateProjectsWithoutBaloot(team1Projects, gameType);
     const team2ProjectsWithoutBaloot = calculateProjectsWithoutBaloot(team2Projects, gameType);
     const team1Baloot = calculateBalootPoints(team1Projects, gameType);
     const team2Baloot = calculateBalootPoints(team2Projects, gameType);
 
-    // المجموع الكلي لكل فريق (أكلات + مشاريع)
-    let team1Total = team1CardsScore + team1ProjectsWithoutBaloot + team1Baloot;
-    let team2Total = team2CardsScore + team2ProjectsWithoutBaloot + team2Baloot;
+    // المشاريع تُضرب في 10 وتُضاف للبنط الخام
+    const team1ProjectsRaw = team1ProjectsWithoutBaloot * 10;
+    const team2ProjectsRaw = team2ProjectsWithoutBaloot * 10;
+    const team1BalootRaw = team1Baloot * 10;
+    const team2BalootRaw = team2Baloot * 10;
+
+    // المجموع الكلي للبنط مع المشاريع
+    // صن: 260 + مشاريع
+    // حكم: 162 + مشاريع
+    const baseRawCards = gameType === 'صن' ? 260 : 162;
+    const totalRawWithProjects = baseRawCards + team1ProjectsRaw + team2ProjectsRaw + team1BalootRaw + team2BalootRaw;
+
+    // البنط الخام لكل فريق مع المشاريع
+    const team1TotalRaw = team1RawPoints + team1ProjectsRaw + team1BalootRaw;
+    const team2TotalRaw = team2RawPoints + team2ProjectsRaw + team2BalootRaw;
 
     // التحقق من نجاح المشتري
-    // يجب أن يحصل على نصف البنط أو أكثر ويتفوق أو يتساوى مع الخصم
-    const buyingTeamRaw = buyingTeam === 1 ? team1RawPoints : team2RawPoints;
-    const buyingTeamTotal = buyingTeam === 1 ? team1Total : team2Total;
-    const otherTeamTotal = buyingTeam === 1 ? team2Total : team1Total;
+    // يجب أن يحصل على نصف البنط الكلي (مع المشاريع) أو أكثر ويتفوق أو يتساوى مع الخصم
+    const buyingTeamTotalRaw = buyingTeam === 1 ? team1TotalRaw : team2TotalRaw;
+    const otherTeamTotalRaw = buyingTeam === 1 ? team2TotalRaw : team1TotalRaw;
 
-    const halfRaw = totalRawCards / 2;
-    const buyingTeamSucceeded = buyingTeamRaw >= halfRaw && buyingTeamTotal >= otherTeamTotal;
+    const halfTotalRaw = totalRawWithProjects / 2;
+    const buyingTeamSucceeded = buyingTeamTotalRaw >= halfTotalRaw && buyingTeamTotalRaw >= otherTeamTotalRaw;
 
     let winningTeam: 1 | 2;
-    let finalTeam1Base: number;
-    let finalTeam2Base: number;
-    let team1BalootFinal = team1Baloot;
-    let team2BalootFinal = team2Baloot;
+    let team1FinalRaw: number;
+    let team2FinalRaw: number;
 
     if (buyingTeamSucceeded) {
       // المشتري نجح - كل فريق يأخذ نقاطه
       winningTeam = buyingTeam;
-      finalTeam1Base = team1CardsScore + team1ProjectsWithoutBaloot;
-      finalTeam2Base = team2CardsScore + team2ProjectsWithoutBaloot;
+      team1FinalRaw = team1TotalRaw;
+      team2FinalRaw = team2TotalRaw;
     } else {
-      // المشتري خسر - الخصم يأخذ كل النقاط (بما فيها مشاريع المشتري)
+      // المشتري خسر - الخصم يأخذ كل البنط (بما فيها مشاريع المشتري)
       winningTeam = otherTeam;
       
-      // مجموع نقاط الأكلات الكلي
-      const totalCardsScore = gameType === 'صن' ? 26 : 16;
-      
-      // مجموع المشاريع (بدون البلوت لأنه يضاف بدون مضاعفة)
-      const totalProjectsWithoutBaloot = team1ProjectsWithoutBaloot + team2ProjectsWithoutBaloot;
-      const totalBaloot = team1Baloot + team2Baloot;
-      
       if (winningTeam === 1) {
-        finalTeam1Base = totalCardsScore + totalProjectsWithoutBaloot;
-        finalTeam2Base = 0;
-        team1BalootFinal = totalBaloot;
-        team2BalootFinal = 0;
+        team1FinalRaw = totalRawWithProjects;
+        team2FinalRaw = 0;
       } else {
-        finalTeam1Base = 0;
-        finalTeam2Base = totalCardsScore + totalProjectsWithoutBaloot;
-        team1BalootFinal = 0;
-        team2BalootFinal = totalBaloot;
+        team1FinalRaw = 0;
+        team2FinalRaw = totalRawWithProjects;
       }
     }
 
-    // تطبيق المضاعفة (البلوت لا يتضاعف)
+    // تحويل البنط للنقاط (÷ 10 مع التقريب)
+    let team1Score = rawToScore(team1FinalRaw, gameType);
+    let team2Score = rawToScore(team2FinalRaw, gameType);
+
+    // تطبيق المضاعفة
     const multiplierFactor =
       multiplier === 'عادي' ? 1 :
       multiplier === 'دبل' ? 2 :
       multiplier === '×3' ? 2.5 : 4; // ×3 = 16+16+8=40 يعني 2.5
 
+    // ملاحظة: البلوت يتضاعف مع باقي النقاط لأنه أصبح جزء من البنط الخام
+    const finalTeam1Points = Math.round(team1Score * multiplierFactor);
+    const finalTeam2Points = Math.round(team2Score * multiplierFactor);
+
     return {
       winningTeam,
-      finalTeam1Points: Math.round(finalTeam1Base * multiplierFactor) + team1BalootFinal,
-      finalTeam2Points: Math.round(finalTeam2Base * multiplierFactor) + team2BalootFinal,
+      finalTeam1Points,
+      finalTeam2Points,
     };
   };
 
