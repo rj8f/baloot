@@ -76,6 +76,7 @@ const AddRound = () => {
     let maxCount = 4;
     if (project === 'بلوت') maxCount = 1;
     else if (project === 'مية') maxCount = 2;
+    else if (project === 'أربعمية' && gameType === 'صن') maxCount = 1;
     
     setProjects(prev => ({
       ...prev,
