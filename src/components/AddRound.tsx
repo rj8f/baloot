@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useGame } from '@/contexts/GameContext';
+import { useGame, RoundInput } from '@/contexts/GameContext';
 import { GameType, Multiplier, TeamProjects, createEmptyProjects, PROJECT_VALUES } from '@/types/baloot';
 import { cn } from '@/lib/utils';
 import { Camera, Plus, Minus, ChevronDown, ChevronUp, Zap } from 'lucide-react';
@@ -22,7 +22,7 @@ const arabicToWestern = (str: string): string => {
 type ProjectKey = keyof TeamProjects;
 
 const AddRound = () => {
-  const { game, addRound, canDoubleSun } = useGame();
+  const { game, addRound, canDoubleSun, previewRoundResult } = useGame();
   const [gameType, setGameType] = useState<GameType>('حكم');
   const [buyingTeam, setBuyingTeam] = useState<1 | 2>(1);
   const [entryTeam, setEntryTeam] = useState<1 | 2>(1);
@@ -254,7 +254,7 @@ const AddRound = () => {
 
           {/* Kaboot Active */}
           {kabootTeam && (
-            <div className="p-3 bg-amber-500/20 border border-amber-500/50 rounded-lg">
+            <div className="p-3 bg-amber-500/20 border border-amber-500/50 rounded-lg space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Zap className="h-5 w-5 text-amber-400" />
@@ -272,9 +272,38 @@ const AddRound = () => {
                   إلغاء
                 </Button>
               </div>
-              <p className="text-xs text-amber-400/80 mt-1">
+              <p className="text-xs text-amber-400/80">
                 {gameType === 'حكم' ? '25' : '44'} نقطة + المشاريع
               </p>
+              {/* Preview for Kaboot */}
+              {(() => {
+                const preview = previewRoundResult({
+                  gameType,
+                  buyingTeam,
+                  team1RawPoints: 0,
+                  team2RawPoints: 0,
+                  team1Projects,
+                  team2Projects,
+                  multiplier,
+                  kabootTeam,
+                });
+                return (
+                  <div className="grid grid-cols-2 gap-2 text-center pt-2 border-t border-amber-500/30">
+                    <div className="bg-blue-600/20 rounded-lg p-2">
+                      <div className="text-xs text-blue-400">النتيجة</div>
+                      <div className="text-lg font-bold text-blue-300">
+                        {game.team1Score} + {preview.finalTeam1Points} = {game.team1Score + preview.finalTeam1Points}
+                      </div>
+                    </div>
+                    <div className="bg-rose-600/20 rounded-lg p-2">
+                      <div className="text-xs text-rose-400">النتيجة</div>
+                      <div className="text-lg font-bold text-rose-300">
+                        {game.team2Score} + {preview.finalTeam2Points} = {game.team2Score + preview.finalTeam2Points}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           )}
 
@@ -358,6 +387,38 @@ const AddRound = () => {
                   </div>
                 </div>
               )}
+
+              {/* Preview of final scores */}
+              {(entryTeamCardsRaw || kabootTeam) && (() => {
+                const team1Raw = kabootTeam ? 0 : totals.team1Cards + (groundTeam === 1 ? 10 : 0);
+                const team2Raw = kabootTeam ? 0 : totals.team2Cards + (groundTeam === 2 ? 10 : 0);
+                const preview = previewRoundResult({
+                  gameType,
+                  buyingTeam,
+                  team1RawPoints: team1Raw,
+                  team2RawPoints: team2Raw,
+                  team1Projects,
+                  team2Projects,
+                  multiplier,
+                  kabootTeam,
+                });
+                return (
+                  <div className="grid grid-cols-2 gap-2 text-center border-t pt-2 mt-2 border-border/30">
+                    <div className="bg-blue-600/20 rounded-lg p-2 border border-blue-500/30">
+                      <div className="text-xs text-blue-400">النتيجة المتوقعة</div>
+                      <div className="text-2xl font-bold text-blue-300">
+                        {game.team1Score} + {preview.finalTeam1Points} = {game.team1Score + preview.finalTeam1Points}
+                      </div>
+                    </div>
+                    <div className="bg-rose-600/20 rounded-lg p-2 border border-rose-500/30">
+                      <div className="text-xs text-rose-400">النتيجة المتوقعة</div>
+                      <div className="text-2xl font-bold text-rose-300">
+                        {game.team2Score} + {preview.finalTeam2Points} = {game.team2Score + preview.finalTeam2Points}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           )}
 
