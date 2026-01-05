@@ -45,9 +45,18 @@ const AddRound = () => {
     setMultiplier('عادي');
   };
 
-  const handleScanSuccess = (t1Points: number, t2Points: number) => {
-    setTeam1Points(t1Points.toString());
-    setTeam2Points(t2Points.toString());
+  const handleScanSuccess = (totalPoints: number) => {
+    // Scanned points are for the buying team
+    const totalGamePoints = gameType === 'صن' ? 130 : 162;
+    const otherTeamPoints = totalGamePoints - totalPoints;
+    
+    if (buyingTeam === 1) {
+      setTeam1Points(totalPoints.toString());
+      setTeam2Points(otherTeamPoints.toString());
+    } else {
+      setTeam1Points(otherTeamPoints.toString());
+      setTeam2Points(totalPoints.toString());
+    }
   };
 
   return (
