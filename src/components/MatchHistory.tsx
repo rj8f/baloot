@@ -66,7 +66,7 @@ const MatchHistory = () => {
           {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </Button>
       </CollapsibleTrigger>
-      <CollapsibleContent className="px-4 pb-4">
+      <CollapsibleContent className="pb-2">
         {loading ? (
           <div className="text-center py-4 text-muted-foreground">جاري التحميل...</div>
         ) : games.length === 0 ? (

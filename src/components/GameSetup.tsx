@@ -18,18 +18,18 @@ const GameSetup = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+    <div className="h-screen overflow-hidden flex flex-col items-center justify-center p-4 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
       {/* Theme Toggle */}
       <div className="absolute top-4 left-4">
         <ThemeToggle />
       </div>
 
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
+      <Card className="w-full max-w-md max-h-[90vh] flex flex-col">
+        <CardHeader className="text-center flex-shrink-0">
           <CardTitle className="text-3xl font-bold text-primary">🃏 حاسبة البلوت</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
+        <CardContent className="space-y-4 flex-1 overflow-hidden flex flex-col">
+          <div className="space-y-2 flex-shrink-0">
             <label className="text-sm font-medium">اسم الفريق الأول</label>
             <Input
               value={team1Name}
@@ -39,7 +39,7 @@ const GameSetup = () => {
             />
           </div>
           
-          <div className="space-y-2">
+          <div className="space-y-2 flex-shrink-0">
             <label className="text-sm font-medium">اسم الفريق الثاني</label>
             <Input
               value={team2Name}
@@ -51,14 +51,16 @@ const GameSetup = () => {
 
           <Button 
             onClick={handleStart} 
-            className="w-full text-lg py-6"
+            className="w-full text-lg py-6 flex-shrink-0"
             size="lg"
           >
             ابدأ اللعبة
           </Button>
 
-          {/* Match History */}
-          <MatchHistory />
+          {/* Match History - scrollable */}
+          <div className="flex-1 overflow-auto min-h-0">
+            <MatchHistory />
+          </div>
         </CardContent>
       </Card>
     </div>
