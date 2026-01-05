@@ -20,9 +20,6 @@ const ScoreBoard = () => {
         <h2 className="text-lg font-bold text-blue-400 truncate">{game.team1Name}</h2>
         <div className="text-5xl font-bold my-3 text-blue-300">{game.team1Score}</div>
         <Progress value={team1Progress} className="h-2 bg-blue-950" />
-        <span className="text-xs text-muted-foreground mt-1 block">
-          {game.winningScore - game.team1Score > 0 ? `باقي ${game.winningScore - game.team1Score}` : 'فاز! 🎉'}
-        </span>
       </div>
 
       {/* Team 2 */}
@@ -33,9 +30,6 @@ const ScoreBoard = () => {
         <h2 className="text-lg font-bold text-rose-400 truncate">{game.team2Name}</h2>
         <div className="text-5xl font-bold my-3 text-rose-300">{game.team2Score}</div>
         <Progress value={team2Progress} className="h-2 bg-rose-950" />
-        <span className="text-xs text-muted-foreground mt-1 block">
-          {game.winningScore - game.team2Score > 0 ? `باقي ${game.winningScore - game.team2Score}` : 'فاز! 🎉'}
-        </span>
       </div>
     </div>
   );
