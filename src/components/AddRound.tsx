@@ -290,15 +290,15 @@ const AddRound = () => {
                 return (
                   <div className="grid grid-cols-2 gap-2 text-center pt-2 border-t border-amber-500/30">
                     <div className="bg-blue-600/20 rounded-lg p-2">
-                      <div className="text-xs text-blue-400">النتيجة</div>
-                      <div className="text-lg font-bold text-blue-300">
-                        {game.team1Score} + {preview.finalTeam1Points} = {game.team1Score + preview.finalTeam1Points}
+                      <div className="text-xs text-blue-400">{game.team1Name}</div>
+                      <div className="text-2xl font-bold text-blue-300">
+                        {game.team1Score + preview.finalTeam1Points}
                       </div>
                     </div>
                     <div className="bg-rose-600/20 rounded-lg p-2">
-                      <div className="text-xs text-rose-400">النتيجة</div>
-                      <div className="text-lg font-bold text-rose-300">
-                        {game.team2Score} + {preview.finalTeam2Points} = {game.team2Score + preview.finalTeam2Points}
+                      <div className="text-xs text-rose-400">{game.team2Name}</div>
+                      <div className="text-2xl font-bold text-rose-300">
+                        {game.team2Score + preview.finalTeam2Points}
                       </div>
                     </div>
                   </div>
