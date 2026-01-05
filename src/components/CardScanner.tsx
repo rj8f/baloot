@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -7,13 +7,14 @@ import { useGame } from '@/contexts/GameContext';
 import { GameType, Multiplier } from '@/types/baloot';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 interface CardScannerProps {
   gameType: GameType;
   buyingTeam: 1 | 2;
   multiplier: Multiplier;
   onClose: () => void;
-  onSuccess: (totalPoints: number) => void;
+  onSuccess: (totalPoints: number, groundTeam: 1 | 2) => void;
 }
 
 interface AnalysisResult {
@@ -38,6 +39,7 @@ const CardScanner = ({ gameType, buyingTeam, multiplier, onClose, onSuccess }: C
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [trumpSuit, setTrumpSuit] = useState<TrumpSuit | null>(null);
   const [showTrumpSelector, setShowTrumpSelector] = useState(gameType === 'حكم');
+  const [groundTeam, setGroundTeam] = useState<1 | 2>(buyingTeam);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -56,6 +58,19 @@ const CardScanner = ({ gameType, buyingTeam, multiplier, onClose, onSuccess }: C
       toast.error('لا يمكن الوصول للكاميرا');
     }
   };
+
+  // Auto-start camera for صن mode on mount, or after trump selection for حكم
+  useEffect(() => {
+    if (gameType === 'صن') {
+      startCamera();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (gameType === 'حكم' && trumpSuit && !showTrumpSelector && !isStreaming && !capturedImage) {
+      startCamera();
+    }
+  }, [trumpSuit, showTrumpSelector]);
 
   const stopCamera = () => {
     if (videoRef.current?.srcObject) {
@@ -127,7 +142,7 @@ const CardScanner = ({ gameType, buyingTeam, multiplier, onClose, onSuccess }: C
 
   const confirmResult = () => {
     if (!result) return;
-    onSuccess(result.trickPoints);
+    onSuccess(result.trickPoints, groundTeam);
     onClose();
   };
 
@@ -274,13 +289,32 @@ const CardScanner = ({ gameType, buyingTeam, multiplier, onClose, onSuccess }: C
                           <span className="text-4xl font-bold text-primary">{result.trickPoints}</span>
                         </div>
 
+                        {/* Ground Selection */}
+                        <div className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+                          <span className="text-sm font-medium">الأرض (+10)</span>
+                          <div className="flex gap-1">
+                            <Button
+                              variant={groundTeam === 1 ? 'default' : 'ghost'}
+                              onClick={() => setGroundTeam(1)}
+                              size="sm"
+                              className={cn("h-8 text-xs", groundTeam === 1 && "bg-blue-600 hover:bg-blue-700")}
+                            >
+                              {game?.team1Name}
+                            </Button>
+                            <Button
+                              variant={groundTeam === 2 ? 'default' : 'ghost'}
+                              onClick={() => setGroundTeam(2)}
+                              size="sm"
+                              className={cn("h-8 text-xs", groundTeam === 2 && "bg-rose-600 hover:bg-rose-700")}
+                            >
+                              {game?.team2Name}
+                            </Button>
+                          </div>
+                        </div>
+
                         {result.notes && (
                           <p className="text-sm text-muted-foreground bg-muted p-2 rounded">{result.notes}</p>
                         )}
-
-                        <p className="text-center text-sm text-muted-foreground pt-2">
-                          هل تريد إدخال هذه النتيجة؟
-                        </p>
 
                         <div className="flex gap-2 pt-2">
                           <Button 
