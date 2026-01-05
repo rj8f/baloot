@@ -77,9 +77,9 @@ const AddRound = () => {
   };
 
   // مجموع الأوراق بدون الأرض
-  // صن: 260 - 10 = 250
+  // صن: 130 - 10 = 120
   // حكم: 162 - 10 = 152
-  const totalCardsWithoutGround = gameType === 'صن' ? 250 : 152;
+  const totalCardsWithoutGround = gameType === 'صن' ? 120 : 152;
 
   // حساب بنط الأكلات لكل فريق (أكلات + أرض فقط - بدون المشاريع)
   const calculateTotalRaw = () => {
