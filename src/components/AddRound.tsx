@@ -8,6 +8,16 @@ import { cn } from '@/lib/utils';
 import { Camera } from 'lucide-react';
 import CardScanner from './CardScanner';
 
+// Convert Arabic numerals to Western numerals
+const arabicToWestern = (str: string): string => {
+  const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+  let result = str;
+  arabicNumerals.forEach((arabic, index) => {
+    result = result.replace(new RegExp(arabic, 'g'), index.toString());
+  });
+  return result;
+};
+
 const AddRound = () => {
   const { game, addRound, canDoubleSun } = useGame();
   const [gameType, setGameType] = useState<GameType>('حكم');
@@ -135,9 +145,10 @@ const AddRound = () => {
               <div className="space-y-1">
                 <span className="text-xs text-blue-400">{game.team1Name}</span>
                 <Input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   value={team1Points}
-                  onChange={(e) => setTeam1Points(e.target.value)}
+                  onChange={(e) => setTeam1Points(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
                   placeholder="0"
                   className="text-center text-xl h-14"
                   disabled={multiplier === 'قهوة'}
@@ -146,9 +157,10 @@ const AddRound = () => {
               <div className="space-y-1">
                 <span className="text-xs text-rose-400">{game.team2Name}</span>
                 <Input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   value={team2Points}
-                  onChange={(e) => setTeam2Points(e.target.value)}
+                  onChange={(e) => setTeam2Points(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
                   placeholder="0"
                   className="text-center text-xl h-14"
                   disabled={multiplier === 'قهوة'}
