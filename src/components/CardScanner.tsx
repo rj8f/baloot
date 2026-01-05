@@ -19,8 +19,6 @@ interface CardScannerProps {
 interface AnalysisResult {
   cards: string[];
   trickPoints: number;
-  projects: { name: string; points: number }[];
-  totalPoints: number;
   notes: string;
 }
 
@@ -129,7 +127,7 @@ const CardScanner = ({ gameType, buyingTeam, multiplier, onClose, onSuccess }: C
 
   const confirmResult = () => {
     if (!result) return;
-    onSuccess(result.totalPoints);
+    onSuccess(result.trickPoints);
     onClose();
   };
 
@@ -271,26 +269,9 @@ const CardScanner = ({ gameType, buyingTeam, multiplier, onClose, onSuccess }: C
                         <CardTitle className="text-lg text-center">✅ نتيجة التحليل</CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-3">
-                        <div className="flex justify-between items-center p-3 bg-primary/10 rounded-lg">
-                          <span className="font-medium">نقاط الأكلات</span>
-                          <span className="text-2xl font-bold text-primary">{result.trickPoints}</span>
-                        </div>
-
-                        {result.projects.length > 0 && (
-                          <div className="space-y-2">
-                            <span className="text-sm font-medium text-muted-foreground">المشاريع:</span>
-                            {result.projects.map((project, i) => (
-                              <div key={i} className="flex justify-between items-center p-2 bg-muted rounded">
-                                <span>{project.name}</span>
-                                <span className="font-bold">+{project.points}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        <div className="flex justify-between items-center p-4 bg-accent/20 rounded-lg border-2 border-accent">
-                          <span className="font-bold text-lg">المجموع</span>
-                          <span className="text-4xl font-bold text-accent">{result.totalPoints}</span>
+                        <div className="flex justify-between items-center p-4 bg-primary/10 rounded-lg border-2 border-primary">
+                          <span className="font-bold text-lg">بنط الأكلات</span>
+                          <span className="text-4xl font-bold text-primary">{result.trickPoints}</span>
                         </div>
 
                         {result.notes && (
