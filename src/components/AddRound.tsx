@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useGame } from '@/contexts/GameContext';
 import { GameType, Multiplier, TeamProjects, createEmptyProjects, PROJECT_VALUES } from '@/types/baloot';
 import { cn } from '@/lib/utils';
-import { Camera, Plus, Minus, Zap } from 'lucide-react';
+import { Camera, Zap } from 'lucide-react';
 import CardScanner from './CardScanner';
 
 // Convert Arabic numerals to Western numerals
@@ -71,10 +71,10 @@ const AddRound = () => {
         { key: 'بلوت', label: 'بلوت' },
       ];
 
-  const updateProject = (project: ProjectKey, delta: number) => {
+  const cycleProject = (project: ProjectKey) => {
     setProjects(prev => ({
       ...prev,
-      [project]: Math.max(0, prev[project] + delta),
+      [project]: prev[project] >= 4 ? 0 : prev[project] + 1,
     }));
   };
 
@@ -352,36 +352,27 @@ const AddRound = () => {
               )}
             </div>
 
-            {/* Project Chips */}
+            {/* Project Chips - Tap to cycle */}
             {projectsTeam && (
               <div className="grid grid-cols-4 gap-2">
                 {availableProjects.map((p) => {
                   const count = projects[p.key];
                   return (
-                    <div 
+                    <button
                       key={p.key}
-                      className="flex flex-col items-center gap-1 bg-muted/50 rounded-xl p-2"
+                      onClick={() => cycleProject(p.key)}
+                      className={cn(
+                        "flex flex-col items-center justify-center gap-1 rounded-xl p-3 transition-all active:scale-95",
+                        count > 0 
+                          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30" 
+                          : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                      )}
                     >
                       <span className="text-sm font-medium">{p.label}</span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => updateProject(p.key, -1)}
-                          disabled={count === 0}
-                          className="p-2 rounded-lg bg-muted hover:bg-muted/80 disabled:opacity-30 active:scale-95 transition-transform"
-                        >
-                          <Minus className="h-4 w-4" />
-                        </button>
-                        <span className="min-w-[24px] text-center text-lg font-bold">
-                          {count}
-                        </span>
-                        <button
-                          onClick={() => updateProject(p.key, 1)}
-                          className="p-2 rounded-lg bg-muted hover:bg-muted/80 active:scale-95 transition-transform"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
+                      {count > 0 && (
+                        <span className="text-xl font-bold">{count}</span>
+                      )}
+                    </button>
                   );
                 })}
               </div>
