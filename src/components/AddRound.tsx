@@ -354,30 +354,33 @@ const AddRound = () => {
 
             {/* Project Chips */}
             {projectsTeam && (
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 {availableProjects.map((p) => {
                   const count = projects[p.key];
                   return (
                     <div 
                       key={p.key}
-                      className="flex items-center gap-1 bg-muted/50 rounded-lg px-2 py-1"
+                      className="flex flex-col items-center gap-1 bg-muted/50 rounded-xl p-2"
                     >
-                      <button
-                        onClick={() => updateProject(p.key, -1)}
-                        disabled={count === 0}
-                        className="p-1 rounded hover:bg-muted disabled:opacity-30"
-                      >
-                        <Minus className="h-3 w-3" />
-                      </button>
-                      <span className="min-w-[40px] text-center text-sm font-medium">
-                        {p.label} {count > 0 && <span className="text-primary">({count})</span>}
-                      </span>
-                      <button
-                        onClick={() => updateProject(p.key, 1)}
-                        className="p-1 rounded hover:bg-muted"
-                      >
-                        <Plus className="h-3 w-3" />
-                      </button>
+                      <span className="text-sm font-medium">{p.label}</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => updateProject(p.key, -1)}
+                          disabled={count === 0}
+                          className="p-2 rounded-lg bg-muted hover:bg-muted/80 disabled:opacity-30 active:scale-95 transition-transform"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </button>
+                        <span className="min-w-[24px] text-center text-lg font-bold">
+                          {count}
+                        </span>
+                        <button
+                          onClick={() => updateProject(p.key, 1)}
+                          className="p-2 rounded-lg bg-muted hover:bg-muted/80 active:scale-95 transition-transform"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
@@ -385,11 +388,11 @@ const AddRound = () => {
             )}
           </div>
 
-          {/* Multiplier - Compact Pills */}
+          {/* Multiplier - Larger Pills */}
           {!kabootTeam && (
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="space-y-2">
               <span className="text-xs text-muted-foreground">الدبل</span>
-              <div className="flex flex-wrap gap-1">
+              <div className="flex flex-wrap gap-2">
                 {availableMultipliers.map((m) => {
                   const isDisabled = gameType === 'صن' && m === 'دبل' && !canDouble;
                   return (
@@ -398,11 +401,11 @@ const AddRound = () => {
                       onClick={() => setMultiplier(m)}
                       disabled={isDisabled}
                       className={cn(
-                        "px-3 py-1 rounded-full text-xs font-medium transition-all",
+                        "px-5 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95",
                         multiplier === m 
                           ? m === 'قهوة' 
-                            ? "bg-amber-500 text-white"
-                            : "bg-primary text-primary-foreground"
+                            ? "bg-amber-500 text-white shadow-lg shadow-amber-500/30"
+                            : "bg-primary text-primary-foreground shadow-lg shadow-primary/30"
                           : "bg-muted text-muted-foreground hover:bg-muted/80",
                         isDisabled && "opacity-40 cursor-not-allowed"
                       )}
