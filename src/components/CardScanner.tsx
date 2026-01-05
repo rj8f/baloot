@@ -14,7 +14,7 @@ interface CardScannerProps {
   buyingTeam: 1 | 2;
   multiplier: Multiplier;
   onClose: () => void;
-  onSuccess: (totalPoints: number, groundTeam: 1 | 2) => void;
+  onSuccess: (totalPoints: number) => void;
 }
 
 interface AnalysisResult {
@@ -39,7 +39,7 @@ const CardScanner = ({ gameType, buyingTeam, multiplier, onClose, onSuccess }: C
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [trumpSuit, setTrumpSuit] = useState<TrumpSuit | null>(null);
   const [showTrumpSelector, setShowTrumpSelector] = useState(gameType === 'حكم');
-  const [groundTeam, setGroundTeam] = useState<1 | 2>(buyingTeam);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -142,7 +142,7 @@ const CardScanner = ({ gameType, buyingTeam, multiplier, onClose, onSuccess }: C
 
   const confirmResult = () => {
     if (!result) return;
-    onSuccess(result.trickPoints, groundTeam);
+    onSuccess(result.trickPoints);
     onClose();
   };
 
@@ -287,29 +287,6 @@ const CardScanner = ({ gameType, buyingTeam, multiplier, onClose, onSuccess }: C
                         <div className="flex justify-between items-center p-4 bg-primary/10 rounded-lg border-2 border-primary">
                           <span className="font-bold text-lg">بنط الأكلات</span>
                           <span className="text-4xl font-bold text-primary">{result.trickPoints}</span>
-                        </div>
-
-                        {/* Ground Selection */}
-                        <div className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
-                          <span className="text-sm font-medium">الأرض (+10)</span>
-                          <div className="flex gap-1">
-                            <Button
-                              variant={groundTeam === 1 ? 'default' : 'ghost'}
-                              onClick={() => setGroundTeam(1)}
-                              size="sm"
-                              className={cn("h-8 text-xs", groundTeam === 1 && "bg-blue-600 hover:bg-blue-700")}
-                            >
-                              {game?.team1Name}
-                            </Button>
-                            <Button
-                              variant={groundTeam === 2 ? 'default' : 'ghost'}
-                              onClick={() => setGroundTeam(2)}
-                              size="sm"
-                              className={cn("h-8 text-xs", groundTeam === 2 && "bg-rose-600 hover:bg-rose-700")}
-                            >
-                              {game?.team2Name}
-                            </Button>
-                          </div>
                         </div>
 
                         {result.notes && (

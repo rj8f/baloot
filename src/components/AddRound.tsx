@@ -27,7 +27,7 @@ const AddRound = () => {
   const [buyingTeam, setBuyingTeam] = useState<1 | 2>(1);
   const [entryTeam, setEntryTeam] = useState<1 | 2>(1);
   const [entryTeamCardsRaw, setEntryTeamCardsRaw] = useState('');
-  const [groundTeam, setGroundTeam] = useState<1 | 2>(1);
+  
   const [team1Projects, setTeam1Projects] = useState<TeamProjects>(createEmptyProjects());
   const [team2Projects, setTeam2Projects] = useState<TeamProjects>(createEmptyProjects());
   const [multiplier, setMultiplier] = useState<Multiplier>('عادي');
@@ -82,21 +82,19 @@ const AddRound = () => {
     }
   };
 
-  const totalCardsWithoutGround = gameType === 'صن' ? 120 : 152;
+  // Total points including ground: صن = 130, حكم = 162
+  const totalPoints = gameType === 'صن' ? 130 : 162;
 
   const calculateTotalRaw = () => {
     const entryCards = parseInt(entryTeamCardsRaw) || 0;
-    const otherCards = totalCardsWithoutGround - entryCards;
+    const otherCards = totalPoints - entryCards;
     
     const team1Cards = entryTeam === 1 ? entryCards : otherCards;
     const team2Cards = entryTeam === 2 ? entryCards : otherCards;
     
-    const team1Ground = groundTeam === 1 ? 10 : 0;
-    const team2Ground = groundTeam === 2 ? 10 : 0;
-    
     return {
-      team1Total: team1Cards + team1Ground,
-      team2Total: team2Cards + team2Ground,
+      team1Total: team1Cards,
+      team2Total: team2Cards,
       team1Cards,
       team2Cards,
       entryCards,
@@ -115,8 +113,8 @@ const AddRound = () => {
   const handleSubmit = () => {
     if ((totals.team1Cards === 0 && totals.team2Cards === 0) && multiplier !== 'قهوة' && !kabootTeam) return;
 
-    const team1Raw = kabootTeam ? 0 : totals.team1Cards + (groundTeam === 1 ? 10 : 0);
-    const team2Raw = kabootTeam ? 0 : totals.team2Cards + (groundTeam === 2 ? 10 : 0);
+    const team1Raw = kabootTeam ? 0 : totals.team1Cards;
+    const team2Raw = kabootTeam ? 0 : totals.team2Cards;
 
     addRound({
       gameType,
@@ -131,7 +129,6 @@ const AddRound = () => {
 
     // Reset form
     setEntryTeamCardsRaw('');
-    setGroundTeam(1);
     setTeam1Projects(createEmptyProjects());
     setTeam2Projects(createEmptyProjects());
     setMultiplier('عادي');
@@ -140,9 +137,8 @@ const AddRound = () => {
     setShowAdvanced(false);
   };
 
-  const handleScanSuccess = (totalPoints: number, ground: 1 | 2) => {
+  const handleScanSuccess = (totalPoints: number) => {
     setEntryTeamCardsRaw(totalPoints.toString());
-    setGroundTeam(ground);
   };
 
   const CompactProjectCounter = ({ team, project, value }: { team: 1 | 2; project: ProjectKey; value: number }) => {
@@ -355,8 +351,8 @@ const AddRound = () => {
 
               {/* Summary with Preview */}
               {entryTeamCardsRaw && (() => {
-                const team1Raw = totals.team1Cards + (groundTeam === 1 ? 10 : 0);
-                const team2Raw = totals.team2Cards + (groundTeam === 2 ? 10 : 0);
+                const team1Raw = totals.team1Cards;
+                const team2Raw = totals.team2Cards;
                 const preview = previewRoundResult({
                   gameType,
                   buyingTeam,
