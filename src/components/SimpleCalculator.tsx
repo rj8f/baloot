@@ -99,14 +99,14 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
 
       {/* Input Controls */}
       <div className="flex-shrink-0 flex justify-center items-center gap-4 py-6 px-4">
-        {/* Team 2 Input */}
+        {/* Team 1 Input - لنا */}
         <Input
           type="tel"
           inputMode="numeric"
           pattern="[0-9]*"
-          value={team2Input}
-          onChange={(e) => handleInputChange(e.target.value, setTeam2Input)}
-          placeholder="لهم"
+          value={team1Input}
+          onChange={(e) => handleInputChange(e.target.value, setTeam1Input)}
+          placeholder="لنا"
           className="w-24 h-16 text-center text-2xl font-bold"
         />
 
@@ -119,14 +119,14 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
           احسب
         </button>
 
-        {/* Team 1 Input */}
+        {/* Team 2 Input - لهم */}
         <Input
           type="tel"
           inputMode="numeric"
           pattern="[0-9]*"
-          value={team1Input}
-          onChange={(e) => handleInputChange(e.target.value, setTeam1Input)}
-          placeholder="لنا"
+          value={team2Input}
+          onChange={(e) => handleInputChange(e.target.value, setTeam2Input)}
+          placeholder="لهم"
           className="w-24 h-16 text-center text-2xl font-bold"
         />
       </div>
@@ -146,8 +146,8 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
       <div className="flex-1 overflow-auto min-h-0 border-t border-border">
         {history.map((entry) => (
           <div key={entry.id} className="flex justify-between items-center px-8 py-3 border-b border-border/50">
-            <span className="text-lg">{entry.team2}</span>
             <span className="text-lg">{entry.team1}</span>
+            <span className="text-lg">{entry.team2}</span>
           </div>
         ))}
       </div>
