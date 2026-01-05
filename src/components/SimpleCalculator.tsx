@@ -20,6 +20,7 @@ import {
 import MatchHistory from './MatchHistory';
 import confetti from 'canvas-confetti';
 import { cn } from '@/lib/utils';
+import { useGame } from '@/contexts/GameContext';
 
 interface SimpleCalculatorProps {
   onBack: () => void;
@@ -42,15 +43,22 @@ const arabicToEnglish = (str: string): string => {
 };
 
 const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
-  const [team1Score, setTeam1Score] = useState(0);
-  const [team2Score, setTeam2Score] = useState(0);
+  const { game, setScores, initGameIfNeeded, resetGame } = useGame();
+  
+  // تهيئة اللعبة عند الفتح
+  useEffect(() => {
+    initGameIfNeeded();
+  }, []);
+
+  const team1Score = game?.team1Score ?? 0;
+  const team2Score = game?.team2Score ?? 0;
+  const winner = game?.winner ?? null;
+  const WINNING_SCORE = 152;
+
   const [team1Input, setTeam1Input] = useState('');
   const [team2Input, setTeam2Input] = useState('');
   const [history, setHistory] = useState<RoundEntry[]>([]);
   const [arrowRotation, setArrowRotation] = useState(0);
-
-  const [winner, setWinner] = useState<1 | 2 | null>(null);
-  const WINNING_SCORE = 152;
 
   const handleInputChange = (value: string, setter: (val: string) => void) => {
     const converted = arabicToEnglish(value);
@@ -97,41 +105,34 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     const newTeam1Score = team1Score + t1;
     const newTeam2Score = team2Score + t2;
     
-    setTeam1Score(newTeam1Score);
-    setTeam2Score(newTeam2Score);
+    // تحديث النتيجة عبر GameContext
+    setScores(newTeam1Score, newTeam2Score);
     setHistory(prev => [newEntry, ...prev]);
     setTeam1Input('');
     setTeam2Input('');
     rotateArrow();
-
-    // Check for winner
-    if (newTeam1Score >= WINNING_SCORE) {
-      setWinner(1);
-    } else if (newTeam2Score >= WINNING_SCORE) {
-      setWinner(2);
-    }
   };
 
   const handleUndo = () => {
     if (history.length === 0) return;
     const lastEntry = history[0];
-    setTeam1Score(prev => prev - lastEntry.team1);
-    setTeam2Score(prev => prev - lastEntry.team2);
+    const newTeam1Score = team1Score - lastEntry.team1;
+    const newTeam2Score = team2Score - lastEntry.team2;
+    setScores(newTeam1Score, newTeam2Score);
     setHistory(prev => prev.slice(1));
   };
 
   const saveAndReset = async () => {
-    // حفظ المباراة إذا كان هناك نقاط
-    if (team1Score > 0 || team2Score > 0) {
-      const winner = team1Score >= 152 ? 1 : team2Score >= 152 ? 2 : null;
+    // حفظ المباراة إذا كان هناك نقاط (فقط إذا لم يحفظ تلقائياً)
+    if ((team1Score > 0 || team2Score > 0) && !winner) {
       try {
         await supabase.from('games').insert([{
           team1_name: 'لنا',
           team2_name: 'لهم',
           team1_score: team1Score,
           team2_score: team2Score,
-          winner: winner,
-          rounds: JSON.parse(JSON.stringify(history.reverse())),
+          winner: null,
+          rounds: JSON.parse(JSON.stringify([...history].reverse())),
           finished_at: new Date().toISOString(),
         }]);
       } catch (error) {
@@ -140,13 +141,14 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     }
     
     // إعادة تعيين
-    setTeam1Score(0);
-    setTeam2Score(0);
+    resetGame();
     setTeam1Input('');
     setTeam2Input('');
     setHistory([]);
     setArrowRotation(0);
-    setWinner(null);
+    
+    // إعادة تهيئة لعبة جديدة
+    setTimeout(() => initGameIfNeeded(), 0);
   };
 
   return (
