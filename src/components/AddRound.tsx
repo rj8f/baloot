@@ -27,22 +27,19 @@ const AddRound = () => {
   const [buyingTeam, setBuyingTeam] = useState<1 | 2>(1);
   const [entryTeam, setEntryTeam] = useState<1 | 2>(1);
   const [entryTeamCardsRaw, setEntryTeamCardsRaw] = useState('');
-  
-  const [team1Projects, setTeam1Projects] = useState<TeamProjects>(createEmptyProjects());
-  const [team2Projects, setTeam2Projects] = useState<TeamProjects>(createEmptyProjects());
+  const [projectsTeam, setProjectsTeam] = useState<1 | 2 | null>(null);
+  const [projects, setProjects] = useState<TeamProjects>(createEmptyProjects());
   const [multiplier, setMultiplier] = useState<Multiplier>('عادي');
   const [showScanner, setShowScanner] = useState(false);
   const [kabootTeam, setKabootTeam] = useState<1 | 2 | null>(null);
-  const [showProjects, setShowProjects] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Reset when game type changes
   useEffect(() => {
-    setTeam1Projects(createEmptyProjects());
-    setTeam2Projects(createEmptyProjects());
+    setProjectsTeam(null);
+    setProjects(createEmptyProjects());
     setEntryTeamCardsRaw('');
     setKabootTeam(null);
-    setShowProjects(false);
     setShowAdvanced(false);
   }, [gameType]);
 
@@ -68,18 +65,11 @@ const AddRound = () => {
         { key: 'بلوت', label: 'بلوت', value: PROJECT_VALUES.حكم.بلوت },
       ];
 
-  const updateProject = (team: 1 | 2, project: ProjectKey, delta: number) => {
-    if (team === 1) {
-      setTeam1Projects(prev => ({
-        ...prev,
-        [project]: Math.max(0, prev[project] + delta),
-      }));
-    } else {
-      setTeam2Projects(prev => ({
-        ...prev,
-        [project]: Math.max(0, prev[project] + delta),
-      }));
-    }
+  const updateProject = (project: ProjectKey, delta: number) => {
+    setProjects(prev => ({
+      ...prev,
+      [project]: Math.max(0, prev[project] + delta),
+    }));
   };
 
   // Total points including ground: صن = 130, حكم = 162
@@ -105,10 +95,11 @@ const AddRound = () => {
   const totals = calculateTotalRaw();
 
   // Count total projects
-  const countProjects = (projects: TeamProjects) => 
-    Object.values(projects).reduce((sum, count) => sum + count, 0);
-  
-  const totalProjectsCount = countProjects(team1Projects) + countProjects(team2Projects);
+  const totalProjectsCount = Object.values(projects).reduce((sum, count) => sum + count, 0);
+
+  // Get team1 and team2 projects based on selected projectsTeam
+  const team1Projects = projectsTeam === 1 ? projects : createEmptyProjects();
+  const team2Projects = projectsTeam === 2 ? projects : createEmptyProjects();
 
   const handleSubmit = () => {
     if ((totals.team1Cards === 0 && totals.team2Cards === 0) && multiplier !== 'قهوة' && !kabootTeam) return;
@@ -129,11 +120,10 @@ const AddRound = () => {
 
     // Reset form
     setEntryTeamCardsRaw('');
-    setTeam1Projects(createEmptyProjects());
-    setTeam2Projects(createEmptyProjects());
+    setProjectsTeam(null);
+    setProjects(createEmptyProjects());
     setMultiplier('عادي');
     setKabootTeam(null);
-    setShowProjects(false);
     setShowAdvanced(false);
   };
 
@@ -141,31 +131,30 @@ const AddRound = () => {
     setEntryTeamCardsRaw(totalPoints.toString());
   };
 
-  const CompactProjectCounter = ({ team, project, value }: { team: 1 | 2; project: ProjectKey; value: number }) => {
-    const projects = team === 1 ? team1Projects : team2Projects;
+  const CompactProjectCounter = ({ project, value }: { project: ProjectKey; value: number }) => {
     const count = projects[project];
     
     return (
-      <div className="flex items-center justify-between py-1.5 px-2 bg-muted/30 rounded">
-        <span className="text-sm">{project}</span>
-        <div className="flex items-center gap-1">
+      <div className="flex items-center justify-between py-2 px-3 bg-muted/30 rounded-lg">
+        <span className="text-sm font-medium">{project}</span>
+        <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6"
-            onClick={() => updateProject(team, project, -1)}
+            className="h-8 w-8"
+            onClick={() => updateProject(project, -1)}
             disabled={count === 0}
           >
-            <Minus className="h-3 w-3" />
+            <Minus className="h-4 w-4" />
           </Button>
-          <span className="w-5 text-center text-sm font-bold">{count}</span>
+          <span className="w-6 text-center text-lg font-bold">{count}</span>
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6"
-            onClick={() => updateProject(team, project, 1)}
+            className="h-8 w-8"
+            onClick={() => updateProject(project, 1)}
           >
-            <Plus className="h-3 w-3" />
+            <Plus className="h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -348,7 +337,6 @@ const AddRound = () => {
                 </Button>
               </div>
 
-
               {/* Summary with Preview */}
               {entryTeamCardsRaw && (() => {
                 const team1Raw = totals.team1Cards;
@@ -379,40 +367,62 @@ const AddRound = () => {
             </div>
           )}
 
-          {/* Projects - Collapsible */}
-          <Collapsible open={showProjects} onOpenChange={setShowProjects}>
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" className="w-full justify-between h-10">
-                <span className="text-sm">
-                  المشاريع
-                  {totalProjectsCount > 0 && (
-                    <span className="mr-2 px-1.5 py-0.5 bg-primary/20 rounded text-xs">
-                      {totalProjectsCount}
-                    </span>
-                  )}
+          {/* Projects Section - Always Visible */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium flex items-center gap-2">
+              المشاريع
+              {totalProjectsCount > 0 && (
+                <span className="px-1.5 py-0.5 bg-primary/20 rounded text-xs">
+                  {totalProjectsCount}
                 </span>
-                {showProjects ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              )}
+            </label>
+            
+            {/* Team Selection for Projects */}
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant={projectsTeam === 1 ? 'default' : 'outline'}
+                onClick={() => {
+                  if (projectsTeam === 1) {
+                    setProjectsTeam(null);
+                    setProjects(createEmptyProjects());
+                  } else {
+                    setProjectsTeam(1);
+                    setProjects(createEmptyProjects());
+                  }
+                }}
+                size="sm"
+                className={cn("h-10", projectsTeam === 1 && "bg-blue-600 hover:bg-blue-700")}
+              >
+                {game.team1Name}
               </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-3 pt-2">
-              <div className="grid grid-cols-2 gap-3">
-                {/* Team 1 Projects */}
-                <div className="space-y-1">
-                  <div className="text-xs font-medium text-blue-400 text-center">{game.team1Name}</div>
-                  {availableProjects.map((p) => (
-                    <CompactProjectCounter key={`t1-${p.key}`} team={1} project={p.key} value={p.value} />
-                  ))}
-                </div>
-                {/* Team 2 Projects */}
-                <div className="space-y-1">
-                  <div className="text-xs font-medium text-rose-400 text-center">{game.team2Name}</div>
-                  {availableProjects.map((p) => (
-                    <CompactProjectCounter key={`t2-${p.key}`} team={2} project={p.key} value={p.value} />
-                  ))}
-                </div>
+              <Button
+                variant={projectsTeam === 2 ? 'default' : 'outline'}
+                onClick={() => {
+                  if (projectsTeam === 2) {
+                    setProjectsTeam(null);
+                    setProjects(createEmptyProjects());
+                  } else {
+                    setProjectsTeam(2);
+                    setProjects(createEmptyProjects());
+                  }
+                }}
+                size="sm"
+                className={cn("h-10", projectsTeam === 2 && "bg-rose-600 hover:bg-rose-700")}
+              >
+                {game.team2Name}
+              </Button>
+            </div>
+
+            {/* Project Counters - Only show if team is selected */}
+            {projectsTeam && (
+              <div className="space-y-2">
+                {availableProjects.map((p) => (
+                  <CompactProjectCounter key={p.key} project={p.key} value={p.value} />
+                ))}
               </div>
-            </CollapsibleContent>
-          </Collapsible>
+            )}
+          </div>
 
           {/* Advanced Options - Collapsible */}
           {!kabootTeam && (
