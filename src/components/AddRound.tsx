@@ -295,46 +295,61 @@ const AddRound = () => {
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">المشاريع</span>
-              <div className="flex bg-muted rounded-lg p-0.5">
-                <button
-                  onClick={() => {
-                    if (projectsTeam === 1) {
-                      setProjectsTeam(null);
-                      setProjects(createEmptyProjects());
-                    } else {
-                      setProjectsTeam(1);
-                      setProjects(createEmptyProjects());
-                    }
-                  }}
-                  className={cn(
-                    "px-3 py-1 rounded-md text-xs font-medium transition-all",
-                    projectsTeam === 1 
+              {kabootTeam ? (
+                // When kaboot is active, show only the kaboot team (locked)
+                <div className="flex bg-muted rounded-lg p-0.5">
+                  <span className={cn(
+                    "px-3 py-1 rounded-md text-xs font-medium",
+                    kabootTeam === 1 
                       ? "bg-blue-600 text-white" 
-                      : "text-muted-foreground"
-                  )}
-                >
-                  {game.team1Name}
-                </button>
-                <button
-                  onClick={() => {
-                    if (projectsTeam === 2) {
-                      setProjectsTeam(null);
-                      setProjects(createEmptyProjects());
-                    } else {
-                      setProjectsTeam(2);
-                      setProjects(createEmptyProjects());
-                    }
-                  }}
-                  className={cn(
-                    "px-3 py-1 rounded-md text-xs font-medium transition-all",
-                    projectsTeam === 2 
-                      ? "bg-rose-600 text-white" 
-                      : "text-muted-foreground"
-                  )}
-                >
-                  {game.team2Name}
-                </button>
-              </div>
+                      : "bg-rose-600 text-white"
+                  )}>
+                    {kabootTeam === 1 ? game.team1Name : game.team2Name}
+                  </span>
+                </div>
+              ) : (
+                // Normal mode - allow team selection
+                <div className="flex bg-muted rounded-lg p-0.5">
+                  <button
+                    onClick={() => {
+                      if (projectsTeam === 1) {
+                        setProjectsTeam(null);
+                        setProjects(createEmptyProjects());
+                      } else {
+                        setProjectsTeam(1);
+                        setProjects(createEmptyProjects());
+                      }
+                    }}
+                    className={cn(
+                      "px-3 py-1 rounded-md text-xs font-medium transition-all",
+                      projectsTeam === 1 
+                        ? "bg-blue-600 text-white" 
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {game.team1Name}
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (projectsTeam === 2) {
+                        setProjectsTeam(null);
+                        setProjects(createEmptyProjects());
+                      } else {
+                        setProjectsTeam(2);
+                        setProjects(createEmptyProjects());
+                      }
+                    }}
+                    className={cn(
+                      "px-3 py-1 rounded-md text-xs font-medium transition-all",
+                      projectsTeam === 2 
+                        ? "bg-rose-600 text-white" 
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {game.team2Name}
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Project Chips */}
