@@ -330,10 +330,10 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
         </div>
         <button 
           onClick={rotateArrow}
-          className="p-2 hover:bg-muted rounded-full transition-colors"
+          className="p-3 hover:bg-muted rounded-full transition-colors"
         >
           <ArrowUp 
-            className="h-8 w-8 text-muted-foreground transition-transform duration-300" 
+            className="h-12 w-12 text-muted-foreground transition-transform duration-300" 
             style={{ transform: `rotate(${arrowRotation}deg)` }}
           />
         </button>

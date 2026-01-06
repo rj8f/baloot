@@ -287,7 +287,11 @@ const AddRound = () => {
               <Button
                 variant="secondary"
                 size="icon"
-                onClick={() => setShowScanner(true)}
+                onClick={() => {
+                  import('sonner').then(({ toast }) => {
+                    toast.info('قيد الإنشاء');
+                  });
+                }}
                 disabled={multiplier === 'قهوة'}
                 className="h-12 w-12 shrink-0"
               >
@@ -557,7 +561,7 @@ const AddRound = () => {
 
       {/* Kaboot Dialog */}
       <Dialog open={showKabootDialog} onOpenChange={setShowKabootDialog}>
-        <DialogContent className="max-w-sm p-4" dir="rtl">
+        <DialogContent className="max-w-sm p-4 rounded-2xl" dir="rtl">
           <DialogHeader className="pb-2">
             <DialogTitle className="text-center flex items-center justify-center gap-2">
               <Zap className="h-5 w-5 text-amber-500" />
@@ -566,12 +570,12 @@ const AddRound = () => {
           </DialogHeader>
           
           <div className="space-y-3">
-            {/* Game Type Selection in Kaboot */}
-            <div className="grid grid-cols-2 gap-2">
+            {/* Game Type Selection in Kaboot - Vertical */}
+            <div className="flex flex-col gap-2">
               <button
                 onClick={() => setGameType('صن')}
                 className={cn(
-                  "py-2 rounded-lg font-bold text-sm transition-all",
+                  "py-3 rounded-xl font-bold text-sm transition-all",
                   gameType === 'صن' 
                     ? "bg-amber-500 text-white" 
                     : "bg-muted text-muted-foreground"
@@ -582,7 +586,7 @@ const AddRound = () => {
               <button
                 onClick={() => setGameType('حكم')}
                 className={cn(
-                  "py-2 rounded-lg font-bold text-sm transition-all",
+                  "py-3 rounded-xl font-bold text-sm transition-all",
                   gameType === 'حكم' 
                     ? "bg-primary text-primary-foreground" 
                     : "bg-muted text-muted-foreground"
