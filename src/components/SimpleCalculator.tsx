@@ -348,18 +348,47 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
 
       {/* History */}
       <div className="flex-1 overflow-auto min-h-0 border-t border-border">
-        <div className="max-w-xs mx-auto">
-          {simpleHistory.map((entry, index) => (
-            <div 
-              key={entry.id} 
-              className="flex items-center justify-between px-4 py-3 border-b border-border/50"
-            >
-              <span className="text-xs text-muted-foreground w-8">#{simpleHistory.length - index}</span>
-              <span className="text-blue-400 font-bold text-xl">{entry.team1}</span>
-              <span className="text-muted-foreground text-lg">-</span>
-              <span className="text-rose-400 font-bold text-xl">{entry.team2}</span>
-            </div>
-          ))}
+        <div className="max-w-sm mx-auto">
+          {game?.rounds?.length ? (
+            <>
+              <div className="py-2 text-center text-xs text-muted-foreground">الجولات المتقدمة</div>
+              {[...game.rounds].slice().reverse().map((round) => (
+                <div
+                  key={round.id}
+                  className="flex items-center justify-center gap-4 py-3 border-b border-border/50"
+                >
+                  <span className="text-xs text-muted-foreground w-8">#{round.roundNumber}</span>
+                  <span className="text-blue-400 font-bold text-xl tabular-nums">{round.finalTeam1Points}</span>
+                  <span className="text-muted-foreground text-lg">-</span>
+                  <span className="text-rose-400 font-bold text-xl tabular-nums">{round.finalTeam2Points}</span>
+                </div>
+              ))}
+            </>
+          ) : null}
+
+          {simpleHistory.length ? (
+            <>
+              <div
+                className={cn(
+                  "py-2 text-center text-xs text-muted-foreground",
+                  game?.rounds?.length && "border-t border-border/60"
+                )}
+              >
+                إضافات المختصر
+              </div>
+              {simpleHistory.map((entry, index) => (
+                <div
+                  key={entry.id}
+                  className="flex items-center justify-center gap-4 py-3 border-b border-border/50"
+                >
+                  <span className="text-xs text-muted-foreground w-8">#{simpleHistory.length - index}</span>
+                  <span className="text-blue-400 font-bold text-xl tabular-nums">{entry.team1}</span>
+                  <span className="text-muted-foreground text-lg">-</span>
+                  <span className="text-rose-400 font-bold text-xl tabular-nums">{entry.team2}</span>
+                </div>
+              ))}
+            </>
+          ) : null}
         </div>
       </div>
     </div>
