@@ -313,11 +313,12 @@ const AddRound = () => {
             {kabootTeam ? `كبوت ${kabootTeam === 1 ? game.team1Name : game.team2Name}` : 'كبوت'}
           </button>
 
-          {/* Projects Section (only when not kaboot) */}
+          {/* Projects & Baloot Section (only when not kaboot) */}
           {!kabootTeam && (
             <div className="space-y-2">
-              {/* Team Selection with label inside */}
-              <div className="grid grid-cols-2 gap-2">
+              {/* Row 1: Team buttons for Projects + Baloot (Hokm) or just Projects (Sun) */}
+              <div className={cn("grid gap-2", gameType === 'حكم' ? "grid-cols-4" : "grid-cols-2")}>
+                {/* Projects Team 1 */}
                 <button
                   onClick={() => {
                     if (projectsTeam === 1) {
@@ -329,7 +330,7 @@ const AddRound = () => {
                     }
                   }}
                   className={cn(
-                    "flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
+                    "flex flex-col items-center justify-center rounded-xl py-2 px-2 transition-all active:scale-95",
                     projectsTeam === 1 
                       ? "bg-blue-600 text-white shadow-md shadow-blue-600/30" 
                       : "bg-muted/50 text-muted-foreground hover:bg-muted"
@@ -338,6 +339,8 @@ const AddRound = () => {
                   <span className="text-[10px] opacity-70">المشاريع</span>
                   <span className="text-sm font-medium">{game.team1Name}</span>
                 </button>
+
+                {/* Projects Team 2 */}
                 <button
                   onClick={() => {
                     if (projectsTeam === 2) {
@@ -349,7 +352,7 @@ const AddRound = () => {
                     }
                   }}
                   className={cn(
-                    "flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
+                    "flex flex-col items-center justify-center rounded-xl py-2 px-2 transition-all active:scale-95",
                     projectsTeam === 2 
                       ? "bg-rose-600 text-white shadow-md shadow-rose-600/30" 
                       : "bg-muted/50 text-muted-foreground hover:bg-muted"
@@ -358,10 +361,58 @@ const AddRound = () => {
                   <span className="text-[10px] opacity-70">المشاريع</span>
                   <span className="text-sm font-medium">{game.team2Name}</span>
                 </button>
+
+                {/* Baloot Team 1 (Hokm only) */}
+                {gameType === 'حكم' && (
+                  <button
+                    onClick={() => {
+                      if (balootTeam === 1) {
+                        setBalootTeam(null);
+                        setBalootCount(0);
+                      } else {
+                        setBalootTeam(1);
+                        setBalootCount(1);
+                      }
+                    }}
+                    className={cn(
+                      "flex flex-col items-center justify-center rounded-xl py-2 px-2 transition-all active:scale-95",
+                      balootTeam === 1 
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-600/30" 
+                        : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                    )}
+                  >
+                    <span className="text-[10px] opacity-70">بلوت</span>
+                    <span className="text-sm font-medium">{game.team1Name}</span>
+                  </button>
+                )}
+
+                {/* Baloot Team 2 (Hokm only) */}
+                {gameType === 'حكم' && (
+                  <button
+                    onClick={() => {
+                      if (balootTeam === 2) {
+                        setBalootTeam(null);
+                        setBalootCount(0);
+                      } else {
+                        setBalootTeam(2);
+                        setBalootCount(1);
+                      }
+                    }}
+                    className={cn(
+                      "flex flex-col items-center justify-center rounded-xl py-2 px-2 transition-all active:scale-95",
+                      balootTeam === 2 
+                        ? "bg-rose-600 text-white shadow-md shadow-rose-600/30" 
+                        : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                    )}
+                  >
+                    <span className="text-[10px] opacity-70">بلوت</span>
+                    <span className="text-sm font-medium">{game.team2Name}</span>
+                  </button>
+                )}
               </div>
 
-              {/* Project Chips - Always visible */}
-              <div className="grid grid-cols-4 gap-2">
+              {/* Row 2: Project Chips */}
+              <div className={cn("grid gap-2", gameType === 'صن' ? "grid-cols-4" : "grid-cols-3")}>
                 {availableProjects.map((p) => {
                   const count = projects[p.key];
                   const isDisabled = !projectsTeam;
@@ -386,52 +437,6 @@ const AddRound = () => {
                   );
                 })}
               </div>
-            </div>
-          )}
-
-          {/* Baloot Section - Separate from other projects (Hokm only) */}
-          {!kabootTeam && gameType === 'حكم' && (
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() => {
-                  if (balootTeam === 1) {
-                    setBalootTeam(null);
-                    setBalootCount(0);
-                  } else {
-                    setBalootTeam(1);
-                    setBalootCount(1);
-                  }
-                }}
-                className={cn(
-                  "flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
-                  balootTeam === 1 
-                    ? "bg-blue-600 text-white shadow-md shadow-blue-600/30" 
-                    : "bg-muted/50 text-muted-foreground hover:bg-muted"
-                )}
-              >
-                <span className="text-[10px] opacity-70">بلوت</span>
-                <span className="text-sm font-medium">{game.team1Name}</span>
-              </button>
-              <button
-                onClick={() => {
-                  if (balootTeam === 2) {
-                    setBalootTeam(null);
-                    setBalootCount(0);
-                  } else {
-                    setBalootTeam(2);
-                    setBalootCount(1);
-                  }
-                }}
-                className={cn(
-                  "flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
-                  balootTeam === 2 
-                    ? "bg-rose-600 text-white shadow-md shadow-rose-600/30" 
-                    : "bg-muted/50 text-muted-foreground hover:bg-muted"
-                )}
-              >
-                <span className="text-[10px] opacity-70">بلوت</span>
-                <span className="text-sm font-medium">{game.team2Name}</span>
-              </button>
             </div>
           )}
 
