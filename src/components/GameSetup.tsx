@@ -1,12 +1,14 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useGame } from '@/contexts/GameContext';
-import ThemeToggle from './ThemeToggle';
 import MatchHistory from './MatchHistory';
-import { Calculator, Settings2 } from 'lucide-react';
+import SettingsDialog from './SettingsDialog';
+import { Calculator, Settings2, Settings } from 'lucide-react';
 
 const GameSetup = () => {
   const { startGame, startSimpleMode } = useGame();
+  const [showSettings, setShowSettings] = useState(false);
 
   const handleStartAdvanced = () => {
     startGame('لنا', 'لهم', 152);
@@ -16,7 +18,14 @@ const GameSetup = () => {
   return (
     <div className="h-screen overflow-hidden flex flex-col items-center justify-center p-4 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
       <div className="absolute top-4 left-4">
-        <ThemeToggle />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setShowSettings(true)}
+          className="h-10 w-10"
+        >
+          <Settings className="h-5 w-5" />
+        </Button>
       </div>
 
       <Card className="w-full max-w-md max-h-[90vh] flex flex-col">
@@ -57,6 +66,8 @@ const GameSetup = () => {
           </div>
         </CardContent>
       </Card>
+
+      <SettingsDialog open={showSettings} onOpenChange={setShowSettings} />
     </div>
   );
 };

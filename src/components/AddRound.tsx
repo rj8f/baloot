@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { useGame } from '@/contexts/GameContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import { Undo2 } from 'lucide-react';
 import { GameType, Multiplier, TeamProjects, createEmptyProjects, PROJECT_VALUES } from '@/types/baloot';
 import { cn } from '@/lib/utils';
@@ -30,6 +31,7 @@ type ProjectKey = keyof TeamProjects;
 
 const AddRound = () => {
   const { game, addRound, canDoubleSun, previewRoundResult, getUnifiedHistory, undoLast } = useGame();
+  const { settings } = useSettings();
   const [showUndoConfirm, setShowUndoConfirm] = useState(false);
   const [gameType, setGameType] = useState<GameType>('حكم');
   const [buyingTeam, setBuyingTeam] = useState<1 | 2>(1);
@@ -131,6 +133,8 @@ const AddRound = () => {
 
   // تحديد إذا كان هناك مية في حكم مع ×3 أو ×4
   const shouldAskForMiyaMultiplier = () => {
+    // إذا الإعداد مغلق، لا تسأل
+    if (!settings.showMiyaPopup) return false;
     if (gameType !== 'حكم') return false;
     if (multiplier !== '×3' && multiplier !== '×4') return false;
     if (kabootTeam) return false;
@@ -166,6 +170,7 @@ const AddRound = () => {
       multiplier,
       kabootTeam,
       miyaDoubleOnly,
+      hokmWithoutPointsMode: settings.hokmWithoutPointsMode,
     });
 
     // Reset form
@@ -208,6 +213,7 @@ const AddRound = () => {
       team2Projects,
       multiplier,
       kabootTeam,
+      hokmWithoutPointsMode: settings.hokmWithoutPointsMode,
     });
   };
 
