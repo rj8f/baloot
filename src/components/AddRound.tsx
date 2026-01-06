@@ -545,8 +545,34 @@ const AddRound = () => {
             </DialogTitle>
           </DialogHeader>
           
-          {/* Team Selection */}
           <div className="space-y-3">
+            {/* Game Type Selection in Kaboot */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setGameType('صن')}
+                className={cn(
+                  "py-2 rounded-lg font-bold text-sm transition-all",
+                  gameType === 'صن' 
+                    ? "bg-amber-500 text-white" 
+                    : "bg-muted text-muted-foreground"
+                )}
+              >
+                صن
+              </button>
+              <button
+                onClick={() => setGameType('حكم')}
+                className={cn(
+                  "py-2 rounded-lg font-bold text-sm transition-all",
+                  gameType === 'حكم' 
+                    ? "bg-primary text-primary-foreground" 
+                    : "bg-muted text-muted-foreground"
+                )}
+              >
+                حكم
+              </button>
+            </div>
+
+            {/* Team Selection */}
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => {
@@ -555,14 +581,13 @@ const AddRound = () => {
                   setProjects(createEmptyProjects());
                 }}
                 className={cn(
-                  "py-3 rounded-lg font-bold text-base transition-all border-2 flex flex-col items-center",
+                  "py-2 rounded-lg font-bold text-sm transition-all border-2 flex flex-col items-center",
                   kabootTeam === 1 
                     ? "bg-blue-600 border-blue-600 text-white" 
                     : "bg-transparent border-blue-600/30 text-blue-400 hover:border-blue-600/60"
                 )}
               >
                 {game.team1Name}
-                {kabootTeam === 1 && <span className="text-[10px] font-normal opacity-80">كبوت</span>}
               </button>
               <button
                 onClick={() => {
@@ -571,14 +596,13 @@ const AddRound = () => {
                   setProjects(createEmptyProjects());
                 }}
                 className={cn(
-                  "py-3 rounded-lg font-bold text-base transition-all border-2 flex flex-col items-center",
+                  "py-2 rounded-lg font-bold text-sm transition-all border-2 flex flex-col items-center",
                   kabootTeam === 2 
                     ? "bg-rose-600 border-rose-600 text-white" 
                     : "bg-transparent border-rose-600/30 text-rose-400 hover:border-rose-600/60"
                 )}
               >
                 {game.team2Name}
-                {kabootTeam === 2 && <span className="text-[10px] font-normal opacity-80">كبوت</span>}
               </button>
             </div>
 
