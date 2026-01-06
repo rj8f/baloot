@@ -393,12 +393,12 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
               return (
                 <div
                   key={entry.id}
-                  className="flex items-center justify-center gap-2 py-3 border-b border-border/50"
+                  className="flex items-center justify-center py-3 border-b border-border/50"
                 >
-                  <span className="text-xs text-muted-foreground w-8">#{unifiedHistory.length - index}</span>
-                  <span className="text-blue-400 font-bold text-xl tabular-nums w-14 text-center">{entry.team1}</span>
-                  <span className="text-muted-foreground text-lg">-</span>
-                  <span className="text-rose-400 font-bold text-xl tabular-nums w-14 text-center">{entry.team2}</span>
+                  <span className="text-xs text-muted-foreground w-8 text-center">#{unifiedHistory.length - index}</span>
+                  <span className="text-blue-400 font-bold text-xl tabular-nums w-16 text-left">{entry.team1}</span>
+                  <span className="text-muted-foreground text-lg w-6 text-center">-</span>
+                  <span className="text-rose-400 font-bold text-xl tabular-nums w-16 text-right">{entry.team2}</span>
                 </div>
               );
             } else {
@@ -406,12 +406,12 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
               return (
                 <div
                   key={round.id}
-                  className="flex items-center justify-center gap-2 py-3 border-b border-border/50"
+                  className="flex items-center justify-center py-3 border-b border-border/50"
                 >
-                  <span className="text-xs text-muted-foreground w-8">#{unifiedHistory.length - index}</span>
-                  <span className="text-blue-400 font-bold text-xl tabular-nums w-14 text-center">{round.finalTeam1Points}</span>
-                  <span className="text-muted-foreground text-lg">-</span>
-                  <span className="text-rose-400 font-bold text-xl tabular-nums w-14 text-center">{round.finalTeam2Points}</span>
+                  <span className="text-xs text-muted-foreground w-8 text-center">#{unifiedHistory.length - index}</span>
+                  <span className="text-blue-400 font-bold text-xl tabular-nums w-16 text-left">{round.finalTeam1Points}</span>
+                  <span className="text-muted-foreground text-lg w-6 text-center">-</span>
+                  <span className="text-rose-400 font-bold text-xl tabular-nums w-16 text-right">{round.finalTeam2Points}</span>
                 </div>
               );
             }
