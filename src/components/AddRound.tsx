@@ -304,48 +304,52 @@ const AddRound = () => {
           {/* Projects Section (only when not kaboot) */}
           {!kabootTeam && (
             <div className="space-y-2">
-              <span className="text-xs text-muted-foreground">المشاريع</span>
-              
-              {/* Team Selection */}
+              {/* Team Selection with label above */}
               <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => {
-                    if (projectsTeam === 1) {
-                      setProjectsTeam(null);
-                      setProjects(createEmptyProjects());
-                    } else {
-                      setProjectsTeam(1);
-                      setProjects(createEmptyProjects());
-                    }
-                  }}
-                  className={cn(
-                    "flex items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
-                    projectsTeam === 1 
-                      ? "bg-blue-600 text-white shadow-md shadow-blue-600/30" 
-                      : "bg-muted/50 text-muted-foreground hover:bg-muted"
-                  )}
-                >
-                  <span className="text-sm font-medium">{game.team1Name}</span>
-                </button>
-                <button
-                  onClick={() => {
-                    if (projectsTeam === 2) {
-                      setProjectsTeam(null);
-                      setProjects(createEmptyProjects());
-                    } else {
-                      setProjectsTeam(2);
-                      setProjects(createEmptyProjects());
-                    }
-                  }}
-                  className={cn(
-                    "flex items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
-                    projectsTeam === 2 
-                      ? "bg-rose-600 text-white shadow-md shadow-rose-600/30" 
-                      : "bg-muted/50 text-muted-foreground hover:bg-muted"
-                  )}
-                >
-                  <span className="text-sm font-medium">{game.team2Name}</span>
-                </button>
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-xs text-muted-foreground">المشاريع</span>
+                  <button
+                    onClick={() => {
+                      if (projectsTeam === 1) {
+                        setProjectsTeam(null);
+                        setProjects(createEmptyProjects());
+                      } else {
+                        setProjectsTeam(1);
+                        setProjects(createEmptyProjects());
+                      }
+                    }}
+                    className={cn(
+                      "w-full flex items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
+                      projectsTeam === 1 
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-600/30" 
+                        : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                    )}
+                  >
+                    <span className="text-sm font-medium">{game.team1Name}</span>
+                  </button>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-xs text-muted-foreground">المشاريع</span>
+                  <button
+                    onClick={() => {
+                      if (projectsTeam === 2) {
+                        setProjectsTeam(null);
+                        setProjects(createEmptyProjects());
+                      } else {
+                        setProjectsTeam(2);
+                        setProjects(createEmptyProjects());
+                      }
+                    }}
+                    className={cn(
+                      "w-full flex items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
+                      projectsTeam === 2 
+                        ? "bg-rose-600 text-white shadow-md shadow-rose-600/30" 
+                        : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                    )}
+                  >
+                    <span className="text-sm font-medium">{game.team2Name}</span>
+                  </button>
+                </div>
               </div>
 
               {/* Project Chips - Always visible */}
