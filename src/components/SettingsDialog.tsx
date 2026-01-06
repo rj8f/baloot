@@ -53,13 +53,11 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
               {settings.darkMode ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4 text-amber-500" />}
               <Label htmlFor="dark-mode" className="text-sm">المظهر</Label>
             </div>
-            <div dir="ltr">
-              <Switch
-                id="dark-mode"
-                checked={settings.darkMode}
-                onCheckedChange={(checked) => updateSettings({ darkMode: checked })}
-              />
-            </div>
+            <Switch
+              id="dark-mode"
+              checked={settings.darkMode}
+              onCheckedChange={(checked) => updateSettings({ darkMode: checked })}
+            />
           </div>
 
           {/* Miya Always x2 Toggle */}
@@ -68,13 +66,11 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
               <span className="text-xs font-bold">×2</span>
               <Label htmlFor="miya-double" className="text-sm">دبل المية</Label>
             </div>
-            <div dir="ltr">
-              <Switch
-                id="miya-double"
-                checked={settings.miyaAlwaysDouble}
-                onCheckedChange={(checked) => updateSettings({ miyaAlwaysDouble: checked })}
-              />
-            </div>
+            <Switch
+              id="miya-double"
+              checked={settings.miyaAlwaysDouble}
+              onCheckedChange={(checked) => updateSettings({ miyaAlwaysDouble: checked })}
+            />
           </div>
 
           {/* Hokm Without Points Mode */}
@@ -83,13 +79,11 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
               <Calculator className="h-4 w-4" />
               <Label htmlFor="hokm-mode" className="text-sm">بدون أبناط</Label>
             </div>
-            <div dir="ltr">
-              <Switch
-                id="hokm-mode"
-                checked={settings.hokmWithoutPointsMode}
-                onCheckedChange={(checked) => updateSettings({ hokmWithoutPointsMode: checked })}
-              />
-            </div>
+            <Switch
+              id="hokm-mode"
+              checked={settings.hokmWithoutPointsMode}
+              onCheckedChange={(checked) => updateSettings({ hokmWithoutPointsMode: checked })}
+            />
           </div>
 
           {/* Reset Game Button */}
