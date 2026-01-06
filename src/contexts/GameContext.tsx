@@ -334,13 +334,20 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     
     if (hokmWithoutPointsMode && gameType === 'حكم' && multiplier === 'عادي') {
       // وضع بدون أبناط: نجمع البنط + المشاريع ثم نقسم على 10 ونقرب
-      // المشاريع في الحكم: سرا=2، 50=5، مية=10 (كلها على 10)
+      // المشاريع في الحكم: سرا=2، 50=5، مية=10 (نضربها في 10 لتحويلها لأبناط)
       const buyingTotal = buyingTeamRaw + buyingTeamProjectsPoints * 10;
       const otherTotal = otherTeamRaw + otherTeamProjectsPoints * 10;
       
-      // تقريب: إذا الرقم بعد القسمة على 10 أكبر من 0.5 يجبر، وإلا يكسر
-      const buyingRounded = Math.round(buyingTotal / 10);
-      const otherRounded = Math.round(otherTotal / 10);
+      // دالة تقريب خاصة: أكبر من 0.5 يجبر، 0.5 أو أقل يكسر
+      const customRound = (value: number): number => {
+        const divided = value / 10;
+        const floored = Math.floor(divided);
+        const decimal = divided - floored;
+        return decimal > 0.5 ? floored + 1 : floored;
+      };
+      
+      const buyingRounded = customRound(buyingTotal);
+      const otherRounded = customRound(otherTotal);
       
       // المشتري ينجح إذا نقاطه مساوية أو أكثر
       buyingTeamSucceeded = buyingRounded >= otherRounded;
