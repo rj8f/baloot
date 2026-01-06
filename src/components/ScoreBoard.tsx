@@ -27,8 +27,8 @@ const ScoreBoard = ({ previewTeam1, previewTeam2 }: ScoreBoardProps) => {
         <h2 className="text-lg font-bold text-blue-400 truncate">{game.team1Name}</h2>
         <div className="text-5xl font-bold my-2 text-blue-300">{game.team1Score}</div>
         {hasPreview && (
-          <div className="text-sm text-blue-400/70 mb-2">
-            + {previewTeam1}
+          <div className="text-sm text-blue-400/70 mb-2" dir="ltr">
+            +{previewTeam1}
           </div>
         )}
         <Progress value={team1Progress} className="h-2 bg-blue-950" />
@@ -42,8 +42,8 @@ const ScoreBoard = ({ previewTeam1, previewTeam2 }: ScoreBoardProps) => {
         <h2 className="text-lg font-bold text-rose-400 truncate">{game.team2Name}</h2>
         <div className="text-5xl font-bold my-2 text-rose-300">{game.team2Score}</div>
         {hasPreview && (
-          <div className="text-sm text-rose-400/70 mb-2">
-            + {previewTeam2}
+          <div className="text-sm text-rose-400/70 mb-2" dir="ltr">
+            +{previewTeam2}
           </div>
         )}
         <Progress value={team2Progress} className="h-2 bg-rose-950" />
