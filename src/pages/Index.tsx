@@ -23,14 +23,18 @@ const GameContent = () => {
 };
 
 const GameSetupWithSettings = () => {
-  const { isFirstTime } = useSettings();
+  const { isFirstTime, setFirstTimeComplete } = useSettings();
+  
+  const handleFirstTimeClose = () => {
+    setFirstTimeComplete();
+  };
   
   // إظهار الإعدادات للمرة الأولى
   if (isFirstTime) {
     return (
       <>
         <GameSetup />
-        <SettingsDialog open={true} onOpenChange={() => {}} isFirstTime={true} />
+        <SettingsDialog open={true} onOpenChange={handleFirstTimeClose} isFirstTime={true} />
       </>
     );
   }

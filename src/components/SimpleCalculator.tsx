@@ -188,7 +188,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   return (
     <div className="h-screen overflow-hidden flex flex-col bg-background text-foreground">
       {/* Winner Modal */}
-      <Dialog open={winner !== null}>
+      <Dialog open={winner !== null} onOpenChange={() => saveAndReset()}>
         <DialogContent className="text-center max-w-sm border-2 overflow-hidden">
           <div className={cn(
             "absolute inset-0 opacity-20 animate-pulse",
