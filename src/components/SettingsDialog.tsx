@@ -95,17 +95,47 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
             </div>
           </div>
 
-          {/* Miya Follows Multiplier Toggle */}
-          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+          {/* Project Multiplier Mode */}
+          <div className="p-3 rounded-lg bg-muted/50 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold">×2</span>
-              <Label htmlFor="miya-double" className="text-sm">المية حسب الدبل</Label>
+              <Label className="text-sm">المشاريع حسب الدبل</Label>
             </div>
-            <Switch
-              id="miya-double"
-              checked={settings.miyaFollowsMultiplier}
-              onCheckedChange={(checked) => updateSettings({ miyaFollowsMultiplier: checked })}
-            />
+            <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
+              <button
+                onClick={() => updateSettings({ projectMultiplierMode: 'full' })}
+                className={cn(
+                  "flex-1 py-2 px-2 rounded-md text-xs font-medium transition-all text-center",
+                  settings.projectMultiplierMode === 'full' 
+                    ? "bg-background shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                مع الدبل
+              </button>
+              <button
+                onClick={() => updateSettings({ projectMultiplierMode: 'miya-x2' })}
+                className={cn(
+                  "flex-1 py-2 px-2 rounded-md text-xs font-medium transition-all text-center",
+                  settings.projectMultiplierMode === 'miya-x2' 
+                    ? "bg-background shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                المية ×2
+              </button>
+              <button
+                onClick={() => updateSettings({ projectMultiplierMode: 'all-x2' })}
+                className={cn(
+                  "flex-1 py-2 px-2 rounded-md text-xs font-medium transition-all text-center",
+                  settings.projectMultiplierMode === 'all-x2' 
+                    ? "bg-background shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                الكل ×2
+              </button>
+            </div>
           </div>
 
           {/* Hokm Without Points Mode */}

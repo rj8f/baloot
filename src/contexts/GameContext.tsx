@@ -19,7 +19,8 @@ interface RoundInput {
   team2Projects: TeamProjects;
   multiplier: Multiplier;
   kabootTeam?: 1 | 2 | null; // الفريق الذي حصل على كبوت (إن وجد)
-  miyaDoubleOnly?: boolean; // في حكم مع ×3 أو ×4، الخصم يريد المية ×2 فقط
+  miyaDoubleOnly?: boolean; // في حكم مع ×3 أو ×4، المية أقصاها ×2
+  allProjectsDoubleOnly?: boolean; // في حكم مع ×3 أو ×4، كل المشاريع (سرا، 50، 100) أقصاها ×2
   hokmWithoutPointsMode?: boolean; // وضع حكم بدون أبناط
 }
 
@@ -281,7 +282,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const calculateRoundResult = (
     roundData: RoundInput
   ): { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number } => {
-    const { gameType, buyingTeam, team1RawPoints, team2RawPoints, team1Projects, team2Projects, multiplier, kabootTeam, miyaDoubleOnly, hokmWithoutPointsMode } = roundData;
+    const { gameType, buyingTeam, team1RawPoints, team2RawPoints, team1Projects, team2Projects, multiplier, kabootTeam, miyaDoubleOnly, allProjectsDoubleOnly, hokmWithoutPointsMode } = roundData;
     const otherTeam: 1 | 2 = buyingTeam === 1 ? 2 : 1;
 
     // كبوت: الفريق الفائز يحصل على 25 في الحكم أو 44 في الصن + مشاريعه
@@ -463,25 +464,37 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     // المشاريع لا تُضرب في sunFactor لأن قيمها في PROJECT_VALUES مضاعفة مسبقاً
     const sunFactor = gameType === 'صن' ? 2 : 1;
 
-    // حساب نقاط المية للخصم إذا اختار ×2 فقط
-    // في حكم مع ×3 أو ×4، إذا الخصم اختار miyaDoubleOnly
-    // المية في الحكم = 10 نقاط
-    // إذا ×3 والخصم يبي ×2: المية = 20 بدل 30
-    // إذا ×4 والخصم يبي ×2: المية = 20 بدل 40
-    let miyaAdjustment = 0;
-    console.log('🎯 miyaDoubleOnly:', miyaDoubleOnly, 'gameType:', gameType, 'multiplier:', multiplier);
-    if (miyaDoubleOnly && gameType === 'حكم' && (multiplier === '×3' || multiplier === '×4')) {
-      // نبحث عن المية عند أي فريق
-      const team1MiyaCount = team1Projects.مية;
-      const team2MiyaCount = team2Projects.مية;
-      const totalMiyaCount = team1MiyaCount + team2MiyaCount;
-      console.log('📊 عدد المية: فريق1=', team1MiyaCount, 'فريق2=', team2MiyaCount);
-      if (totalMiyaCount > 0) {
-        // المية = 10 نقاط في الحكم
-        // الفرق = مية × (المضاعف - 2) × 10
-        const miyaBaseValue = 10; // قيمة المية في الحكم
-        miyaAdjustment = totalMiyaCount * miyaBaseValue * (multiplierFactor - 2);
-        console.log('💰 تعديل المية:', miyaAdjustment);
+    // حساب تعديل المشاريع إذا اختار اللاعب ×2 فقط
+    // في حكم مع ×3 أو ×4
+    let projectsAdjustment = 0;
+    
+    if (gameType === 'حكم' && (multiplier === '×3' || multiplier === '×4')) {
+      // إذا allProjectsDoubleOnly: كل المشاريع (سرا، 50، 100) أقصاها ×2
+      if (allProjectsDoubleOnly) {
+        const team1Sira = team1Projects.سرا;
+        const team2Sira = team2Projects.سرا;
+        const team150 = team1Projects.خمسين;
+        const team250 = team2Projects.خمسين;
+        const team1100 = team1Projects.مية;
+        const team2100 = team2Projects.مية;
+        
+        // قيم المشاريع في الحكم: سرا=2، 50=5، 100=10
+        const siraAdjust = (team1Sira + team2Sira) * 2 * (multiplierFactor - 2);
+        const fiftyAdjust = (team150 + team250) * 5 * (multiplierFactor - 2);
+        const miyaAdjust = (team1100 + team2100) * 10 * (multiplierFactor - 2);
+        
+        projectsAdjustment = siraAdjust + fiftyAdjust + miyaAdjust;
+      }
+      // إذا miyaDoubleOnly: المية فقط أقصاها ×2
+      else if (miyaDoubleOnly) {
+        const team1MiyaCount = team1Projects.مية;
+        const team2MiyaCount = team2Projects.مية;
+        const totalMiyaCount = team1MiyaCount + team2MiyaCount;
+        
+        if (totalMiyaCount > 0) {
+          const miyaBaseValue = 10; // قيمة المية في الحكم
+          projectsAdjustment = totalMiyaCount * miyaBaseValue * (multiplierFactor - 2);
+        }
       }
     }
 
@@ -490,15 +503,13 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     let finalTeam1Points = Math.round((team1RawScore * sunFactor + team1FinalProjects) * multiplierFactor) + team1FinalBaloot;
     let finalTeam2Points = Math.round((team2RawScore * sunFactor + team2FinalProjects) * multiplierFactor) + team2FinalBaloot;
 
-    // تطبيق تعديل المية - نطرح الفرق من الفائز فقط (لا نضيفه للخاسر)
-    // لأن المية أقصاها ×2 يعني تقليل قيمتها، مو تحويل نقاط
-    if (miyaAdjustment > 0) {
+    // تطبيق تعديل المشاريع - نطرح الفرق من الفائز فقط
+    if (projectsAdjustment > 0) {
       if (winningTeam === 1) {
-        finalTeam1Points -= miyaAdjustment;
+        finalTeam1Points -= projectsAdjustment;
       } else {
-        finalTeam2Points -= miyaAdjustment;
+        finalTeam2Points -= projectsAdjustment;
       }
-      console.log('✅ تم تطبيق تعديل المية: -', miyaAdjustment, 'من الفائز');
     }
 
     return {
