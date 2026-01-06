@@ -574,7 +574,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
                 className={cn(
                   "py-3 rounded-xl font-bold text-sm transition-all",
                   gameType === 'صن' 
-                    ? "bg-amber-500 text-white" 
+                    ? "bg-gradient-to-b from-team-start to-team-end text-primary-foreground shadow-lg" 
                     : "bg-muted text-muted-foreground"
                 )}
               >
@@ -585,7 +585,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
                 className={cn(
                   "py-3 rounded-xl font-bold text-sm transition-all",
                   gameType === 'حكم' 
-                    ? "bg-primary text-primary-foreground" 
+                    ? "bg-gradient-to-b from-team-start to-team-end text-primary-foreground shadow-lg" 
                     : "bg-muted text-muted-foreground"
                 )}
               >
@@ -604,8 +604,8 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
                 className={cn(
                   "py-2 rounded-lg font-bold text-sm transition-all border-2 flex flex-col items-center",
                   kabootTeam === 1 
-                    ? "bg-amber-500 border-amber-500 text-white shadow-lg" 
-                    : "bg-transparent border-amber-500/30 text-amber-600 dark:text-amber-400 hover:border-amber-500/60"
+                    ? "bg-gradient-to-b from-team-start to-team-end border-team-start text-primary-foreground shadow-lg" 
+                    : "bg-transparent border-border text-muted-foreground hover:border-team-start/60"
                 )}
               >
                 {game.team1Name}
@@ -619,8 +619,8 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
                 className={cn(
                   "py-2 rounded-lg font-bold text-sm transition-all border-2 flex flex-col items-center",
                   kabootTeam === 2 
-                    ? "bg-amber-500 border-amber-500 text-white shadow-lg" 
-                    : "bg-transparent border-amber-500/30 text-amber-600 dark:text-amber-400 hover:border-amber-500/60"
+                    ? "bg-gradient-to-b from-team-start to-team-end border-team-start text-primary-foreground shadow-lg" 
+                    : "bg-transparent border-border text-muted-foreground hover:border-team-start/60"
                 )}
               >
                 {game.team2Name}
@@ -639,7 +639,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
                       className={cn(
                         "flex items-center justify-center gap-1 rounded-xl py-2 px-3 transition-all active:scale-95",
                         count > 0 
-                          ? "bg-primary text-primary-foreground shadow-md shadow-primary/30" 
+                          ? "bg-gradient-to-b from-team-start to-team-end text-primary-foreground shadow-md" 
                           : "bg-muted/50 text-muted-foreground hover:bg-muted"
                       )}
                     >
@@ -668,7 +668,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
                 className={cn(
                   "w-full flex items-center justify-center gap-1 rounded-xl py-2 px-3 transition-all active:scale-95",
                   balootTeam === kabootTeam 
-                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/30" 
+                    ? "bg-gradient-to-b from-team-start to-team-end text-primary-foreground shadow-md" 
                     : "bg-muted/50 text-muted-foreground hover:bg-muted"
                 )}
               >
@@ -684,12 +684,12 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
               <div className="flex items-center justify-center gap-4 py-2 px-3 rounded-lg bg-muted/50">
                 <div className="text-center">
                   <span className="text-xs text-muted-foreground">{game.team1Name}</span>
-                  <p className="text-lg font-bold text-blue-500">{game.team1Score + preview.finalTeam1Points}</p>
+                  <p className="text-lg font-bold bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">{game.team1Score + preview.finalTeam1Points}</p>
                 </div>
                 <span className="text-muted-foreground">-</span>
                 <div className="text-center">
                   <span className="text-xs text-muted-foreground">{game.team2Name}</span>
-                  <p className="text-lg font-bold text-rose-500">{game.team2Score + preview.finalTeam2Points}</p>
+                  <p className="text-lg font-bold bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">{game.team2Score + preview.finalTeam2Points}</p>
                 </div>
               </div>
             )}
