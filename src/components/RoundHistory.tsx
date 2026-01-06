@@ -39,24 +39,13 @@ const RoundHistory = () => {
           {unifiedHistory.map((item, index) => {
             if (item.type === 'advanced') {
               const round = item.entry as Round;
-              const isTeam1Winner = round.winningTeam === 1;
               return (
                 <div
                   key={round.id}
-                  className={cn(
-                    "relative flex items-center justify-between p-3 rounded-xl border overflow-hidden",
-                    isTeam1Winner
-                      ? "bg-team1-bg border-team1-text/20"
-                      : "bg-team2-bg border-team2-text/20"
-                  )}
+                  className="relative flex items-center justify-between p-3 rounded-xl border bg-team-bg overflow-hidden"
                 >
                   {/* Left accent bar */}
-                  <div className={cn(
-                    "absolute left-0 top-0 bottom-0 w-1",
-                    isTeam1Winner 
-                      ? "bg-gradient-to-b from-team1-start to-team1-end" 
-                      : "bg-gradient-to-b from-team2-start to-team2-end"
-                  )} />
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-team-start to-team-end" />
                   
                   <div className="flex items-center gap-3 mr-2">
                     <span className="text-xs text-muted-foreground font-medium">#{unifiedHistory.length - index}</span>
@@ -78,14 +67,14 @@ const RoundHistory = () => {
                   <div className="flex items-center gap-3">
                     <div className="text-left flex gap-3">
                       <div className="text-center">
-                        <span className="font-black text-lg tabular-nums bg-gradient-to-b from-team1-start to-team1-end bg-clip-text text-transparent">
+                        <span className="font-black text-lg tabular-nums bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">
                           {round.finalTeam1Points}
                         </span>
                         <span className="text-xs text-muted-foreground block">{game.team1Name}</span>
                       </div>
                       <span className="text-muted-foreground self-center font-light">—</span>
                       <div className="text-center">
-                        <span className="font-black text-lg tabular-nums bg-gradient-to-b from-team2-start to-team2-end bg-clip-text text-transparent">
+                        <span className="font-black text-lg tabular-nums bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">
                           {round.finalTeam2Points}
                         </span>
                         <span className="text-xs text-muted-foreground block">{game.team2Name}</span>
@@ -111,11 +100,11 @@ const RoundHistory = () => {
                 >
                   <span className="text-xs text-muted-foreground font-medium">#{unifiedHistory.length - index}</span>
                   <div className="flex items-center gap-4">
-                    <span className="font-black text-lg tabular-nums bg-gradient-to-b from-team1-start to-team1-end bg-clip-text text-transparent">
+                    <span className="font-black text-lg tabular-nums bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">
                       {entry.team1}
                     </span>
                     <span className="text-muted-foreground font-light">—</span>
-                    <span className="font-black text-lg tabular-nums bg-gradient-to-b from-team2-start to-team2-end bg-clip-text text-transparent">
+                    <span className="font-black text-lg tabular-nums bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">
                       {entry.team2}
                     </span>
                   </div>
