@@ -17,17 +17,26 @@ import {
 } from '@/components/ui/sheet';
 
 const GameDashboard = () => {
-  const { game, resetGame, undoLastRound, switchToSimple, goToSelection } = useGame();
+  const { game, resetGame, undoLastRound, switchToSimple, goToSelection, simpleHistory, undoSimpleHistory } = useGame();
 
   if (!game) return null;
 
+  const canUndo = game.rounds.length > 0 || simpleHistory.length > 0;
+
   const handleUndo = () => {
-    if (game.rounds.length === 0) {
-      toast.error('لا توجد جولات للتراجع عنها');
+    // أولاً نتراجع عن آخر إدخال من السجل المختصر إن وجد
+    if (simpleHistory.length > 0) {
+      undoSimpleHistory();
+      toast.success('تم التراجع عن آخر إدخال');
       return;
     }
-    undoLastRound();
-    toast.success('تم التراجع عن آخر جولة');
+    // ثم نتراجع عن الجولات المتقدمة
+    if (game.rounds.length > 0) {
+      undoLastRound();
+      toast.success('تم التراجع عن آخر جولة');
+      return;
+    }
+    toast.error('لا توجد جولات للتراجع عنها');
   };
 
   return (
@@ -71,7 +80,7 @@ const GameDashboard = () => {
               variant="ghost" 
               size="icon" 
               onClick={handleUndo}
-              disabled={game.rounds.length === 0}
+              disabled={!canUndo}
               title="تراجع"
             >
               <Undo2 className="h-4 w-4" />
