@@ -273,7 +273,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
                 <SheetTitle>سجل المباريات</SheetTitle>
               </SheetHeader>
               <div className="mt-4 overflow-auto h-full pb-8">
-                <MatchHistory />
+                <MatchHistory expandedByDefault />
               </div>
             </SheetContent>
           </Sheet>
