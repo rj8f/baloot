@@ -29,7 +29,8 @@ const arabicToWestern = (str: string): string => {
 type ProjectKey = keyof TeamProjects;
 
 const AddRound = () => {
-  const { game, addRound, canDoubleSun, previewRoundResult, simpleHistory, undoSimpleHistory, undoLastRound } = useGame();
+  const { game, addRound, canDoubleSun, previewRoundResult, getUnifiedHistory, undoLast } = useGame();
+  const [showUndoConfirm, setShowUndoConfirm] = useState(false);
   const [gameType, setGameType] = useState<GameType>('حكم');
   const [buyingTeam, setBuyingTeam] = useState<1 | 2>(1);
   const [entryTeam, setEntryTeam] = useState<1 | 2>(1);
@@ -44,6 +45,8 @@ const AddRound = () => {
     team1Projects: TeamProjects;
     team2Projects: TeamProjects;
   } | null>(null);
+
+  const unifiedHistory = getUnifiedHistory();
 
   // Reset when game type changes
   useEffect(() => {
@@ -498,14 +501,8 @@ const AddRound = () => {
             <Button 
               variant="outline"
               size="lg"
-              onClick={() => {
-                if (simpleHistory.length > 0) {
-                  undoSimpleHistory();
-                } else if (game && game.rounds.length > 0) {
-                  undoLastRound();
-                }
-              }}
-              disabled={simpleHistory.length === 0 && (!game || game.rounds.length === 0)}
+              onClick={() => setShowUndoConfirm(true)}
+              disabled={unifiedHistory.length === 0}
               className="py-5 px-4"
               title="تراجع"
             >
@@ -547,6 +544,37 @@ const AddRound = () => {
               className="py-6 text-lg"
             >
               {multiplier}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* تأكيد التراجع */}
+      <Dialog open={showUndoConfirm} onOpenChange={setShowUndoConfirm}>
+        <DialogContent className="max-w-sm" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-center">تأكيد التراجع</DialogTitle>
+            <DialogDescription className="text-center">
+              هل تريد حذف آخر جولة مسجلة؟
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-3 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowUndoConfirm(false)}
+              className="py-4"
+            >
+              إلغاء
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                undoLast();
+                setShowUndoConfirm(false);
+              }}
+              className="py-4"
+            >
+              تراجع
             </Button>
           </div>
         </DialogContent>
