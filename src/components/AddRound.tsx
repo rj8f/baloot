@@ -296,8 +296,8 @@ const AddRound = () => {
                 pattern="[0-9]*"
                 value={entryTeamCardsRaw}
                 onChange={(e) => setEntryTeamCardsRaw(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
-                placeholder="البنط"
-                className="text-center text-xl h-12 flex-1 font-bold"
+                placeholder="عدد الأبناط"
+                className="text-center text-xl h-12 flex-1 font-bold placeholder:text-muted-foreground/40 placeholder:text-sm"
                 disabled={multiplier === 'قهوة'}
               />
               <Button
