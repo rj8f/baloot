@@ -388,20 +388,17 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
 
       {/* تأكيد التراجع */}
       <Dialog open={showUndoConfirm} onOpenChange={setShowUndoConfirm}>
-        <DialogContent className="max-w-sm" dir="rtl">
-          <DialogHeader>
-            <DialogTitle className="text-center">تأكيد التراجع</DialogTitle>
-            <DialogDescription className="text-center">
-              هل تريد حذف آخر جولة مسجلة؟
-            </DialogDescription>
+        <DialogContent className="max-w-xs p-4" dir="rtl">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="text-center text-base">حذف؟</DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-3 mt-4">
+          <div className="grid grid-cols-2 gap-2">
             <Button
               variant="outline"
               onClick={() => setShowUndoConfirm(false)}
-              className="py-4"
+              className="py-5 text-lg font-bold"
             >
-              إلغاء
+              لا
             </Button>
             <Button
               variant="destructive"
@@ -409,9 +406,9 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
                 undoLast();
                 setShowUndoConfirm(false);
               }}
-              className="py-4"
+              className="py-5 text-lg font-bold"
             >
-              تراجع
+              نعم
             </Button>
           </div>
         </DialogContent>
