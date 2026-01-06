@@ -324,37 +324,31 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     const totalRaw = team1TotalRaw + team2TotalRaw;
 
     // التحقق من نجاح المشتري
-    // في وضع "بدون أبناط" للحكم العادي: نقرب للعشرات ونقارن
     const buyingTeamRaw = buyingTeam === 1 ? team1TotalRaw : team2TotalRaw;
     const otherTeamRaw = buyingTeam === 1 ? team2TotalRaw : team1TotalRaw;
-    const buyingTeamProjectsPoints = buyingTeam === 1 ? team1ProjectsWithoutBaloot : team2ProjectsWithoutBaloot;
-    const otherTeamProjectsPoints = buyingTeam === 1 ? team2ProjectsWithoutBaloot : team1ProjectsWithoutBaloot;
-    const buyingTeamBaloot = buyingTeam === 1 ? team1Baloot : team2Baloot;
-    const otherTeamBaloot = buyingTeam === 1 ? team2Baloot : team1Baloot;
 
     let buyingTeamSucceeded: boolean;
     
     if (hokmWithoutPointsMode && gameType === 'حكم' && multiplier === 'عادي') {
-      // وضع بدون أبناط: نقارن بعد التقريب للعشرات
-      // نضيف المشاريع + البلوت للأبناط قبل القسمة على 10
-      // قيم المشاريع: سرا=2، 50=5، مية=10، بلوت=2
-      const buyingTotal = buyingTeamRaw + buyingTeamProjectsPoints + buyingTeamBaloot;
-      const otherTotal = otherTeamRaw + otherTeamProjectsPoints + otherTeamBaloot;
+      // وضع بدون أبناط:
+      // إذا آحاد أبناط المشتري 6 أو أكثر، نقرب للعشرة ونخصم الفرق من الخصم
+      let adjustedBuyingRaw = buyingTeamRaw;
+      let adjustedOtherRaw = otherTeamRaw;
       
-      // دالة تقريب خاصة: أكبر من 0.5 يجبر، 0.5 أو أقل يكسر
-      const customRound = (value: number): number => {
-        const divided = value / 10;
-        const floored = Math.floor(divided);
-        const decimal = divided - floored;
-        return decimal > 0.5 ? floored + 1 : floored;
-      };
+      const buyerOnesDigit = buyingTeamRaw % 10;
+      if (buyerOnesDigit >= 6) {
+        // تقريب للعشرة الأعلى
+        const roundedBuyer = Math.ceil(buyingTeamRaw / 10) * 10;
+        const difference = roundedBuyer - buyingTeamRaw;
+        
+        adjustedBuyingRaw = roundedBuyer;
+        adjustedOtherRaw = otherTeamRaw - difference;
+      }
       
-      const buyingRounded = customRound(buyingTotal);
-      const otherRounded = customRound(otherTotal);
-      
-      // المشتري ينجح إذا نقاطه مساوية أو أكثر
-      buyingTeamSucceeded = buyingRounded >= otherRounded;
+      // المشتري ينجح إذا أبناطه المعدلة >= أبناط الخصم المعدلة
+      buyingTeamSucceeded = adjustedBuyingRaw >= adjustedOtherRaw;
     } else {
+      // الطريقة العادية: المشتري يحتاج نصف الأبناط أو أكثر
       const halfTotalRaw = totalRaw / 2;
       buyingTeamSucceeded = buyingTeamRaw >= halfTotalRaw && buyingTeamRaw >= otherTeamRaw;
     }
