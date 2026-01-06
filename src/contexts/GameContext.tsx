@@ -352,9 +352,17 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
     let buyingTeamSucceeded: boolean;
 
-    // الطريقة العادية: المشتري يحتاج نصف الأبناط أو أكثر
-    const halfTotalRaw = totalRaw / 2;
-    buyingTeamSucceeded = buyingTeamRaw >= halfTotalRaw && buyingTeamRaw >= otherTeamRaw;
+    // المشتري يحتاج نصف (الأبناط + المشاريع بدون البلوت) أو أكثر للفوز
+    // المشاريع تُحتسب كنقاط خام في المقارنة
+    const buyingTeamProjects = buyingTeam === 1 ? team1ProjectsWithoutBaloot : team2ProjectsWithoutBaloot;
+    const otherTeamProjects = buyingTeam === 1 ? team2ProjectsWithoutBaloot : team1ProjectsWithoutBaloot;
+    
+    const buyingTeamTotal = buyingTeamRaw + buyingTeamProjects;
+    const otherTeamTotal = otherTeamRaw + otherTeamProjects;
+    const grandTotal = buyingTeamTotal + otherTeamTotal;
+    const halfTotal = grandTotal / 2;
+    
+    buyingTeamSucceeded = buyingTeamTotal >= halfTotal;
 
     let winningTeam: 1 | 2;
     let team1FinalRaw: number;
