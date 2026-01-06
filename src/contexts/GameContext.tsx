@@ -7,6 +7,7 @@ import {
   TeamProjects,
   calculateProjectsWithoutBaloot,
   calculateBalootPoints,
+  calculateSunProjectsRaw,
 } from '@/types/baloot';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -292,7 +293,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       const projectPoints = calculateProjectsWithoutBaloot(kabootTeamProjects, gameType);
       const balootPoints = calculateBalootPoints(kabootTeamProjects, gameType);
       
-      // PROJECT_VALUES للصن مضاعفة مسبقاً، لا حاجة للضرب في sunFactor
       const finalPoints = kabootPoints + projectPoints + balootPoints;
       
       return {
@@ -311,6 +311,98 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       };
     }
 
+    // ==================== حساب الصن ====================
+    if (gameType === 'صن') {
+      // 1. حساب أبناط المشاريع (سرا=20، خمسين=50، مية=100، أربعمية=200)
+      const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
+      const team2ProjectsRaw = calculateSunProjectsRaw(team2Projects);
+      const totalProjectsRaw = team1ProjectsRaw + team2ProjectsRaw;
+
+      // 2. المجموع الكلي للأبناط = 130 + مجموع أبناط المشاريع
+      const totalRawWithProjects = 130 + totalProjectsRaw;
+
+      // 3. المجموع × 2
+      const grandTotal = totalRawWithProjects * 2;
+      const halfTotal = grandTotal / 2;
+
+      // 4. حساب أبناط كل فريق (أبناط اللعب + أبناط المشاريع) × 2
+      const team1TotalRaw = (team1RawPoints + team1ProjectsRaw) * 2;
+      const team2TotalRaw = (team2RawPoints + team2ProjectsRaw) * 2;
+
+      // 5. التحقق من نجاح المشتري
+      const buyingTeamTotalRaw = buyingTeam === 1 ? team1TotalRaw : team2TotalRaw;
+      const buyingTeamSucceeded = buyingTeamTotalRaw >= halfTotal;
+
+      console.log('=== تشخيص الصن ===');
+      console.log('أبناط المشاريع فريق 1:', team1ProjectsRaw);
+      console.log('أبناط المشاريع فريق 2:', team2ProjectsRaw);
+      console.log('المجموع الكلي للأبناط (مع المشاريع):', totalRawWithProjects);
+      console.log('المجموع × 2:', grandTotal);
+      console.log('النصف:', halfTotal);
+      console.log('أبناط فريق 1 × 2:', team1TotalRaw);
+      console.log('أبناط فريق 2 × 2:', team2TotalRaw);
+      console.log('أبناط المشتري:', buyingTeamTotalRaw);
+      console.log('نجح المشتري؟', buyingTeamSucceeded);
+
+      let winningTeam: 1 | 2;
+      let team1FinalRaw: number;
+      let team2FinalRaw: number;
+
+      const hasMultiplier = multiplier !== 'عادي';
+
+      if (buyingTeamSucceeded) {
+        winningTeam = buyingTeam;
+        if (hasMultiplier) {
+          // الفائز ياخذ كل الأبناط
+          if (winningTeam === 1) {
+            team1FinalRaw = grandTotal;
+            team2FinalRaw = 0;
+          } else {
+            team1FinalRaw = 0;
+            team2FinalRaw = grandTotal;
+          }
+        } else {
+          // كل فريق يأخذ أبناطه
+          team1FinalRaw = team1TotalRaw;
+          team2FinalRaw = team2TotalRaw;
+        }
+      } else {
+        // المشتري خسر - الخصم ياخذ كل الأبناط
+        winningTeam = otherTeam;
+        if (winningTeam === 1) {
+          team1FinalRaw = grandTotal;
+          team2FinalRaw = 0;
+        } else {
+          team1FinalRaw = 0;
+          team2FinalRaw = grandTotal;
+        }
+      }
+
+      // 6. تحويل للنقاط (÷ 10)
+      let finalTeam1Points = Math.round(team1FinalRaw / 10);
+      let finalTeam2Points = Math.round(team2FinalRaw / 10);
+
+      // تطبيق المضاعفة (إذا وجدت)
+      const multiplierFactor =
+        multiplier === 'عادي' ? 1 :
+        multiplier === 'دبل' ? 2 :
+        multiplier === '×3' ? 3 : 4;
+
+      if (multiplierFactor > 1) {
+        finalTeam1Points = finalTeam1Points * multiplierFactor;
+        finalTeam2Points = finalTeam2Points * multiplierFactor;
+      }
+
+      console.log('النتيجة النهائية - فريق 1:', finalTeam1Points, 'فريق 2:', finalTeam2Points);
+
+      return {
+        winningTeam,
+        finalTeam1Points,
+        finalTeam2Points,
+      };
+    }
+
+    // ==================== حساب الحكم ====================
     // حساب نقاط المشاريع (كنقاط - لا تُضرب في 10)
     const team1ProjectsWithoutBaloot = calculateProjectsWithoutBaloot(team1Projects, gameType);
     const team2ProjectsWithoutBaloot = calculateProjectsWithoutBaloot(team2Projects, gameType);
@@ -330,12 +422,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
     // تحويل المشاريع إلى مكافئها الخام للتحقق من نجاح المشتري
     // في الحكم: النقاط × 10 لأن التقريب /10
-    // في الصن: النقاط كما هي لأن التقريب غير مطلوب (1 نقطة = 1 بنط)
-    const projectMultiplier = gameType === 'حكم' ? 10 : 1;
-    const team1ProjectsRawEq = team1ProjectsWithoutBaloot * projectMultiplier;
-    const team2ProjectsRawEq = team2ProjectsWithoutBaloot * projectMultiplier;
-    const team1BalootRawEq = team1Baloot * projectMultiplier;
-    const team2BalootRawEq = team2Baloot * projectMultiplier;
+    const team1ProjectsRawEq = team1ProjectsWithoutBaloot * 10;
+    const team2ProjectsRawEq = team2ProjectsWithoutBaloot * 10;
+    const team1BalootRawEq = team1Baloot * 10;
+    const team2BalootRawEq = team2Baloot * 10;
 
     // التحقق من نجاح المشتري
     let buyingTeamRaw = buyingTeam === 1 ? team1AdjustedRaw : team2AdjustedRaw;
@@ -347,7 +437,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     const otherTeamBalootRawEq = buyingTeam === 1 ? team2BalootRawEq : team1BalootRawEq;
 
     // إذا كانت الخاصية مفعلة: ننقل 5 أبناط (خام) من الخصم للمشتري إذا آحاد مجموع المشتري (مع المشاريع والبلوت) 0/6/7/8/9
-    if (hokmWithoutPointsMode && gameType === 'حكم' && multiplier === 'عادي') {
+    if (hokmWithoutPointsMode && multiplier === 'عادي') {
       const buyingTotalRawForRule = buyingTeamRaw + buyingTeamProjectsRawEq + buyingTeamBalootRawEq;
       const ones = ((buyingTotalRawForRule % 10) + 10) % 10;
       if (ones >= 6 || ones === 0) {
@@ -371,7 +461,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     const grandTotalRawForSuccess = buyingTeamTotalRawForSuccess + otherTeamTotalRawForSuccess;
     const halfTotalRawForSuccess = grandTotalRawForSuccess / 2;
 
-    console.log('=== تشخيص نجاح المشتري ===');
+    console.log('=== تشخيص نجاح المشتري (حكم) ===');
     console.log('المشتري:', buyingTeam === 1 ? 'فريق 1' : 'فريق 2');
     console.log('أبناط المشتري (بعد التعديل):', buyingTeamRaw);
     console.log('مشاريع المشتري (خام):', buyingTeamProjectsRawEq);
@@ -421,7 +511,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       } else {
         // عادي: كل فريق يأخذ نقاطه
         // إذا كانت الخاصية مفعلة، نستخدم النقاط المُعدَّلة
-        const useAdjusted = hokmWithoutPointsMode && gameType === 'حكم' && multiplier === 'عادي';
+        const useAdjusted = hokmWithoutPointsMode && multiplier === 'عادي';
         team1FinalRaw = useAdjusted ? team1AdjustedRaw : team1TotalRaw;
         team2FinalRaw = useAdjusted ? team2AdjustedRaw : team2TotalRaw;
         team1FinalProjects = team1ProjectsWithoutBaloot;
@@ -459,7 +549,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     // حالة خاصة: في الحكم العادي، إذا كان المشتري 86 والخصم 76
     // التقريب العادي يعطي 9+8=17، لكن المجموع الصحيح 16
     // القاعدة: المشتري يأخذ 9 والخصم يأخذ 7
-    if (gameType === 'حكم' && !hasMultiplier && buyingTeamSucceeded) {
+    if (!hasMultiplier && buyingTeamSucceeded) {
       const buyingRaw = buyingTeam === 1 ? team1FinalRaw : team2FinalRaw;
       const otherRaw = buyingTeam === 1 ? team2FinalRaw : team1FinalRaw;
       
@@ -481,15 +571,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       multiplier === 'دبل' ? 2 :
       multiplier === '×3' ? 3 : 4;
 
-    // في الصن: البنط يُضرب في 2 (قبل أي مضاعفات أخرى)
-    // المشاريع لا تُضرب في sunFactor لأن قيمها في PROJECT_VALUES مضاعفة مسبقاً
-    const sunFactor = gameType === 'صن' ? 2 : 1;
-
     // حساب تعديل المشاريع إذا اختار اللاعب ×2 فقط
     // في حكم مع ×3 أو ×4
     let projectsAdjustment = 0;
     
-    if (gameType === 'حكم' && (multiplier === '×3' || multiplier === '×4')) {
+    if (multiplier === '×3' || multiplier === '×4') {
       // إذا allProjectsDoubleOnly: كل المشاريع (سرا، 50، 100) أقصاها ×2
       if (allProjectsDoubleOnly) {
         const team1Sira = team1Projects.سرا;
@@ -519,10 +605,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       }
     }
 
-    // النقاط النهائية = (بنط ÷ 10 × مضاعف الصن + مشاريع) × المضاعف + بلوت
+    // النقاط النهائية = (بنط ÷ 10 + مشاريع) × المضاعف + بلوت
     // البلوت لا يتضاعف
-    let finalTeam1Points = Math.round((team1RawScore * sunFactor + team1FinalProjects) * multiplierFactor) + team1FinalBaloot;
-    let finalTeam2Points = Math.round((team2RawScore * sunFactor + team2FinalProjects) * multiplierFactor) + team2FinalBaloot;
+    let finalTeam1Points = Math.round((team1RawScore + team1FinalProjects) * multiplierFactor) + team1FinalBaloot;
+    let finalTeam2Points = Math.round((team2RawScore + team2FinalProjects) * multiplierFactor) + team2FinalBaloot;
 
     // تطبيق تعديل المشاريع - نطرح الفرق من الفائز فقط
     if (projectsAdjustment > 0) {
