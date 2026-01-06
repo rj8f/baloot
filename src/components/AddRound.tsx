@@ -235,10 +235,10 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
 
   return (
     <>
-      <Card className="mx-4 mb-4 overflow-hidden">
+      <Card className="mx-4 mb-4 overflow-hidden glass border-border/50 shadow-xl">
         <CardContent className="p-4 space-y-4">
           {/* Top Bar: Game Type Toggle */}
-          <div className="flex items-center justify-center gap-1 p-1 bg-muted rounded-lg">
+          <div className="flex items-center justify-center gap-1 p-1 bg-muted/50 rounded-lg backdrop-blur-sm">
             <button
               onClick={() => { setGameType('حكم'); setMultiplier('عادي'); }}
               className={cn(
@@ -320,7 +320,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
           <div className="flex gap-2">
             <Button 
               onClick={handleSubmit} 
-              className="flex-1 text-lg py-5"
+              className="flex-1 text-lg py-5 btn-press bg-gradient-to-r from-team-start to-team-end hover:opacity-90 shadow-lg"
               size="lg"
             >
               احسب
@@ -330,7 +330,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
               size="lg"
               onClick={() => setShowUndoConfirm(true)}
               disabled={unifiedHistory.length === 0}
-              className="py-5 px-4"
+              className="py-5 px-4 btn-press"
               title="تراجع"
             >
               <Undo2 className="h-5 w-5" />
