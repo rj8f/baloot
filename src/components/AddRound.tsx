@@ -251,29 +251,30 @@ const AddRound = () => {
           </div>
 
           {/* Buying Team - Large Buttons */}
-          <span className="text-xs text-muted-foreground text-center block">المشترى</span>
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => setBuyingTeam(1)}
               className={cn(
-                "py-3 rounded-lg font-bold text-lg transition-all border-2",
+                "py-3 rounded-lg font-bold text-lg transition-all border-2 flex flex-col items-center",
                 buyingTeam === 1 
                   ? "bg-blue-600 border-blue-600 text-white" 
                   : "bg-transparent border-blue-600/30 text-blue-400 hover:border-blue-600/60"
               )}
             >
               {game.team1Name}
+              {buyingTeam === 1 && <span className="text-xs font-normal opacity-80">المشترى</span>}
             </button>
             <button
               onClick={() => setBuyingTeam(2)}
               className={cn(
-                "py-3 rounded-lg font-bold text-lg transition-all border-2",
+                "py-3 rounded-lg font-bold text-lg transition-all border-2 flex flex-col items-center",
                 buyingTeam === 2 
                   ? "bg-rose-600 border-rose-600 text-white" 
                   : "bg-transparent border-rose-600/30 text-rose-400 hover:border-rose-600/60"
               )}
             >
               {game.team2Name}
+              {buyingTeam === 2 && <span className="text-xs font-normal opacity-80">المشترى</span>}
             </button>
           </div>
 
