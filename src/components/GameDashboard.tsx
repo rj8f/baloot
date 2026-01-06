@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useGame } from '@/contexts/GameContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import { Button } from '@/components/ui/button';
 import ScoreBoard from './ScoreBoard';
 import AddRound from './AddRound';
@@ -8,7 +9,7 @@ import WinnerModal from './WinnerModal';
 import SettingsDialog from './SettingsDialog';
 
 import MatchHistory from './MatchHistory';
-import { RotateCcw, History, Calculator, Home, Settings } from 'lucide-react';
+import { RotateCcw, History, Calculator, Home, Settings, Volume2, VolumeX } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Sheet,
@@ -20,6 +21,7 @@ import {
 
 const GameDashboard = () => {
   const { game, resetGame, switchToSimple, goToSelection } = useGame();
+  const { settings, toggleMute } = useSettings();
   const [showSettings, setShowSettings] = useState(false);
 
   if (!game) return null;
@@ -51,6 +53,20 @@ const GameDashboard = () => {
               </div>
               </SheetContent>
             </Sheet>
+            
+            {/* زر كتم الصوت */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={toggleMute}
+              title={settings.isMuted ? "تفعيل الصوت" : "كتم الصوت"}
+            >
+              {settings.isMuted ? (
+                <VolumeX className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <Volume2 className="h-4 w-4" />
+              )}
+            </Button>
             
             {/* زر الإعدادات */}
             <Button 

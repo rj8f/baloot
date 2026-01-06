@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowUp, RotateCcw, Home, History, Trophy, Crown, Star, Calculator } from 'lucide-react';
+import { ArrowUp, RotateCcw, Home, History, Trophy, Crown, Star, Calculator, Volume2, VolumeX } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Sheet,
@@ -21,6 +21,7 @@ import MatchHistory from './MatchHistory';
 import confetti from 'canvas-confetti';
 import { cn } from '@/lib/utils';
 import { useGame, SimpleHistoryEntry } from '@/contexts/GameContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import { Round } from '@/types/baloot';
 
 interface SimpleCalculatorProps {
@@ -56,6 +57,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     getUnifiedHistory,
     undoLast,
   } = useGame();
+  const { settings, toggleMute } = useSettings();
   
   const [showUndoConfirm, setShowUndoConfirm] = useState(false);
   
@@ -107,6 +109,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
 
   // دالة الإعلان الصوتي
   const announceScore = (score1: number, score2: number) => {
+    if (settings.isMuted) return;
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const announcement = `لنا ${score1}، لهم ${score2}`;
@@ -258,6 +261,19 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
           صكة جديدة
         </Button>
         <div className="flex items-center gap-1">
+          {/* زر كتم الصوت */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleMute}
+            title={settings.isMuted ? "تفعيل الصوت" : "كتم الصوت"}
+          >
+            {settings.isMuted ? (
+              <VolumeX className="h-5 w-5 text-muted-foreground" />
+            ) : (
+              <Volume2 className="h-5 w-5" />
+            )}
+          </Button>
           {/* زر التبديل للحاسبة المتقدمة */}
           <Button 
             variant="ghost" 

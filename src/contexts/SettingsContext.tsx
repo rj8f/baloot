@@ -4,6 +4,7 @@ interface Settings {
   showMiyaPopup: boolean;        // إظهار popup المية في حكم مع ×3 أو ×4
   darkMode: boolean;             // الوضع الليلي
   hokmWithoutPointsMode: boolean; // حكم عادي بدون أبناط (تقريب العشرات)
+  isMuted: boolean;              // كتم صوت الإعلان
 }
 
 interface SettingsContextType {
@@ -11,12 +12,14 @@ interface SettingsContextType {
   updateSettings: (newSettings: Partial<Settings>) => void;
   isFirstTime: boolean;
   setFirstTimeComplete: () => void;
+  toggleMute: () => void;
 }
 
 const defaultSettings: Settings = {
   showMiyaPopup: true,
   darkMode: true,
   hokmWithoutPointsMode: false,
+  isMuted: false,
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -69,8 +72,12 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     setIsFirstTime(false);
   };
 
+  const toggleMute = () => {
+    setSettings(prev => ({ ...prev, isMuted: !prev.isMuted }));
+  };
+
   return (
-    <SettingsContext.Provider value={{ settings, updateSettings, isFirstTime, setFirstTimeComplete }}>
+    <SettingsContext.Provider value={{ settings, updateSettings, isFirstTime, setFirstTimeComplete, toggleMute }}>
       {children}
     </SettingsContext.Provider>
   );
