@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useSettings } from '@/contexts/SettingsContext';
-import { Settings, Moon, Sun, Calculator, MessageSquare, RotateCcw } from 'lucide-react';
+import { Settings, Moon, Sun, Monitor, Calculator, MessageSquare, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useGame } from '@/contexts/GameContext';
 
@@ -47,17 +47,52 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
         </DialogHeader>
 
         <div className="space-y-3 py-2">
-          {/* Dark Mode Toggle */}
-          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+          {/* Theme Mode Selection */}
+          <div className="p-3 rounded-lg bg-muted/50 space-y-2">
             <div className="flex items-center gap-2">
-              {settings.darkMode ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-              <Label htmlFor="dark-mode" className="text-sm">المظهر</Label>
+              {settings.themeMode === 'dark' ? <Moon className="h-4 w-4" /> : 
+               settings.themeMode === 'light' ? <Sun className="h-4 w-4" /> : 
+               <Monitor className="h-4 w-4" />}
+              <Label className="text-sm">المظهر</Label>
             </div>
-            <Switch
-              id="dark-mode"
-              checked={settings.darkMode}
-              onCheckedChange={(checked) => updateSettings({ darkMode: checked })}
-            />
+            <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
+              <button
+                onClick={() => updateSettings({ themeMode: 'dark' })}
+                className={cn(
+                  "flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1",
+                  settings.themeMode === 'dark' 
+                    ? "bg-background shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Moon className="h-3 w-3" />
+                ليلي
+              </button>
+              <button
+                onClick={() => updateSettings({ themeMode: 'light' })}
+                className={cn(
+                  "flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1",
+                  settings.themeMode === 'light' 
+                    ? "bg-background shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Sun className="h-3 w-3" />
+                نهاري
+              </button>
+              <button
+                onClick={() => updateSettings({ themeMode: 'auto' })}
+                className={cn(
+                  "flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1",
+                  settings.themeMode === 'auto' 
+                    ? "bg-background shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Monitor className="h-3 w-3" />
+                تلقائي
+              </button>
+            </div>
           </div>
 
           {/* Miya Follows Multiplier Toggle */}
