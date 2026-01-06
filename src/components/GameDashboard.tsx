@@ -88,9 +88,6 @@ const GameDashboard = () => {
             <Button variant="ghost" size="icon" onClick={goToSelection} title="الرئيسية">
               <Home className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={resetGame} title="إعادة تعيين">
-              <RotateCcw className="h-4 w-4" />
-            </Button>
           </div>
         </div>
 

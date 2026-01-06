@@ -10,8 +10,9 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useSettings } from '@/contexts/SettingsContext';
-import { Settings, Moon, Sun, Calculator, MessageSquare } from 'lucide-react';
+import { Settings, Moon, Sun, Calculator, MessageSquare, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useGame } from '@/contexts/GameContext';
 
 interface SettingsDialogProps {
   open: boolean;
@@ -21,6 +22,7 @@ interface SettingsDialogProps {
 
 const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDialogProps) => {
   const { settings, updateSettings, setFirstTimeComplete } = useSettings();
+  const { resetGame } = useGame();
 
   const handleComplete = () => {
     if (isFirstTime) {
@@ -119,6 +121,21 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
               </ul>
             </div>
           )}
+
+          {/* Reset Game Button */}
+          <div className="pt-2 border-t">
+            <Button 
+              variant="destructive" 
+              className="w-full gap-2" 
+              onClick={() => {
+                resetGame();
+                onOpenChange(false);
+              }}
+            >
+              <RotateCcw className="h-4 w-4" />
+              إعادة تعيين المباراة
+            </Button>
+          </div>
         </div>
 
         <Button onClick={handleComplete} className="w-full">
