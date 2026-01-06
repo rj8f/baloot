@@ -323,23 +323,23 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
       <SettingsDialog open={showSettings} onOpenChange={setShowSettings} />
 
       {/* Scores Display */}
-      <div className="flex-shrink-0 flex justify-center items-center gap-8 py-6">
-        <div className="text-center">
+      <div className="flex-shrink-0 flex justify-center items-center gap-4 py-6">
+        <div className="text-center w-28">
           <div className="text-2xl font-bold text-muted-foreground">لنا</div>
-          <div className="text-6xl font-bold">{team1Score}</div>
+          <div className="text-6xl font-bold tabular-nums">{team1Score}</div>
         </div>
         <button 
           onClick={rotateArrow}
-          className="p-3 hover:bg-muted rounded-full transition-colors"
+          className="p-3 hover:bg-muted rounded-full transition-colors flex-shrink-0"
         >
           <ArrowUp 
             className="h-12 w-12 text-muted-foreground transition-transform duration-300" 
             style={{ transform: `rotate(${arrowRotation}deg)` }}
           />
         </button>
-        <div className="text-center">
+        <div className="text-center w-28">
           <div className="text-2xl font-bold text-muted-foreground">لهم</div>
-          <div className="text-6xl font-bold">{team2Score}</div>
+          <div className="text-6xl font-bold tabular-nums">{team2Score}</div>
         </div>
       </div>
 
