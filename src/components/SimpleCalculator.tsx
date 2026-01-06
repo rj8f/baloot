@@ -239,8 +239,8 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
           <Button variant="ghost" size="icon" onClick={onBack} className="h-9 w-9">
             <Home className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={saveAndReset} className="h-9 w-9">
-            <RotateCcw className="h-5 w-5" />
+          <Button variant="ghost" size="sm" onClick={saveAndReset} className="h-9 px-3 text-sm">
+            صكة جديدة
           </Button>
         </div>
         
