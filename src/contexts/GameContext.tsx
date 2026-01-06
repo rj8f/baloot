@@ -324,16 +324,29 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     let team1AdjustedRaw = team1TotalRaw;
     let team2AdjustedRaw = team2TotalRaw;
 
-    // المجموع الكلي للبنط (بدون المشاريع - المشاريع تُحسب منفصلة)
+    // المجموع الكلي للبنط (أكلات + أرض فقط)
+    // ملاحظة: المشاريع في هذا التطبيق تُحسب كنقاط (بنط) وليست كنقاط خام، لذا عند التحقق من نجاح المشتري
+    // نُحوّل المشاريع إلى مكافئها الخام (×10) حتى تكون المقارنة بنفس وحدة الإدخال (0-162 / 0-130).
     const totalRaw = team1TotalRaw + team2TotalRaw;
+
+    const team1ProjectsRawEq = team1ProjectsWithoutBaloot * 10;
+    const team2ProjectsRawEq = team2ProjectsWithoutBaloot * 10;
+    const team1BalootRawEq = team1Baloot * 10;
+    const team2BalootRawEq = team2Baloot * 10;
 
     // التحقق من نجاح المشتري
     let buyingTeamRaw = buyingTeam === 1 ? team1AdjustedRaw : team2AdjustedRaw;
     let otherTeamRaw = buyingTeam === 1 ? team2AdjustedRaw : team1AdjustedRaw;
 
-    // إذا كانت الخاصية مفعلة: ننقل 5 أبناط من الخصم للمشتري إذا آحاد أبناط المشتري 0/6/7/8/9
+    const buyingTeamProjectsRawEq = buyingTeam === 1 ? team1ProjectsRawEq : team2ProjectsRawEq;
+    const otherTeamProjectsRawEq = buyingTeam === 1 ? team2ProjectsRawEq : team1ProjectsRawEq;
+    const buyingTeamBalootRawEq = buyingTeam === 1 ? team1BalootRawEq : team2BalootRawEq;
+    const otherTeamBalootRawEq = buyingTeam === 1 ? team2BalootRawEq : team1BalootRawEq;
+
+    // إذا كانت الخاصية مفعلة: ننقل 5 أبناط (خام) من الخصم للمشتري إذا آحاد مجموع المشتري (مع المشاريع والبلوت) 0/6/7/8/9
     if (hokmWithoutPointsMode && gameType === 'حكم' && multiplier === 'عادي') {
-      const ones = ((buyingTeamRaw % 10) + 10) % 10;
+      const buyingTotalRawForRule = buyingTeamRaw + buyingTeamProjectsRawEq + buyingTeamBalootRawEq;
+      const ones = ((buyingTotalRawForRule % 10) + 10) % 10;
       if (ones >= 6 || ones === 0) {
         const transfer = Math.min(5, Math.max(0, otherTeamRaw));
 
@@ -350,19 +363,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       }
     }
 
-    let buyingTeamSucceeded: boolean;
+    const buyingTeamTotalRawForSuccess = buyingTeamRaw + buyingTeamProjectsRawEq + buyingTeamBalootRawEq;
+    const otherTeamTotalRawForSuccess = otherTeamRaw + otherTeamProjectsRawEq + otherTeamBalootRawEq;
+    const grandTotalRawForSuccess = buyingTeamTotalRawForSuccess + otherTeamTotalRawForSuccess;
+    const halfTotalRawForSuccess = grandTotalRawForSuccess / 2;
 
-    // المشتري يحتاج نصف (الأبناط + المشاريع بدون البلوت) أو أكثر للفوز
-    // المشاريع تُحتسب كنقاط خام في المقارنة
-    const buyingTeamProjects = buyingTeam === 1 ? team1ProjectsWithoutBaloot : team2ProjectsWithoutBaloot;
-    const otherTeamProjects = buyingTeam === 1 ? team2ProjectsWithoutBaloot : team1ProjectsWithoutBaloot;
-    
-    const buyingTeamTotal = buyingTeamRaw + buyingTeamProjects;
-    const otherTeamTotal = otherTeamRaw + otherTeamProjects;
-    const grandTotal = buyingTeamTotal + otherTeamTotal;
-    const halfTotal = grandTotal / 2;
-    
-    buyingTeamSucceeded = buyingTeamTotal >= halfTotal;
+    const buyingTeamSucceeded = buyingTeamTotalRawForSuccess >= halfTotalRawForSuccess;
 
     let winningTeam: 1 | 2;
     let team1FinalRaw: number;
