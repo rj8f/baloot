@@ -118,6 +118,15 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
   // دالة الإعلان الصوتي للنتيجة
   const announceScore = (team1Name: string, team2Name: string, team1Score: number, team2Score: number) => {
+    // التحقق من إعداد كتم الصوت
+    const settingsStr = localStorage.getItem('baloot_settings');
+    if (settingsStr) {
+      try {
+        const settings = JSON.parse(settingsStr);
+        if (settings.isMuted) return;
+      } catch {}
+    }
+    
     if ('speechSynthesis' in window) {
       // إيقاف أي إعلان سابق
       window.speechSynthesis.cancel();
