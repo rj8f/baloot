@@ -39,30 +39,32 @@ const RoundHistory = () => {
           {unifiedHistory.map((item, index) => {
             if (item.type === 'advanced') {
               const round = item.entry as Round;
+              const isTeam1Winner = round.winningTeam === 1;
               return (
                 <div
                   key={round.id}
                   className={cn(
-                    "flex items-center justify-between p-3 rounded-lg border",
-                    round.winningTeam === 1
-                      ? "bg-foreground/10 border-foreground/30"
-                      : "bg-muted-foreground/10 border-muted-foreground/30"
+                    "relative flex items-center justify-between p-3 rounded-xl border overflow-hidden",
+                    isTeam1Winner
+                      ? "bg-team1-bg border-team1-text/20"
+                      : "bg-team2-bg border-team2-text/20"
                   )}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs text-muted-foreground">#{unifiedHistory.length - index}</span>
+                  {/* Left accent bar */}
+                  <div className={cn(
+                    "absolute left-0 top-0 bottom-0 w-1",
+                    isTeam1Winner 
+                      ? "bg-gradient-to-b from-team1-start to-team1-end" 
+                      : "bg-gradient-to-b from-team2-start to-team2-end"
+                  )} />
+                  
+                  <div className="flex items-center gap-3 mr-2">
+                    <span className="text-xs text-muted-foreground font-medium">#{unifiedHistory.length - index}</span>
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium">{round.gameType}</span>
+                        <span className="font-semibold">{round.gameType}</span>
                         {round.multiplier !== 'عادي' && (
-                          <span
-                            className={cn(
-                              "text-xs px-2 py-0.5 rounded",
-                              round.multiplier === 'قهوة'
-                                ? "bg-foreground/20"
-                                : "bg-primary/20"
-                            )}
-                          >
+                          <span className="text-xs px-2 py-0.5 rounded bg-foreground/10 font-medium">
                             {round.multiplier}
                           </span>
                         )}
@@ -76,14 +78,14 @@ const RoundHistory = () => {
                   <div className="flex items-center gap-3">
                     <div className="text-left flex gap-3">
                       <div className="text-center">
-                        <span className="text-team1 font-bold text-lg tabular-nums">
+                        <span className="font-black text-lg tabular-nums bg-gradient-to-b from-team1-start to-team1-end bg-clip-text text-transparent">
                           {round.finalTeam1Points}
                         </span>
                         <span className="text-xs text-muted-foreground block">{game.team1Name}</span>
                       </div>
-                      <span className="text-muted-foreground self-center">-</span>
+                      <span className="text-muted-foreground self-center font-light">—</span>
                       <div className="text-center">
-                        <span className="text-team2 font-bold text-lg tabular-nums">
+                        <span className="font-black text-lg tabular-nums bg-gradient-to-b from-team2-start to-team2-end bg-clip-text text-transparent">
                           {round.finalTeam2Points}
                         </span>
                         <span className="text-xs text-muted-foreground block">{game.team2Name}</span>
@@ -105,13 +107,17 @@ const RoundHistory = () => {
               return (
                 <div
                   key={entry.id}
-                  className="flex items-center justify-between p-3 rounded-lg border bg-muted/30"
+                  className="flex items-center justify-between p-3 rounded-xl border bg-card"
                 >
-                  <span className="text-xs text-muted-foreground">#{unifiedHistory.length - index}</span>
+                  <span className="text-xs text-muted-foreground font-medium">#{unifiedHistory.length - index}</span>
                   <div className="flex items-center gap-4">
-                    <span className="text-team1 font-bold text-lg tabular-nums">{entry.team1}</span>
-                    <span className="text-muted-foreground">-</span>
-                    <span className="text-team2 font-bold text-lg tabular-nums">{entry.team2}</span>
+                    <span className="font-black text-lg tabular-nums bg-gradient-to-b from-team1-start to-team1-end bg-clip-text text-transparent">
+                      {entry.team1}
+                    </span>
+                    <span className="text-muted-foreground font-light">—</span>
+                    <span className="font-black text-lg tabular-nums bg-gradient-to-b from-team2-start to-team2-end bg-clip-text text-transparent">
+                      {entry.team2}
+                    </span>
                   </div>
                   <Button
                     variant="ghost"

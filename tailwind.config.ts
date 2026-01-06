@@ -58,12 +58,16 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         team1: {
-          DEFAULT: "hsl(var(--team1))",
-          light: "hsl(var(--team1-light))",
+          start: "hsl(var(--team1-start))",
+          end: "hsl(var(--team1-end))",
+          text: "hsl(var(--team1-text))",
+          bg: "hsl(var(--team1-bg))",
         },
         team2: {
-          DEFAULT: "hsl(var(--team2))",
-          light: "hsl(var(--team2-light))",
+          start: "hsl(var(--team2-start))",
+          end: "hsl(var(--team2-end))",
+          text: "hsl(var(--team2-text))",
+          bg: "hsl(var(--team2-bg))",
         },
       },
       borderRadius: {
