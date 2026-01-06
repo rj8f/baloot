@@ -667,7 +667,7 @@ const AddRound = () => {
 
             {/* Projects in Kaboot */}
             {kabootTeam && (
-              <div className="grid grid-cols-4 gap-2">
+              <div className={cn("grid gap-2", gameType === 'صن' ? "grid-cols-4" : "grid-cols-3")}>
                 {availableProjects.map((p) => {
                   const count = projects[p.key];
                   return (
@@ -689,6 +689,32 @@ const AddRound = () => {
                   );
                 })}
               </div>
+            )}
+
+            {/* Baloot in Kaboot (Hokm only) */}
+            {kabootTeam && gameType === 'حكم' && (
+              <button
+                onClick={() => {
+                  if (balootTeam === kabootTeam) {
+                    setBalootTeam(null);
+                    setBalootCount(0);
+                  } else {
+                    setBalootTeam(kabootTeam);
+                    setBalootCount(1);
+                  }
+                }}
+                className={cn(
+                  "w-full flex items-center justify-center gap-1 rounded-xl py-2 px-3 transition-all active:scale-95",
+                  balootTeam === kabootTeam 
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/30" 
+                    : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                )}
+              >
+                <span className="text-sm font-medium">بلوت</span>
+                {balootTeam === kabootTeam && (
+                  <span className="text-xs font-bold">x1</span>
+                )}
+              </button>
             )}
 
             {/* Preview in Kaboot */}
