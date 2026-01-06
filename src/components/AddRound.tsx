@@ -522,26 +522,23 @@ const AddRound = () => {
         />
       )}
 
-      {/* Dialog سؤال الخصم عن المية */}
+      {/* Dialog المية */}
       <Dialog open={showMiyaDialog} onOpenChange={setShowMiyaDialog}>
-        <DialogContent className="max-w-sm" dir="rtl">
-          <DialogHeader>
-            <DialogTitle className="text-center">مشروع المية للخصم</DialogTitle>
-            <DialogDescription className="text-center">
-              الخصم عنده مشروع مية، كيف يبي تُحسب؟
-            </DialogDescription>
+        <DialogContent className="max-w-xs p-4" dir="rtl">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="text-center text-base">المية؟</DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-3 mt-4">
+          <div className="grid grid-cols-2 gap-2">
             <Button
               variant="outline"
               onClick={handleMiyaDoubleOnly}
-              className="py-6 text-lg"
+              className="py-5 text-lg font-bold"
             >
-              ×2 فقط
+              ×2
             </Button>
             <Button
               onClick={handleMiyaWithMultiplier}
-              className="py-6 text-lg"
+              className="py-5 text-lg font-bold"
             >
               {multiplier}
             </Button>
