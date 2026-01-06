@@ -138,9 +138,10 @@ const AddRound = () => {
     بلوت: balootTeam === 2 ? balootCount : 0,
   };
 
-  // تحديد إذا المية تكون دائماً ×2 في حكم مع ×3 أو ×4
+  // تحديد إذا المية تكون أقصاها ×2 في حكم مع ×3 أو ×4
   const shouldApplyMiyaDouble = () => {
-    if (!settings.miyaAlwaysDouble) return false;
+    // إذا الإعداد مفعل = المية تتبع المضاعف الكامل، لا حاجة لتطبيق ×2
+    if (settings.miyaFollowsMultiplier) return false;
     if (gameType !== 'حكم') return false;
     if (multiplier !== '×3' && multiplier !== '×4') return false;
     if (kabootTeam) return false;

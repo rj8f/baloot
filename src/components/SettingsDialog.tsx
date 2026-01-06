@@ -60,16 +60,16 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
             />
           </div>
 
-          {/* Miya Always x2 Toggle */}
+          {/* Miya Follows Multiplier Toggle */}
           <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold">×2</span>
-              <Label htmlFor="miya-double" className="text-sm">المية ما تزيد عن الدبل</Label>
+              <Label htmlFor="miya-double" className="text-sm">المية حسب الدبل</Label>
             </div>
             <Switch
               id="miya-double"
-              checked={settings.miyaAlwaysDouble}
-              onCheckedChange={(checked) => updateSettings({ miyaAlwaysDouble: checked })}
+              checked={settings.miyaFollowsMultiplier}
+              onCheckedChange={(checked) => updateSettings({ miyaFollowsMultiplier: checked })}
             />
           </div>
 

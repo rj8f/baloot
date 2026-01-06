@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface Settings {
-  miyaAlwaysDouble: boolean;     // المية دائماً ×2 في حكم مع ×3 أو ×4
+  miyaFollowsMultiplier: boolean; // المية حسب الدبل (true = تتبع المضاعف، false = أقصاها x2)
   darkMode: boolean;             // الوضع الليلي
   hokmWithoutPointsMode: boolean; // حكم عادي بدون أبناط (تقريب العشرات)
   isMuted: boolean;              // كتم صوت الإعلان
@@ -16,7 +16,7 @@ interface SettingsContextType {
 }
 
 const defaultSettings: Settings = {
-  miyaAlwaysDouble: false,
+  miyaFollowsMultiplier: true,  // الافتراضي: المية تتبع المضاعف
   darkMode: true,
   hokmWithoutPointsMode: false,
   isMuted: false,
