@@ -263,6 +263,76 @@ const AddRound = () => {
             </button>
           </div>
 
+          {/* Points Entry - Under Game Type */}
+          {!kabootTeam && (
+            <div className="flex items-center gap-2">
+              <div className="flex bg-muted rounded-lg p-0.5">
+                <button
+                  onClick={() => setEntryTeam(1)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                    entryTeam === 1 
+                      ? "bg-blue-600 text-white" 
+                      : "text-muted-foreground"
+                  )}
+                >
+                  {game.team1Name}
+                </button>
+                <button
+                  onClick={() => setEntryTeam(2)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                    entryTeam === 2 
+                      ? "bg-rose-600 text-white" 
+                      : "text-muted-foreground"
+                  )}
+                >
+                  {game.team2Name}
+                </button>
+              </div>
+              <Input
+                type="tel"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={entryTeamCardsRaw}
+                onChange={(e) => setEntryTeamCardsRaw(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
+                placeholder="البنط"
+                className="text-center text-xl h-12 flex-1 font-bold"
+                disabled={multiplier === 'قهوة'}
+              />
+              <Button
+                variant="secondary"
+                size="icon"
+                onClick={() => setShowScanner(true)}
+                disabled={multiplier === 'قهوة'}
+                className="h-12 w-12 shrink-0"
+              >
+                <Camera className="h-5 w-5" />
+              </Button>
+            </div>
+          )}
+
+          {/* Submit and Undo Buttons */}
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleSubmit} 
+              className="flex-1 text-lg py-5"
+              size="lg"
+            >
+              احسب
+            </Button>
+            <Button 
+              variant="outline"
+              size="lg"
+              onClick={() => setShowUndoConfirm(true)}
+              disabled={unifiedHistory.length === 0}
+              className="py-5 px-4"
+              title="تراجع"
+            >
+              <Undo2 className="h-5 w-5" />
+            </Button>
+          </div>
+
           {/* Buying Team - Same style as Projects */}
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -468,58 +538,6 @@ const AddRound = () => {
             </div>
           )}
 
-          {/* Points Entry - Only show if not Kaboot */}
-          {!kabootTeam && (
-            <div className="space-y-2">
-              {/* Entry Team Toggle - Inline with Input */}
-              <div className="flex items-center gap-2">
-                <div className="flex bg-muted rounded-lg p-0.5">
-                  <button
-                    onClick={() => setEntryTeam(1)}
-                    className={cn(
-                      "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
-                      entryTeam === 1 
-                        ? "bg-blue-600 text-white" 
-                        : "text-muted-foreground"
-                    )}
-                  >
-                    {game.team1Name}
-                  </button>
-                  <button
-                    onClick={() => setEntryTeam(2)}
-                    className={cn(
-                      "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
-                      entryTeam === 2 
-                        ? "bg-rose-600 text-white" 
-                        : "text-muted-foreground"
-                    )}
-                  >
-                    {game.team2Name}
-                  </button>
-                </div>
-                <Input
-                  type="tel"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={entryTeamCardsRaw}
-                  onChange={(e) => setEntryTeamCardsRaw(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
-                  placeholder="البنط"
-                  className="text-center text-xl h-12 flex-1 font-bold"
-                  disabled={multiplier === 'قهوة'}
-                />
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  onClick={() => setShowScanner(true)}
-                  disabled={multiplier === 'قهوة'}
-                  className="h-12 w-12 shrink-0"
-                >
-                  <Camera className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-          )}
-
           {/* Preview - Compact */}
           {showPreview && (
             <div className="grid grid-cols-2 gap-2 text-center">
@@ -539,27 +557,6 @@ const AddRound = () => {
               </div>
             </div>
           )}
-
-          {/* Submit and Undo Buttons */}
-          <div className="flex gap-2">
-            <Button 
-              onClick={handleSubmit} 
-              className="flex-1 text-lg py-5"
-              size="lg"
-            >
-              احسب
-            </Button>
-            <Button 
-              variant="outline"
-              size="lg"
-              onClick={() => setShowUndoConfirm(true)}
-              disabled={unifiedHistory.length === 0}
-              className="py-5 px-4"
-              title="تراجع"
-            >
-              <Undo2 className="h-5 w-5" />
-            </Button>
-          </div>
         </CardContent>
       </Card>
 
