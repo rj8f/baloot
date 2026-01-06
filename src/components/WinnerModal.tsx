@@ -69,7 +69,7 @@ const WinnerModal = () => {
   const loserScore = game.winner === 1 ? game.team2Score : game.team1Score;
 
   return (
-    <Dialog open={true}>
+    <Dialog open={true} onOpenChange={() => resetGame()}>
       <DialogContent className="text-center max-w-sm border-2 overflow-hidden">
         {/* Animated background gradient */}
         <div className={cn(
