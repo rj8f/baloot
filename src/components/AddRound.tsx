@@ -266,11 +266,11 @@ const AddRound = () => {
           {/* Points Entry - Under Game Type */}
           {!kabootTeam && (
             <div className="flex items-center gap-2">
-              <div className="flex bg-muted rounded-lg p-0.5">
+              <div className="flex bg-muted rounded-lg p-0.5 h-12">
                 <button
                   onClick={() => setEntryTeam(1)}
                   className={cn(
-                    "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                    "px-3 rounded-md text-xs font-medium transition-all flex items-center",
                     entryTeam === 1 
                       ? "bg-blue-600 text-white" 
                       : "text-muted-foreground"
@@ -281,7 +281,7 @@ const AddRound = () => {
                 <button
                   onClick={() => setEntryTeam(2)}
                   className={cn(
-                    "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                    "px-3 rounded-md text-xs font-medium transition-all flex items-center",
                     entryTeam === 2 
                       ? "bg-rose-600 text-white" 
                       : "text-muted-foreground"
