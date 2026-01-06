@@ -29,7 +29,11 @@ const arabicToWestern = (str: string): string => {
 
 type ProjectKey = keyof TeamProjects;
 
-const AddRound = () => {
+interface AddRoundProps {
+  onPreviewChange?: (preview: { team1: number; team2: number } | null) => void;
+}
+
+const AddRound = ({ onPreviewChange }: AddRoundProps) => {
   const { game, addRound, canDoubleSun, previewRoundResult, getUnifiedHistory, undoLast } = useGame();
   const { settings } = useSettings();
   const [showUndoConfirm, setShowUndoConfirm] = useState(false);
@@ -216,6 +220,18 @@ const AddRound = () => {
 
   const preview = getPreview();
   const showPreview = entryTeamCardsRaw || kabootTeam;
+
+  // Send preview to parent
+  useEffect(() => {
+    if (showPreview && onPreviewChange) {
+      onPreviewChange({
+        team1: game.team1Score + preview.finalTeam1Points,
+        team2: game.team2Score + preview.finalTeam2Points,
+      });
+    } else if (onPreviewChange) {
+      onPreviewChange(null);
+    }
+  }, [showPreview, preview.finalTeam1Points, preview.finalTeam2Points, game.team1Score, game.team2Score, onPreviewChange]);
 
   return (
     <>
@@ -526,25 +542,6 @@ const AddRound = () => {
             </div>
           )}
 
-          {/* Preview - Compact */}
-          {showPreview && (
-            <div className="grid grid-cols-2 gap-2 text-center">
-              <div className={cn(
-                "rounded-lg py-2",
-                "bg-blue-500/10"
-              )}>
-                <div className="text-xs text-blue-400">{game.team1Name}</div>
-                <div className="text-xl font-bold">{game.team1Score + preview.finalTeam1Points}</div>
-              </div>
-              <div className={cn(
-                "rounded-lg py-2",
-                "bg-rose-500/10"
-              )}>
-                <div className="text-xs text-rose-400">{game.team2Name}</div>
-                <div className="text-xl font-bold">{game.team2Score + preview.finalTeam2Points}</div>
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
 

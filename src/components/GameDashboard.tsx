@@ -23,6 +23,7 @@ const GameDashboard = () => {
   const { game, resetGame, switchToSimple, goToSelection } = useGame();
   const { settings, toggleMute } = useSettings();
   const [showSettings, setShowSettings] = useState(false);
+  const [scorePreview, setScorePreview] = useState<{ team1: number; team2: number } | null>(null);
 
   if (!game) return null;
 
@@ -88,10 +89,13 @@ const GameDashboard = () => {
         </div>
 
         {/* Score Board */}
-        <ScoreBoard />
+        <ScoreBoard 
+          previewTeam1={scorePreview?.team1} 
+          previewTeam2={scorePreview?.team2} 
+        />
 
         {/* Add Round */}
-        <AddRound />
+        <AddRound onPreviewChange={setScorePreview} />
 
         {/* Round History */}
         <RoundHistory />
