@@ -301,9 +301,12 @@ const AddRound = () => {
             {kabootTeam ? `كبوت ${kabootTeam === 1 ? game.team1Name : game.team2Name}` : 'كبوت'}
           </button>
 
-          {/* Projects - Team Selection as Grid (only when not kaboot) */}
+          {/* Projects Section (only when not kaboot) */}
           {!kabootTeam && (
             <div className="space-y-2">
+              <span className="text-xs text-muted-foreground">المشاريع</span>
+              
+              {/* Team Selection */}
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => {
@@ -316,14 +319,13 @@ const AddRound = () => {
                     }
                   }}
                   className={cn(
-                    "flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
+                    "flex items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
                     projectsTeam === 1 
                       ? "bg-blue-600 text-white shadow-md shadow-blue-600/30" 
                       : "bg-muted/50 text-muted-foreground hover:bg-muted"
                   )}
                 >
                   <span className="text-sm font-medium">{game.team1Name}</span>
-                  {projectsTeam === 1 && <span className="text-[10px] font-normal opacity-80">المشاريع</span>}
                 </button>
                 <button
                   onClick={() => {
@@ -336,42 +338,42 @@ const AddRound = () => {
                     }
                   }}
                   className={cn(
-                    "flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
+                    "flex items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
                     projectsTeam === 2 
                       ? "bg-rose-600 text-white shadow-md shadow-rose-600/30" 
                       : "bg-muted/50 text-muted-foreground hover:bg-muted"
                   )}
                 >
                   <span className="text-sm font-medium">{game.team2Name}</span>
-                  {projectsTeam === 2 && <span className="text-[10px] font-normal opacity-80">المشاريع</span>}
                 </button>
               </div>
 
-              {/* Project Chips - Tap to cycle */}
-              {projectsTeam && (
-                <div className="grid grid-cols-4 gap-2">
-                  {availableProjects.map((p) => {
-                    const count = projects[p.key];
-                    return (
-                      <button
-                        key={p.key}
-                        onClick={() => cycleProject(p.key)}
-                        className={cn(
-                          "flex items-center justify-center gap-1 rounded-xl py-2 px-3 transition-all active:scale-95",
-                          count > 0 
-                            ? "bg-primary text-primary-foreground shadow-md shadow-primary/30" 
-                            : "bg-muted/50 text-muted-foreground hover:bg-muted"
-                        )}
-                      >
-                        <span className="text-sm font-medium">{p.label}</span>
-                        {count > 0 && (
-                          <span className="text-xs font-bold">x{count}</span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
+              {/* Project Chips - Always visible */}
+              <div className="grid grid-cols-4 gap-2">
+                {availableProjects.map((p) => {
+                  const count = projects[p.key];
+                  const isDisabled = !projectsTeam;
+                  return (
+                    <button
+                      key={p.key}
+                      onClick={() => projectsTeam && cycleProject(p.key)}
+                      disabled={isDisabled}
+                      className={cn(
+                        "flex items-center justify-center gap-1 rounded-xl py-2 px-3 transition-all active:scale-95",
+                        count > 0 
+                          ? "bg-primary text-primary-foreground shadow-md shadow-primary/30" 
+                          : "bg-muted/50 text-muted-foreground hover:bg-muted",
+                        isDisabled && "opacity-40"
+                      )}
+                    >
+                      <span className="text-sm font-medium">{p.label}</span>
+                      {count > 0 && (
+                        <span className="text-xs font-bold">x{count}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
 
