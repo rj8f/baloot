@@ -42,7 +42,7 @@ const ScoreBoard = ({ previewTeam1, previewTeam2 }: ScoreBoardProps) => {
               </div>
             )}
             {/* 3D Progress bar */}
-            <div className="h-3 bg-muted/50 rounded-full overflow-hidden shadow-inner">
+            <div className="h-3 bg-background/80 rounded-full overflow-hidden shadow-inner border border-team-start/30">
               <div 
                 className="h-full bg-gradient-to-r from-team-start via-team-end to-team-start rounded-full transition-all duration-700 ease-out shadow-lg"
                 style={{ 
@@ -74,7 +74,7 @@ const ScoreBoard = ({ previewTeam1, previewTeam2 }: ScoreBoardProps) => {
               </div>
             )}
             {/* 3D Progress bar */}
-            <div className="h-3 bg-muted/50 rounded-full overflow-hidden shadow-inner">
+            <div className="h-3 bg-background/80 rounded-full overflow-hidden shadow-inner border border-team-start/30">
               <div 
                 className="h-full bg-gradient-to-r from-team-start via-team-end to-team-start rounded-full transition-all duration-700 ease-out shadow-lg"
                 style={{ 
