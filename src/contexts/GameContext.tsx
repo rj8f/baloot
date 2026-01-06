@@ -490,15 +490,15 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     let finalTeam1Points = Math.round((team1RawScore * sunFactor + team1FinalProjects) * multiplierFactor) + team1FinalBaloot;
     let finalTeam2Points = Math.round((team2RawScore * sunFactor + team2FinalProjects) * multiplierFactor) + team2FinalBaloot;
 
-    // تطبيق تعديل المية - نطرح الفرق من الفائز (المشتري) ونضيفه للخصم
+    // تطبيق تعديل المية - نطرح الفرق من الفائز فقط (لا نضيفه للخاسر)
+    // لأن المية أقصاها ×2 يعني تقليل قيمتها، مو تحويل نقاط
     if (miyaAdjustment > 0) {
       if (winningTeam === 1) {
         finalTeam1Points -= miyaAdjustment;
-        finalTeam2Points += miyaAdjustment;
       } else {
         finalTeam2Points -= miyaAdjustment;
-        finalTeam1Points += miyaAdjustment;
       }
+      console.log('✅ تم تطبيق تعديل المية: -', miyaAdjustment, 'من الفائز');
     }
 
     return {
