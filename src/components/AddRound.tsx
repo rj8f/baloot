@@ -125,17 +125,14 @@ const AddRound = () => {
   const team1Projects: TeamProjects = projectsTeam === 1 ? projects : createEmptyProjects();
   const team2Projects: TeamProjects = projectsTeam === 2 ? projects : createEmptyProjects();
 
-  // تحديد إذا كان الخصم يملك مية في حكم مع ×3 أو ×4
+  // تحديد إذا كان هناك مية في حكم مع ×3 أو ×4
   const shouldAskForMiyaMultiplier = () => {
     if (gameType !== 'حكم') return false;
     if (multiplier !== '×3' && multiplier !== '×4') return false;
     if (kabootTeam) return false;
     
-    // الخصم هو الفريق الذي لم يشتري
-    const opponentTeam = buyingTeam === 1 ? 2 : 1;
-    const opponentProjects = opponentTeam === 1 ? team1Projects : team2Projects;
-    
-    return opponentProjects.مية > 0;
+    // اسأل إذا أي فريق عنده مية
+    return team1Projects.مية > 0 || team2Projects.مية > 0;
   };
 
   const handleSubmit = () => {
