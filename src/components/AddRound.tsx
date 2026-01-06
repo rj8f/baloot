@@ -39,6 +39,8 @@ const AddRound = () => {
   const [entryTeamCardsRaw, setEntryTeamCardsRaw] = useState('');
   const [projectsTeam, setProjectsTeam] = useState<1 | 2 | null>(null);
   const [projects, setProjects] = useState<TeamProjects>(createEmptyProjects());
+  const [balootTeam, setBalootTeam] = useState<1 | 2 | null>(null);
+  const [balootCount, setBalootCount] = useState(0);
   const [multiplier, setMultiplier] = useState<Multiplier>('عادي');
   const [showScanner, setShowScanner] = useState(false);
   const [kabootTeam, setKabootTeam] = useState<1 | 2 | null>(null);
@@ -58,6 +60,8 @@ const AddRound = () => {
     setEntryTeamCardsRaw('');
     setKabootTeam(null);
     setMultiplier('عادي');
+    setBalootTeam(null);
+    setBalootCount(0);
   }, [gameType]);
 
   // Auto-set projects team when kaboot is selected
@@ -76,6 +80,7 @@ const AddRound = () => {
   const availableMultipliers = gameType === 'حكم' ? hokmMultipliers : sunMultipliers;
   const canDouble = gameType === 'حكم' || canDoubleSun();
 
+  // المشاريع بدون البلوت (البلوت منفصل)
   const availableProjects: { key: ProjectKey; label: string }[] = gameType === 'صن'
     ? [
         { key: 'سرا', label: 'سرا' },
@@ -87,7 +92,6 @@ const AddRound = () => {
         { key: 'سرا', label: 'سرا' },
         { key: 'خمسين', label: '50' },
         { key: 'مية', label: '100' },
-        { key: 'بلوت', label: 'بلوت' },
       ];
 
   const cycleProject = (project: ProjectKey) => {
@@ -128,9 +132,15 @@ const AddRound = () => {
   // Count total projects
   const totalProjectsCount = Object.values(projects).reduce((sum, count) => sum + count, 0);
 
-  // Get team1 and team2 projects based on selected projectsTeam
-  const team1Projects: TeamProjects = projectsTeam === 1 ? projects : createEmptyProjects();
-  const team2Projects: TeamProjects = projectsTeam === 2 ? projects : createEmptyProjects();
+  // Get team1 and team2 projects based on selected projectsTeam + balootTeam
+  const team1Projects: TeamProjects = {
+    ...(projectsTeam === 1 ? projects : createEmptyProjects()),
+    بلوت: balootTeam === 1 ? balootCount : 0,
+  };
+  const team2Projects: TeamProjects = {
+    ...(projectsTeam === 2 ? projects : createEmptyProjects()),
+    بلوت: balootTeam === 2 ? balootCount : 0,
+  };
 
   // تحديد إذا كان هناك مية في حكم مع ×3 أو ×4
   const shouldAskForMiyaMultiplier = () => {
@@ -181,6 +191,8 @@ const AddRound = () => {
     setMultiplier('عادي');
     setKabootTeam(null);
     setPendingSubmit(null);
+    setBalootTeam(null);
+    setBalootCount(0);
   };
 
   // الخصم يريد المية فقط ×2
@@ -377,34 +389,77 @@ const AddRound = () => {
             </div>
           )}
 
-          {/* Multiplier - Same style as projects */}
+          {/* Baloot Section - Separate from other projects (Hokm only) */}
+          {!kabootTeam && gameType === 'حكم' && (
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => {
+                  if (balootTeam === 1) {
+                    setBalootTeam(null);
+                    setBalootCount(0);
+                  } else {
+                    setBalootTeam(1);
+                    setBalootCount(1);
+                  }
+                }}
+                className={cn(
+                  "flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
+                  balootTeam === 1 
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-600/30" 
+                    : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                )}
+              >
+                <span className="text-[10px] opacity-70">بلوت</span>
+                <span className="text-sm font-medium">{game.team1Name}</span>
+              </button>
+              <button
+                onClick={() => {
+                  if (balootTeam === 2) {
+                    setBalootTeam(null);
+                    setBalootCount(0);
+                  } else {
+                    setBalootTeam(2);
+                    setBalootCount(1);
+                  }
+                }}
+                className={cn(
+                  "flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
+                  balootTeam === 2 
+                    ? "bg-rose-600 text-white shadow-md shadow-rose-600/30" 
+                    : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                )}
+              >
+                <span className="text-[10px] opacity-70">بلوت</span>
+                <span className="text-sm font-medium">{game.team2Name}</span>
+              </button>
+            </div>
+          )}
+
+          {/* Multiplier */}
           {!kabootTeam && (
-            <div className="space-y-2">
-              <span className="text-xs text-muted-foreground">الدبل</span>
-              <div className="grid grid-cols-4 gap-2">
-                {availableMultipliers.map((m) => {
-                  const isDisabled = gameType === 'صن' && m === 'دبل' && !canDouble;
-                  const isSelected = multiplier === m;
-                  return (
-                    <button
-                      key={m}
-                      onClick={() => setMultiplier(isSelected ? 'عادي' : m)}
-                      disabled={isDisabled}
-                      className={cn(
-                        "flex items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
-                        isSelected 
-                          ? m === 'قهوة' 
-                            ? "bg-amber-500 text-white shadow-md shadow-amber-500/30"
-                            : "bg-primary text-primary-foreground shadow-md shadow-primary/30"
-                          : "bg-muted/50 text-muted-foreground hover:bg-muted",
-                        isDisabled && "opacity-40 cursor-not-allowed"
-                      )}
-                    >
-                      <span className="text-sm font-medium">{m}</span>
-                    </button>
-                  );
-                })}
-              </div>
+            <div className="grid grid-cols-4 gap-2">
+              {availableMultipliers.map((m) => {
+                const isDisabled = gameType === 'صن' && m === 'دبل' && !canDouble;
+                const isSelected = multiplier === m;
+                return (
+                  <button
+                    key={m}
+                    onClick={() => setMultiplier(isSelected ? 'عادي' : m)}
+                    disabled={isDisabled}
+                    className={cn(
+                      "flex items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
+                      isSelected 
+                        ? m === 'قهوة' 
+                          ? "bg-amber-500 text-white shadow-md shadow-amber-500/30"
+                          : "bg-primary text-primary-foreground shadow-md shadow-primary/30"
+                        : "bg-muted/50 text-muted-foreground hover:bg-muted",
+                      isDisabled && "opacity-40 cursor-not-allowed"
+                    )}
+                  >
+                    <span className="text-sm font-medium">{m}</span>
+                  </button>
+                );
+              })}
             </div>
           )}
 
