@@ -102,6 +102,23 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     }
   }, [winner]);
 
+  // دالة الإعلان الصوتي
+  const announceScore = (score1: number, score2: number) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const announcement = `لنا ${score1}، لهم ${score2}`;
+      const utterance = new SpeechSynthesisUtterance(announcement);
+      utterance.lang = 'ar-SA';
+      utterance.rate = 1.3;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      const voices = window.speechSynthesis.getVoices();
+      const arabicVoice = voices.find(v => v.lang.startsWith('ar'));
+      if (arabicVoice) utterance.voice = arabicVoice;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
   const handleAddPoints = () => {
     const t1 = parseInt(team1Input) || 0;
     const t2 = parseInt(team2Input) || 0;
@@ -123,6 +140,9 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     setTeam1Input('');
     setTeam2Input('');
     rotateArrow();
+    
+    // إعلان النتيجة صوتياً
+    announceScore(newTeam1Score, newTeam2Score);
   };
 
   const handleUndo = () => {
