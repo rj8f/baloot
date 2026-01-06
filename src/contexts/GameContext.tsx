@@ -324,7 +324,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     const multiplierFactor =
       multiplier === 'عادي' ? 1 :
       multiplier === 'دبل' ? 2 :
-      multiplier === '×3' ? 2.5 : 4; // ×3 = 16+16+8=40 يعني 2.5
+      multiplier === '×3' ? 3 : 4;
 
     // في الصن: البنط يُضرب في 2 (قبل أي مضاعفات أخرى)
     // المشاريع لا تُضرب في sunFactor لأن قيمها في PROJECT_VALUES مضاعفة مسبقاً
