@@ -25,7 +25,7 @@ interface SettingsContextType {
 }
 
 const defaultSettings: Settings = {
-  projectMultiplierMode: 'full',  // الافتراضي: كل المشاريع تتبع المضاعف
+  projectMultiplierMode: 'all-x2',  // الافتراضي: الكل ×2
   themeMode: 'dark',
   hokmWithoutPointsMode: false,
   isMuted: false,
