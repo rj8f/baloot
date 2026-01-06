@@ -303,18 +303,18 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
             variant="ghost" 
             size="icon"
             className="h-9 w-9"
-            onClick={switchToAdvanced}
+            onClick={() => setShowSettings(true)}
           >
-            <Calculator className="h-5 w-5" />
+            <Settings className="h-5 w-5" />
           </Button>
           
           <Button 
             variant="ghost" 
             size="icon"
             className="h-9 w-9"
-            onClick={() => setShowSettings(true)}
+            onClick={switchToAdvanced}
           >
-            <Settings className="h-5 w-5" />
+            <Calculator className="h-5 w-5" />
           </Button>
         </div>
       </div>
