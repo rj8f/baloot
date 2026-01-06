@@ -29,9 +29,8 @@ const GameSetup = () => {
       </div>
 
       <Card className="w-full max-w-md max-h-[90vh] flex flex-col">
-        <CardHeader className="text-center flex-shrink-0">
-          <CardTitle className="text-3xl font-bold text-primary">🃏 حاسبة البلوت</CardTitle>
-          <p className="text-muted-foreground mt-2">اختر نوع الحاسبة</p>
+        <CardHeader className="text-center flex-shrink-0 pb-2">
+          <p className="text-muted-foreground">اختر نوع الحاسبة</p>
         </CardHeader>
         <CardContent className="space-y-4 flex-1 overflow-hidden flex flex-col">
           {/* Simple Calculator Option */}
