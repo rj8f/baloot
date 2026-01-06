@@ -320,38 +320,41 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     const team1TotalRaw = team1RawPoints;
     const team2TotalRaw = team2RawPoints;
 
+    // البنط بعد تطبيق خيار "بدون أبناط" (إن كان مفعلاً)
+    let team1AdjustedRaw = team1TotalRaw;
+    let team2AdjustedRaw = team2TotalRaw;
+
     // المجموع الكلي للبنط (بدون المشاريع - المشاريع تُحسب منفصلة)
     const totalRaw = team1TotalRaw + team2TotalRaw;
 
     // التحقق من نجاح المشتري
-    const buyingTeamRaw = buyingTeam === 1 ? team1TotalRaw : team2TotalRaw;
-    const otherTeamRaw = buyingTeam === 1 ? team2TotalRaw : team1TotalRaw;
+    let buyingTeamRaw = buyingTeam === 1 ? team1AdjustedRaw : team2AdjustedRaw;
+    let otherTeamRaw = buyingTeam === 1 ? team2AdjustedRaw : team1AdjustedRaw;
+
+    // إذا كانت الخاصية مفعلة: ننقل 5 أبناط من الخصم للمشتري إذا آحاد أبناط المشتري 6/7/8/9
+    if (hokmWithoutPointsMode && gameType === 'حكم' && multiplier === 'عادي') {
+      const ones = ((buyingTeamRaw % 10) + 10) % 10;
+      if (ones >= 6) {
+        const transfer = Math.min(5, Math.max(0, otherTeamRaw));
+
+        buyingTeamRaw += transfer;
+        otherTeamRaw -= transfer;
+
+        if (buyingTeam === 1) {
+          team1AdjustedRaw = buyingTeamRaw;
+          team2AdjustedRaw = otherTeamRaw;
+        } else {
+          team2AdjustedRaw = buyingTeamRaw;
+          team1AdjustedRaw = otherTeamRaw;
+        }
+      }
+    }
 
     let buyingTeamSucceeded: boolean;
-    
-    if (hokmWithoutPointsMode && gameType === 'حكم' && multiplier === 'عادي') {
-      // وضع بدون أبناط:
-      // إذا آحاد أبناط المشتري 6 أو أكثر، نقرب للعشرة ونخصم الفرق من الخصم
-      let adjustedBuyingRaw = buyingTeamRaw;
-      let adjustedOtherRaw = otherTeamRaw;
-      
-      const buyerOnesDigit = buyingTeamRaw % 10;
-      if (buyerOnesDigit >= 6) {
-        // تقريب للعشرة الأعلى
-        const roundedBuyer = Math.ceil(buyingTeamRaw / 10) * 10;
-        const difference = roundedBuyer - buyingTeamRaw;
-        
-        adjustedBuyingRaw = roundedBuyer;
-        adjustedOtherRaw = otherTeamRaw - difference;
-      }
-      
-      // المشتري ينجح إذا أبناطه المعدلة >= أبناط الخصم المعدلة
-      buyingTeamSucceeded = adjustedBuyingRaw >= adjustedOtherRaw;
-    } else {
-      // الطريقة العادية: المشتري يحتاج نصف الأبناط أو أكثر
-      const halfTotalRaw = totalRaw / 2;
-      buyingTeamSucceeded = buyingTeamRaw >= halfTotalRaw && buyingTeamRaw >= otherTeamRaw;
-    }
+
+    // الطريقة العادية: المشتري يحتاج نصف الأبناط أو أكثر
+    const halfTotalRaw = totalRaw / 2;
+    buyingTeamSucceeded = buyingTeamRaw >= halfTotalRaw && buyingTeamRaw >= otherTeamRaw;
 
     let winningTeam: 1 | 2;
     let team1FinalRaw: number;
@@ -387,8 +390,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         }
       } else {
         // عادي: كل فريق يأخذ نقاطه
-        team1FinalRaw = team1TotalRaw;
-        team2FinalRaw = team2TotalRaw;
+        team1FinalRaw = team1AdjustedRaw;
+        team2FinalRaw = team2AdjustedRaw;
         team1FinalProjects = team1ProjectsWithoutBaloot;
         team2FinalProjects = team2ProjectsWithoutBaloot;
         team1FinalBaloot = team1Baloot;
