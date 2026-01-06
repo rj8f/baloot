@@ -61,6 +61,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const { settings, toggleMute } = useSettings();
   
   const [showUndoConfirm, setShowUndoConfirm] = useState(false);
+  const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   
   // تهيئة اللعبة عند الفتح
@@ -239,7 +240,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
           <Button variant="ghost" size="icon" onClick={onBack} className="h-9 w-9">
             <Home className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="sm" onClick={saveAndReset} className="h-9 px-3 text-sm">
+          <Button variant="ghost" size="sm" onClick={() => setShowNewGameConfirm(true)} className="h-9 px-3 text-sm">
             صكة جديدة
           </Button>
         </div>
@@ -414,6 +415,33 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
               onClick={() => {
                 undoLast();
                 setShowUndoConfirm(false);
+              }}
+              className="py-5 text-lg font-bold"
+            >
+              نعم
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* تأكيد صكة جديدة */}
+      <Dialog open={showNewGameConfirm} onOpenChange={setShowNewGameConfirm}>
+        <DialogContent className="max-w-xs p-4" dir="rtl">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="text-center text-base">صكة جديدة؟</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowNewGameConfirm(false)}
+              className="py-5 text-lg font-bold"
+            >
+              لا
+            </Button>
+            <Button
+              onClick={() => {
+                saveAndReset();
+                setShowNewGameConfirm(false);
               }}
               className="py-5 text-lg font-bold"
             >
