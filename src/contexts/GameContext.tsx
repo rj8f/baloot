@@ -20,6 +20,7 @@ interface RoundInput {
   multiplier: Multiplier;
   kabootTeam?: 1 | 2 | null; // الفريق الذي حصل على كبوت (إن وجد)
   miyaDoubleOnly?: boolean; // في حكم مع ×3 أو ×4، الخصم يريد المية ×2 فقط
+  hokmWithoutPointsMode?: boolean; // وضع حكم بدون أبناط
 }
 
 export interface SimpleHistoryEntry {
@@ -271,7 +272,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const calculateRoundResult = (
     roundData: RoundInput
   ): { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number } => {
-    const { gameType, buyingTeam, team1RawPoints, team2RawPoints, team1Projects, team2Projects, multiplier, kabootTeam, miyaDoubleOnly } = roundData;
+    const { gameType, buyingTeam, team1RawPoints, team2RawPoints, team1Projects, team2Projects, multiplier, kabootTeam, miyaDoubleOnly, hokmWithoutPointsMode } = roundData;
     const otherTeam: 1 | 2 = buyingTeam === 1 ? 2 : 1;
 
     // كبوت: الفريق الفائز يحصل على 25 في الحكم أو 44 في الصن + مشاريعه
@@ -314,12 +315,30 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     const totalRaw = team1TotalRaw + team2TotalRaw;
 
     // التحقق من نجاح المشتري
-    // يجب أن يحصل على نصف البنط الكلي أو أكثر
+    // في وضع "بدون أبناط" للحكم العادي: نقرب للعشرات ونقارن
     const buyingTeamRaw = buyingTeam === 1 ? team1TotalRaw : team2TotalRaw;
     const otherTeamRaw = buyingTeam === 1 ? team2TotalRaw : team1TotalRaw;
+    const buyingTeamProjectsPoints = buyingTeam === 1 ? team1ProjectsWithoutBaloot : team2ProjectsWithoutBaloot;
+    const otherTeamProjectsPoints = buyingTeam === 1 ? team2ProjectsWithoutBaloot : team1ProjectsWithoutBaloot;
 
-    const halfTotalRaw = totalRaw / 2;
-    const buyingTeamSucceeded = buyingTeamRaw >= halfTotalRaw && buyingTeamRaw >= otherTeamRaw;
+    let buyingTeamSucceeded: boolean;
+    
+    if (hokmWithoutPointsMode && gameType === 'حكم' && multiplier === 'عادي') {
+      // وضع بدون أبناط: نجمع البنط + المشاريع ثم نقسم على 10 ونقرب
+      // المشاريع في الحكم: سرا=2، 50=5، مية=10 (كلها على 10)
+      const buyingTotal = buyingTeamRaw + buyingTeamProjectsPoints * 10;
+      const otherTotal = otherTeamRaw + otherTeamProjectsPoints * 10;
+      
+      // تقريب: إذا الرقم بعد القسمة على 10 أكبر من 0.5 يجبر، وإلا يكسر
+      const buyingRounded = Math.round(buyingTotal / 10);
+      const otherRounded = Math.round(otherTotal / 10);
+      
+      // المشتري ينجح إذا نقاطه مساوية أو أكثر
+      buyingTeamSucceeded = buyingRounded >= otherRounded;
+    } else {
+      const halfTotalRaw = totalRaw / 2;
+      buyingTeamSucceeded = buyingTeamRaw >= halfTotalRaw && buyingTeamRaw >= otherTeamRaw;
+    }
 
     let winningTeam: 1 | 2;
     let team1FinalRaw: number;

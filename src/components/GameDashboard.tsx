@@ -1,12 +1,14 @@
+import { useState } from 'react';
 import { useGame } from '@/contexts/GameContext';
 import { Button } from '@/components/ui/button';
 import ScoreBoard from './ScoreBoard';
 import AddRound from './AddRound';
 import RoundHistory from './RoundHistory';
 import WinnerModal from './WinnerModal';
+import SettingsDialog from './SettingsDialog';
 
 import MatchHistory from './MatchHistory';
-import { RotateCcw, History, Calculator, Home } from 'lucide-react';
+import { RotateCcw, History, Calculator, Home, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Sheet,
@@ -18,6 +20,7 @@ import {
 
 const GameDashboard = () => {
   const { game, resetGame, switchToSimple, goToSelection } = useGame();
+  const [showSettings, setShowSettings] = useState(false);
 
   if (!game) return null;
 
@@ -49,6 +52,16 @@ const GameDashboard = () => {
               </SheetContent>
             </Sheet>
             
+            {/* زر الإعدادات */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setShowSettings(true)}
+              title="الإعدادات"
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
+            
             {/* زر التبديل للحاسبة المختصرة */}
             <Button 
               variant="ghost" 
@@ -79,6 +92,9 @@ const GameDashboard = () => {
 
         {/* Winner Modal */}
         <WinnerModal />
+        
+        {/* Settings Dialog */}
+        <SettingsDialog open={showSettings} onOpenChange={setShowSettings} />
       </div>
     </div>
   );
