@@ -23,7 +23,7 @@ const ScoreBoard = ({ previewTeam1, previewTeam2 }: ScoreBoardProps) => {
       
       <div className="grid grid-cols-2 gap-3 relative z-10">
         {/* Team 1 - 3D Card */}
-        <div className="card-3d relative rounded-2xl p-4 text-center overflow-hidden bg-team-bg border border-border/50 shadow-xl">
+        <div className="relative rounded-2xl p-4 text-center overflow-hidden bg-team-bg border border-border/50 shadow-xl">
           {/* Glass overlay */}
           <div className="absolute inset-0 glass opacity-50" />
           {/* Gradient accent line */}
@@ -55,7 +55,7 @@ const ScoreBoard = ({ previewTeam1, previewTeam2 }: ScoreBoardProps) => {
         </div>
 
         {/* Team 2 - 3D Card */}
-        <div className="card-3d relative rounded-2xl p-4 text-center overflow-hidden bg-team-bg border border-border/50 shadow-xl">
+        <div className="relative rounded-2xl p-4 text-center overflow-hidden bg-team-bg border border-border/50 shadow-xl">
           {/* Glass overlay */}
           <div className="absolute inset-0 glass opacity-50" />
           {/* Gradient accent line */}
