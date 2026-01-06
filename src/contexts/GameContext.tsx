@@ -329,14 +329,17 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     const otherTeamRaw = buyingTeam === 1 ? team2TotalRaw : team1TotalRaw;
     const buyingTeamProjectsPoints = buyingTeam === 1 ? team1ProjectsWithoutBaloot : team2ProjectsWithoutBaloot;
     const otherTeamProjectsPoints = buyingTeam === 1 ? team2ProjectsWithoutBaloot : team1ProjectsWithoutBaloot;
+    const buyingTeamBaloot = buyingTeam === 1 ? team1Baloot : team2Baloot;
+    const otherTeamBaloot = buyingTeam === 1 ? team2Baloot : team1Baloot;
 
     let buyingTeamSucceeded: boolean;
     
     if (hokmWithoutPointsMode && gameType === 'حكم' && multiplier === 'عادي') {
       // وضع بدون أبناط: نقارن بعد التقريب للعشرات
-      // نضيف المشاريع (قيمها: 2/5/10) مباشرة للأبناط قبل القسمة على 10
-      const buyingTotal = buyingTeamRaw + buyingTeamProjectsPoints;
-      const otherTotal = otherTeamRaw + otherTeamProjectsPoints;
+      // نضيف المشاريع + البلوت للأبناط قبل القسمة على 10
+      // قيم المشاريع: سرا=2، 50=5، مية=10، بلوت=2
+      const buyingTotal = buyingTeamRaw + buyingTeamProjectsPoints + buyingTeamBaloot;
+      const otherTotal = otherTeamRaw + otherTeamProjectsPoints + otherTeamBaloot;
       
       // دالة تقريب خاصة: أكبر من 0.5 يجبر، 0.5 أو أقل يكسر
       const customRound = (value: number): number => {
