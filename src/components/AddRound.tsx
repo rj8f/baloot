@@ -45,11 +45,7 @@ const AddRound = () => {
   const [showScanner, setShowScanner] = useState(false);
   const [kabootTeam, setKabootTeam] = useState<1 | 2 | null>(null);
   const [showKabootDialog, setShowKabootDialog] = useState(false);
-  const [showMiyaDialog, setShowMiyaDialog] = useState(false);
-  const [pendingSubmit, setPendingSubmit] = useState<{
-    team1Projects: TeamProjects;
-    team2Projects: TeamProjects;
-  } | null>(null);
+  
 
   const unifiedHistory = getUnifiedHistory();
 
@@ -142,29 +138,23 @@ const AddRound = () => {
     بلوت: balootTeam === 2 ? balootCount : 0,
   };
 
-  // تحديد إذا كان هناك مية في حكم مع ×3 أو ×4
-  const shouldAskForMiyaMultiplier = () => {
-    // إذا الإعداد مغلق، لا تسأل
-    if (!settings.showMiyaPopup) return false;
+  // تحديد إذا المية تكون دائماً ×2 في حكم مع ×3 أو ×4
+  const shouldApplyMiyaDouble = () => {
+    if (!settings.miyaAlwaysDouble) return false;
     if (gameType !== 'حكم') return false;
     if (multiplier !== '×3' && multiplier !== '×4') return false;
     if (kabootTeam) return false;
     
-    // اسأل إذا أي فريق عنده مية
+    // تطبق ×2 إذا أي فريق عنده مية
     return team1Projects.مية > 0 || team2Projects.مية > 0;
   };
 
   const handleSubmit = () => {
     if ((totals.team1Cards === 0 && totals.team2Cards === 0) && multiplier !== 'قهوة' && !kabootTeam) return;
 
-    // تحقق إذا كان يجب سؤال الخصم عن طريقة حساب المية
-    if (shouldAskForMiyaMultiplier()) {
-      setPendingSubmit({ team1Projects, team2Projects });
-      setShowMiyaDialog(true);
-      return;
-    }
-
-    submitRound(team1Projects, team2Projects, false);
+    // إذا الإعداد مفعل، طبق ×2 على المية تلقائياً بدون popup
+    const miyaDoubleOnly = shouldApplyMiyaDouble();
+    submitRound(team1Projects, team2Projects, miyaDoubleOnly);
   };
 
   const submitRound = (t1Projects: TeamProjects, t2Projects: TeamProjects, miyaDoubleOnly: boolean) => {
@@ -190,24 +180,10 @@ const AddRound = () => {
     setProjects(createEmptyProjects());
     setMultiplier('عادي');
     setKabootTeam(null);
-    setPendingSubmit(null);
     setBalootTeam(null);
     setBalootCount(0);
   };
 
-  // الخصم يريد المية فقط ×2
-  const handleMiyaDoubleOnly = () => {
-    if (!pendingSubmit) return;
-    setShowMiyaDialog(false);
-    submitRound(pendingSubmit.team1Projects, pendingSubmit.team2Projects, true);
-  };
-
-  // الخصم يريد المية على حسب المضاعف
-  const handleMiyaWithMultiplier = () => {
-    if (!pendingSubmit) return;
-    setShowMiyaDialog(false);
-    submitRound(pendingSubmit.team1Projects, pendingSubmit.team2Projects, false);
-  };
 
   const handleScanSuccess = (totalPoints: number) => {
     setEntryTeamCardsRaw(totalPoints.toString());
@@ -570,29 +546,6 @@ const AddRound = () => {
         />
       )}
 
-      {/* Dialog المية */}
-      <Dialog open={showMiyaDialog} onOpenChange={setShowMiyaDialog}>
-        <DialogContent className="max-w-xs p-4" dir="rtl">
-          <DialogHeader className="pb-2">
-            <DialogTitle className="text-center text-base">المية؟</DialogTitle>
-          </DialogHeader>
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant="outline"
-              onClick={handleMiyaDoubleOnly}
-              className="py-5 text-lg font-bold"
-            >
-              ×2
-            </Button>
-            <Button
-              onClick={handleMiyaWithMultiplier}
-              className="py-5 text-lg font-bold"
-            >
-              {multiplier}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Kaboot Dialog */}
       <Dialog open={showKabootDialog} onOpenChange={setShowKabootDialog}>
