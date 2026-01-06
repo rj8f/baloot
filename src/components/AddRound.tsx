@@ -145,15 +145,15 @@ const AddRound = () => {
     if (gameType !== 'حكم') return false;
     if (multiplier !== '×3' && multiplier !== '×4') return false;
     if (kabootTeam) return false;
-    
-    // تطبق ×2 إذا أي فريق عنده مية
+
+    // نطبق "أقصاها ×2" إذا أي فريق عنده مية
     return team1Projects.مية > 0 || team2Projects.مية > 0;
   };
 
   const handleSubmit = () => {
     if ((totals.team1Cards === 0 && totals.team2Cards === 0) && multiplier !== 'قهوة' && !kabootTeam) return;
 
-    // إذا الإعداد مفعل، طبق ×2 على المية تلقائياً بدون popup
+    // إذا الإعداد مُغلق، خلّ المية أقصاها ×2 تلقائياً (بدون popup)
     const miyaDoubleOnly = shouldApplyMiyaDouble();
     submitRound(team1Projects, team2Projects, miyaDoubleOnly);
   };
@@ -203,6 +203,7 @@ const AddRound = () => {
       team2Projects,
       multiplier,
       kabootTeam,
+      miyaDoubleOnly: shouldApplyMiyaDouble(),
       hokmWithoutPointsMode: settings.hokmWithoutPointsMode,
     });
   };
