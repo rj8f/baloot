@@ -390,8 +390,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         }
       } else {
         // عادي: كل فريق يأخذ نقاطه
-        team1FinalRaw = team1AdjustedRaw;
-        team2FinalRaw = team2AdjustedRaw;
+        // إذا كانت الخاصية مفعلة، نستخدم النقاط المُعدَّلة
+        const useAdjusted = hokmWithoutPointsMode && gameType === 'حكم' && multiplier === 'عادي';
+        team1FinalRaw = useAdjusted ? team1AdjustedRaw : team1TotalRaw;
+        team2FinalRaw = useAdjusted ? team2AdjustedRaw : team2TotalRaw;
         team1FinalProjects = team1ProjectsWithoutBaloot;
         team2FinalProjects = team2ProjectsWithoutBaloot;
         team1FinalBaloot = team1Baloot;
