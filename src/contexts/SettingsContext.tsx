@@ -2,8 +2,14 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 
 type ThemeMode = 'dark' | 'light' | 'auto';
 
+// خيارات المشاريع حسب الدبل:
+// 'full' = كل المشاريع تتبع المضاعف الكامل
+// 'miya-x2' = المية فقط أقصاها ×2
+// 'all-x2' = السرا والخمسين والمية كلها أقصاها ×2
+type ProjectMultiplierMode = 'full' | 'miya-x2' | 'all-x2';
+
 interface Settings {
-  miyaFollowsMultiplier: boolean; // المية حسب الدبل (true = تتبع المضاعف، false = أقصاها x2)
+  projectMultiplierMode: ProjectMultiplierMode; // وضع المشاريع حسب الدبل
   themeMode: ThemeMode;           // الوضع: ليلي، نهاري، تلقائي
   hokmWithoutPointsMode: boolean; // حكم عادي بدون أبناط (تقريب العشرات)
   isMuted: boolean;              // كتم صوت الإعلان
@@ -19,7 +25,7 @@ interface SettingsContextType {
 }
 
 const defaultSettings: Settings = {
-  miyaFollowsMultiplier: true,  // الافتراضي: المية تتبع المضاعف
+  projectMultiplierMode: 'full',  // الافتراضي: كل المشاريع تتبع المضاعف
   themeMode: 'dark',
   hokmWithoutPointsMode: false,
   isMuted: false,
@@ -42,9 +48,13 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       try {
         const parsed = JSON.parse(saved);
 
-        // توافق مع الإصدارات السابقة: miyaAlwaysDouble => miyaFollowsMultiplier
-        if (typeof parsed?.miyaFollowsMultiplier !== 'boolean' && typeof parsed?.miyaAlwaysDouble === 'boolean') {
-          parsed.miyaFollowsMultiplier = !parsed.miyaAlwaysDouble;
+        // توافق مع الإصدارات السابقة: miyaFollowsMultiplier => projectMultiplierMode
+        if (typeof parsed?.projectMultiplierMode !== 'string') {
+          if (typeof parsed?.miyaFollowsMultiplier === 'boolean') {
+            parsed.projectMultiplierMode = parsed.miyaFollowsMultiplier ? 'full' : 'miya-x2';
+          } else if (typeof parsed?.miyaAlwaysDouble === 'boolean') {
+            parsed.projectMultiplierMode = parsed.miyaAlwaysDouble ? 'miya-x2' : 'full';
+          }
         }
 
         // توافق مع الإصدارات السابقة: darkMode => themeMode

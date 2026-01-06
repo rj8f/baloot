@@ -142,33 +142,44 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
     بلوت: balootTeam === 2 ? balootCount : 0,
   };
 
-  // تحديد إذا المية تكون أقصاها ×2 في حكم مع ×3 أو ×4
-  const shouldApplyMiyaDouble = () => {
-    // إذا الإعداد مفعل = المية تتبع المضاعف الكامل، لا حاجة لتطبيق ×2
-    console.log('🔍 miyaFollowsMultiplier:', settings.miyaFollowsMultiplier);
-    if (settings.miyaFollowsMultiplier) {
-      console.log('➡️ المية تتبع المضاعف الكامل');
-      return false;
+  // تحديد وضع المشاريع حسب الدبل
+  const getProjectMultiplierInfo = () => {
+    const mode = settings.projectMultiplierMode;
+    
+    // إذا 'full' = كل المشاريع تتبع المضاعف الكامل
+    if (mode === 'full') {
+      return { miyaDoubleOnly: false, allProjectsDoubleOnly: false };
     }
-    if (gameType !== 'حكم') return false;
-    if (multiplier !== '×3' && multiplier !== '×4') return false;
-    if (kabootTeam) return false;
-
-    // نطبق "أقصاها ×2" إذا أي فريق عنده مية
-    const hasMiya = team1Projects.مية > 0 || team2Projects.مية > 0;
-    console.log('➡️ المية أقصاها ×2، يوجد مية؟', hasMiya);
-    return hasMiya;
+    
+    // لا نطبق القيود إلا في حكم مع ×3 أو ×4
+    if (gameType !== 'حكم') return { miyaDoubleOnly: false, allProjectsDoubleOnly: false };
+    if (multiplier !== '×3' && multiplier !== '×4') return { miyaDoubleOnly: false, allProjectsDoubleOnly: false };
+    if (kabootTeam) return { miyaDoubleOnly: false, allProjectsDoubleOnly: false };
+    
+    if (mode === 'miya-x2') {
+      // المية فقط أقصاها ×2
+      const hasMiya = team1Projects.مية > 0 || team2Projects.مية > 0;
+      return { miyaDoubleOnly: hasMiya, allProjectsDoubleOnly: false };
+    }
+    
+    if (mode === 'all-x2') {
+      // كل المشاريع (سرا، 50، 100) أقصاها ×2
+      const hasProjects = (team1Projects.سرا > 0 || team1Projects.خمسين > 0 || team1Projects.مية > 0) ||
+                          (team2Projects.سرا > 0 || team2Projects.خمسين > 0 || team2Projects.مية > 0);
+      return { miyaDoubleOnly: false, allProjectsDoubleOnly: hasProjects };
+    }
+    
+    return { miyaDoubleOnly: false, allProjectsDoubleOnly: false };
   };
 
   const handleSubmit = () => {
     if ((totals.team1Cards === 0 && totals.team2Cards === 0) && multiplier !== 'قهوة' && !kabootTeam) return;
 
-    // إذا الإعداد مُغلق، خلّ المية أقصاها ×2 تلقائياً (بدون popup)
-    const miyaDoubleOnly = shouldApplyMiyaDouble();
-    submitRound(team1Projects, team2Projects, miyaDoubleOnly);
+    const { miyaDoubleOnly, allProjectsDoubleOnly } = getProjectMultiplierInfo();
+    submitRound(team1Projects, team2Projects, miyaDoubleOnly, allProjectsDoubleOnly);
   };
 
-  const submitRound = (t1Projects: TeamProjects, t2Projects: TeamProjects, miyaDoubleOnly: boolean) => {
+  const submitRound = (t1Projects: TeamProjects, t2Projects: TeamProjects, miyaDoubleOnly: boolean, allProjectsDoubleOnly: boolean) => {
     const team1Raw = kabootTeam ? 0 : totals.team1Cards;
     const team2Raw = kabootTeam ? 0 : totals.team2Cards;
 
@@ -182,6 +193,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
       multiplier,
       kabootTeam,
       miyaDoubleOnly,
+      allProjectsDoubleOnly,
       hokmWithoutPointsMode: settings.hokmWithoutPointsMode,
     });
 
@@ -204,6 +216,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
   const getPreview = () => {
     const team1Raw = kabootTeam ? 0 : totals.team1Cards;
     const team2Raw = kabootTeam ? 0 : totals.team2Cards;
+    const { miyaDoubleOnly, allProjectsDoubleOnly } = getProjectMultiplierInfo();
     return previewRoundResult({
       gameType,
       buyingTeam,
@@ -213,7 +226,8 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
       team2Projects,
       multiplier,
       kabootTeam,
-      miyaDoubleOnly: shouldApplyMiyaDouble(),
+      miyaDoubleOnly,
+      allProjectsDoubleOnly,
       hokmWithoutPointsMode: settings.hokmWithoutPointsMode,
     });
   };
