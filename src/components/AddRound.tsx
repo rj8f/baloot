@@ -270,7 +270,7 @@ const AddRound = () => {
                 <button
                   onClick={() => setEntryTeam(1)}
                   className={cn(
-                    "px-3 rounded-md text-xs font-medium transition-all flex items-center",
+                    "w-10 rounded-md text-xs font-medium transition-all flex items-center justify-center",
                     entryTeam === 1 
                       ? "bg-blue-600 text-white" 
                       : "text-muted-foreground"
@@ -281,7 +281,7 @@ const AddRound = () => {
                 <button
                   onClick={() => setEntryTeam(2)}
                   className={cn(
-                    "px-3 rounded-md text-xs font-medium transition-all flex items-center",
+                    "w-10 rounded-md text-xs font-medium transition-all flex items-center justify-center",
                     entryTeam === 2 
                       ? "bg-rose-600 text-white" 
                       : "text-muted-foreground"
