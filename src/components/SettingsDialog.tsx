@@ -99,7 +99,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
           <div className="p-3 rounded-lg bg-muted/50 space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold">×2</span>
-              <Label className="text-sm">المشاريع حسب الدبل</Label>
+              <Label className="text-sm">حسبة المشاريع في الثري والفور</Label>
             </div>
             <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
               <button
@@ -111,7 +111,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                مع الدبل
+                مع الـ x3 او الـ x4
               </button>
               <button
                 onClick={() => updateSettings({ projectMultiplierMode: 'miya-x2' })}
@@ -122,7 +122,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                المية ×2
+                المية بس x2
               </button>
               <button
                 onClick={() => updateSettings({ projectMultiplierMode: 'all-x2' })}
