@@ -245,6 +245,7 @@ const AddRound = () => {
           </div>
 
           {/* Buying Team - Large Buttons */}
+          <span className="text-xs text-muted-foreground">من المشتري؟</span>
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => setBuyingTeam(1)}
