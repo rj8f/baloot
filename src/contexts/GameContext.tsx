@@ -469,14 +469,19 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     // إذا ×3 والخصم يبي ×2: المية = 20 بدل 30
     // إذا ×4 والخصم يبي ×2: المية = 20 بدل 40
     let miyaAdjustment = 0;
+    console.log('🎯 miyaDoubleOnly:', miyaDoubleOnly, 'gameType:', gameType, 'multiplier:', multiplier);
     if (miyaDoubleOnly && gameType === 'حكم' && (multiplier === '×3' || multiplier === '×4')) {
-      const opponentProjects = otherTeam === 1 ? team1Projects : team2Projects;
-      const miyaCount = opponentProjects.مية;
-      if (miyaCount > 0) {
+      // نبحث عن المية عند أي فريق
+      const team1MiyaCount = team1Projects.مية;
+      const team2MiyaCount = team2Projects.مية;
+      const totalMiyaCount = team1MiyaCount + team2MiyaCount;
+      console.log('📊 عدد المية: فريق1=', team1MiyaCount, 'فريق2=', team2MiyaCount);
+      if (totalMiyaCount > 0) {
         // المية = 10 نقاط في الحكم
         // الفرق = مية × (المضاعف - 2) × 10
         const miyaBaseValue = 10; // قيمة المية في الحكم
-        miyaAdjustment = miyaCount * miyaBaseValue * (multiplierFactor - 2);
+        miyaAdjustment = totalMiyaCount * miyaBaseValue * (multiplierFactor - 2);
+        console.log('💰 تعديل المية:', miyaAdjustment);
       }
     }
 
