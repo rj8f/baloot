@@ -12,14 +12,14 @@ export interface TeamProjects {
   بلوت: number;    // عدد مشاريع البلوت (شايب وبنت الحكم)
 }
 
-// قيم المشاريع حسب نوع اللعب
+// قيم المشاريع كنقاط نهائية حسب نوع اللعب
 export const PROJECT_VALUES = {
   صن: {
-    سرا: 4,
-    خمسين: 10,
-    مية: 20,
-    أربعمية: 40,
-    بلوت: 0, // لا يوجد بلوت في الصن
+    سرا: 4,      // 20 بنط × 2 ÷ 10 = 4 نقاط
+    خمسين: 10,   // 50 بنط × 2 ÷ 10 = 10 نقاط
+    مية: 20,     // 100 بنط × 2 ÷ 10 = 20 نقاط
+    أربعمية: 40, // 200 بنط × 2 ÷ 10 = 40 نقاط
+    بلوت: 0,     // لا يوجد بلوت في الصن
   },
   حكم: {
     سرا: 2,
@@ -29,6 +29,25 @@ export const PROJECT_VALUES = {
     بلوت: 2,
   },
 } as const;
+
+// قيم المشاريع كأبناط في الصن (للحسابات الداخلية)
+export const SUN_PROJECT_RAW_VALUES = {
+  سرا: 20,
+  خمسين: 50,
+  مية: 100,
+  أربعمية: 200,
+  بلوت: 0,
+} as const;
+
+// حساب أبناط المشاريع في الصن
+export const calculateSunProjectsRaw = (projects: TeamProjects): number => {
+  return (
+    projects.سرا * SUN_PROJECT_RAW_VALUES.سرا +
+    projects.خمسين * SUN_PROJECT_RAW_VALUES.خمسين +
+    projects.مية * SUN_PROJECT_RAW_VALUES.مية +
+    projects.أربعمية * SUN_PROJECT_RAW_VALUES.أربعمية
+  );
+};
 
 export interface Round {
   id: string;
