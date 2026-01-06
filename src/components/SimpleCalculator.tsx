@@ -256,7 +256,10 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
 
       {/* Header */}
       <div className="flex justify-between items-center p-4 border-b bg-background/80 backdrop-blur-sm">
-        <h1 className="text-xl font-bold text-primary">البلوت</h1>
+        <Button variant="outline" size="sm" onClick={saveAndReset}>
+          <RotateCcw className="h-4 w-4 ml-1" />
+          صكة جديدة
+        </Button>
         <div className="flex items-center gap-1">
           {/* Match History Sheet */}
           <Sheet>
@@ -358,13 +361,9 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex-shrink-0 flex justify-center items-center gap-3 py-4">
+      <div className="flex-shrink-0 flex justify-center items-center py-4">
         <Button variant="outline" onClick={handleUndo} disabled={unifiedHistory.length === 0}>
           تراجع
-        </Button>
-        <Button variant="outline" onClick={saveAndReset}>
-          <RotateCcw className="h-4 w-4 ml-1" />
-          صكة جديدة
         </Button>
       </div>
 

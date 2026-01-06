@@ -31,7 +31,7 @@ const GameDashboard = () => {
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b bg-background/80 backdrop-blur-sm sticky top-0 z-10">
-          <h1 className="text-xl font-bold text-primary">البلوت</h1>
+          <div></div>
           <div className="flex items-center gap-1">
             
             {/* Match History Sheet */}
