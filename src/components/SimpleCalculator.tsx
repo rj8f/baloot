@@ -255,17 +255,31 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
       </Dialog>
 
       {/* Header */}
-      <div className="flex justify-between items-center p-4 border-b bg-background/80 backdrop-blur-sm">
-        <Button variant="outline" size="sm" onClick={saveAndReset}>
-          <RotateCcw className="h-4 w-4 ml-1" />
-          صكة جديدة
+      <div className="flex items-center justify-between p-3 border-b bg-background/80 backdrop-blur-sm">
+        {/* Left: Home */}
+        <Button variant="ghost" size="icon" onClick={onBack} className="h-9 w-9">
+          <Home className="h-5 w-5" />
         </Button>
-        <div className="flex items-center gap-1">
-          {/* Match History Sheet */}
+        
+        {/* Right: Actions */}
+        <div className="flex items-center gap-0.5">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-9 w-9"
+            onClick={toggleMute}
+          >
+            {settings.isMuted ? (
+              <VolumeX className="h-5 w-5 text-muted-foreground" />
+            ) : (
+              <Volume2 className="h-5 w-5" />
+            )}
+          </Button>
+          
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" title="سجل المباريات">
-                <History className="h-4 w-4" />
+              <Button variant="ghost" size="icon" className="h-9 w-9">
+                <History className="h-5 w-5" />
               </Button>
             </SheetTrigger>
             <SheetContent side="top" className="h-[70vh]">
@@ -277,30 +291,19 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
               </div>
             </SheetContent>
           </Sheet>
-          {/* زر كتم الصوت */}
+          
           <Button 
             variant="ghost" 
-            size="icon" 
-            onClick={toggleMute}
-            title={settings.isMuted ? "تفعيل الصوت" : "كتم الصوت"}
-          >
-            {settings.isMuted ? (
-              <VolumeX className="h-4 w-4 text-muted-foreground" />
-            ) : (
-              <Volume2 className="h-4 w-4" />
-            )}
-          </Button>
-          {/* زر التبديل للحاسبة المتقدمة */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
+            size="icon"
+            className="h-9 w-9"
             onClick={switchToAdvanced}
-            title="الحاسبة المتقدمة"
           >
-            <Calculator className="h-4 w-4" />
+            <Calculator className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={onBack} title="الرئيسية">
-            <Home className="h-4 w-4" />
+          
+          <Button variant="outline" size="sm" onClick={saveAndReset} className="h-9 px-3">
+            <RotateCcw className="h-4 w-4 ml-1" />
+            جديدة
           </Button>
         </div>
       </div>

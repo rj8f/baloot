@@ -30,63 +30,59 @@ const GameDashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 pb-8">
       <div className="max-w-lg mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-background/80 backdrop-blur-sm sticky top-0 z-10">
-          <div></div>
-          <div className="flex items-center gap-1">
+        <div className="flex items-center justify-between p-3 border-b bg-background/80 backdrop-blur-sm sticky top-0 z-10">
+          {/* Left: Home */}
+          <Button variant="ghost" size="icon" onClick={goToSelection} className="h-9 w-9">
+            <Home className="h-5 w-5" />
+          </Button>
+          
+          {/* Right: Actions */}
+          <div className="flex items-center gap-0.5">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="h-9 w-9"
+              onClick={toggleMute}
+            >
+              {settings.isMuted ? (
+                <VolumeX className="h-5 w-5 text-muted-foreground" />
+              ) : (
+                <Volume2 className="h-5 w-5" />
+              )}
+            </Button>
             
-            {/* Match History Sheet */}
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" title="سجل المباريات">
-                  <History className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <History className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="top" className="h-[70vh]">
                 <SheetHeader>
                   <SheetTitle>سجل المباريات</SheetTitle>
                 </SheetHeader>
-              <div className="mt-4 overflow-auto h-full pb-8">
-                <MatchHistory expandedByDefault />
-              </div>
+                <div className="mt-4 overflow-auto h-full pb-8">
+                  <MatchHistory expandedByDefault />
+                </div>
               </SheetContent>
             </Sheet>
             
-            {/* زر كتم الصوت */}
             <Button 
               variant="ghost" 
-              size="icon" 
-              onClick={toggleMute}
-              title={settings.isMuted ? "تفعيل الصوت" : "كتم الصوت"}
-            >
-              {settings.isMuted ? (
-                <VolumeX className="h-4 w-4 text-muted-foreground" />
-              ) : (
-                <Volume2 className="h-4 w-4" />
-              )}
-            </Button>
-            
-            {/* زر الإعدادات */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
+              size="icon"
+              className="h-9 w-9"
               onClick={() => setShowSettings(true)}
-              title="الإعدادات"
             >
-              <Settings className="h-4 w-4" />
+              <Settings className="h-5 w-5" />
             </Button>
             
-            {/* زر التبديل للحاسبة المختصرة */}
             <Button 
               variant="ghost" 
-              size="icon" 
+              size="icon"
+              className="h-9 w-9"
               onClick={switchToSimple}
-              title="الحاسبة المختصرة"
             >
-              <Calculator className="h-4 w-4" />
-            </Button>
-            
-            <Button variant="ghost" size="icon" onClick={goToSelection} title="الرئيسية">
-              <Home className="h-4 w-4" />
+              <Calculator className="h-5 w-5" />
             </Button>
           </div>
         </div>
