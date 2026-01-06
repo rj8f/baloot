@@ -101,6 +101,30 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('baloot_simple_history', JSON.stringify(simpleHistory));
   }, [simpleHistory]);
 
+  // دالة الإعلان الصوتي للنتيجة
+  const announceScore = (team1Name: string, team2Name: string, team1Score: number, team2Score: number) => {
+    if ('speechSynthesis' in window) {
+      // إيقاف أي إعلان سابق
+      window.speechSynthesis.cancel();
+      
+      const announcement = `${team1Name} ${team1Score}، ${team2Name} ${team2Score}`;
+      const utterance = new SpeechSynthesisUtterance(announcement);
+      utterance.lang = 'ar-SA';
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      
+      // اختيار صوت عربي إن وجد
+      const voices = window.speechSynthesis.getVoices();
+      const arabicVoice = voices.find(v => v.lang.startsWith('ar'));
+      if (arabicVoice) {
+        utterance.voice = arabicVoice;
+      }
+      
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
   const createNewGame = () => ({
     id: crypto.randomUUID(),
     team1Name: 'لنا',
@@ -402,6 +426,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     };
 
     setGame(updatedGame);
+
+    // إعلان النتيجة صوتياً
+    announceScore(game.team1Name, game.team2Name, newTeam1Score, newTeam2Score);
 
     // حفظ المباراة عند انتهائها
     if (winner) {
