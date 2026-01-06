@@ -64,7 +64,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
           <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold">×2</span>
-              <Label htmlFor="miya-double" className="text-sm">دبل المية</Label>
+              <Label htmlFor="miya-double" className="text-sm">المية ما تزيد عن الدبل</Label>
             </div>
             <Switch
               id="miya-double"
