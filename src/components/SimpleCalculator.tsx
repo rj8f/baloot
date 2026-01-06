@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowUp, RotateCcw, Home, History, Trophy, Crown, Star, Calculator, Volume2, VolumeX, Settings } from 'lucide-react';
@@ -79,11 +79,19 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const [team1Input, setTeam1Input] = useState('');
   const [team2Input, setTeam2Input] = useState('');
   const [arrowRotation, setArrowRotation] = useState(0);
+  
+  const team1InputRef = useRef<HTMLInputElement>(null);
+  const team2InputRef = useRef<HTMLInputElement>(null);
 
-  const handleInputChange = (value: string, setter: (val: string) => void) => {
+  const handleInputChange = (value: string, setter: (val: string) => void, targetRef?: React.RefObject<HTMLInputElement>) => {
     const converted = arabicToEnglish(value);
     const cleaned = converted.replace(/[^0-9]/g, '');
     setter(cleaned);
+    
+    // انتقال تلقائي عند إدخال رقمين
+    if (cleaned.length >= 2 && targetRef?.current) {
+      targetRef.current.focus();
+    }
   };
 
   const rotateArrow = () => {
@@ -329,11 +337,12 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
       <div className="flex-shrink-0 flex justify-center items-center gap-4 py-6 px-4">
         {/* Team 1 Input - لنا */}
         <Input
+          ref={team1InputRef}
           type="tel"
           inputMode="numeric"
           pattern="[0-9]*"
           value={team1Input}
-          onChange={(e) => handleInputChange(e.target.value, setTeam1Input)}
+          onChange={(e) => handleInputChange(e.target.value, setTeam1Input, team2InputRef)}
           placeholder="لنا"
           className="w-24 h-16 text-center text-2xl font-bold"
         />
@@ -349,11 +358,12 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
 
         {/* Team 2 Input - لهم */}
         <Input
+          ref={team2InputRef}
           type="tel"
           inputMode="numeric"
           pattern="[0-9]*"
           value={team2Input}
-          onChange={(e) => handleInputChange(e.target.value, setTeam2Input)}
+          onChange={(e) => handleInputChange(e.target.value, setTeam2Input, team1InputRef)}
           placeholder="لهم"
           className="w-24 h-16 text-center text-2xl font-bold"
         />
