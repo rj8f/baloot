@@ -255,39 +255,14 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
       </Dialog>
 
       {/* Header */}
-      <div className="flex justify-between items-center p-4">
-        <Button variant="outline" size="sm" onClick={saveAndReset}>
-          <RotateCcw className="h-4 w-4 ml-1" />
-          صكة جديدة
-        </Button>
+      <div className="flex justify-between items-center p-4 border-b bg-background/80 backdrop-blur-sm">
+        <h1 className="text-xl font-bold text-primary">البلوت</h1>
         <div className="flex items-center gap-1">
-          {/* زر كتم الصوت */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={toggleMute}
-            title={settings.isMuted ? "تفعيل الصوت" : "كتم الصوت"}
-          >
-            {settings.isMuted ? (
-              <VolumeX className="h-5 w-5 text-muted-foreground" />
-            ) : (
-              <Volume2 className="h-5 w-5" />
-            )}
-          </Button>
-          {/* زر التبديل للحاسبة المتقدمة */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={switchToAdvanced}
-            title="الحاسبة المتقدمة"
-          >
-            <Calculator className="h-5 w-5" />
-          </Button>
           {/* Match History Sheet */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" title="سجل المباريات">
-                <History className="h-5 w-5" />
+                <History className="h-4 w-4" />
               </Button>
             </SheetTrigger>
             <SheetContent side="top" className="h-[70vh]">
@@ -299,8 +274,30 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
               </div>
             </SheetContent>
           </Sheet>
-          <Button variant="ghost" size="icon" onClick={onBack}>
-            <Home className="h-5 w-5" />
+          {/* زر كتم الصوت */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleMute}
+            title={settings.isMuted ? "تفعيل الصوت" : "كتم الصوت"}
+          >
+            {settings.isMuted ? (
+              <VolumeX className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <Volume2 className="h-4 w-4" />
+            )}
+          </Button>
+          {/* زر التبديل للحاسبة المتقدمة */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={switchToAdvanced}
+            title="الحاسبة المتقدمة"
+          >
+            <Calculator className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={onBack} title="الرئيسية">
+            <Home className="h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -361,9 +358,13 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex-shrink-0 flex justify-center items-center py-4">
+      <div className="flex-shrink-0 flex justify-center items-center gap-3 py-4">
         <Button variant="outline" onClick={handleUndo} disabled={unifiedHistory.length === 0}>
           تراجع
+        </Button>
+        <Button variant="outline" onClick={saveAndReset}>
+          <RotateCcw className="h-4 w-4 ml-1" />
+          صكة جديدة
         </Button>
       </div>
 
