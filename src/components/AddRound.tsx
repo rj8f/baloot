@@ -141,13 +141,19 @@ const AddRound = () => {
   // تحديد إذا المية تكون أقصاها ×2 في حكم مع ×3 أو ×4
   const shouldApplyMiyaDouble = () => {
     // إذا الإعداد مفعل = المية تتبع المضاعف الكامل، لا حاجة لتطبيق ×2
-    if (settings.miyaFollowsMultiplier) return false;
+    console.log('🔍 miyaFollowsMultiplier:', settings.miyaFollowsMultiplier);
+    if (settings.miyaFollowsMultiplier) {
+      console.log('➡️ المية تتبع المضاعف الكامل');
+      return false;
+    }
     if (gameType !== 'حكم') return false;
     if (multiplier !== '×3' && multiplier !== '×4') return false;
     if (kabootTeam) return false;
 
     // نطبق "أقصاها ×2" إذا أي فريق عنده مية
-    return team1Projects.مية > 0 || team2Projects.مية > 0;
+    const hasMiya = team1Projects.مية > 0 || team2Projects.مية > 0;
+    console.log('➡️ المية أقصاها ×2، يوجد مية؟', hasMiya);
+    return hasMiya;
   };
 
   const handleSubmit = () => {
