@@ -16,13 +16,11 @@ const WinnerModal = () => {
 
   useEffect(() => {
     if (game?.winner) {
-      // Fire confetti celebration
+      // Fire confetti celebration - grayscale
       const duration = 3000;
       const end = Date.now() + duration;
 
-      const colors = game.winner === 1 
-        ? ['#3b82f6', '#60a5fa', '#93c5fd'] // Blue team colors
-        : ['#f43f5e', '#fb7185', '#fda4af']; // Rose team colors
+      const colors = ['#ffffff', '#a0a0a0', '#606060', '#303030'];
 
       const frame = () => {
         confetti({
@@ -74,44 +72,30 @@ const WinnerModal = () => {
         {/* Animated background gradient */}
         <div className={cn(
           "absolute inset-0 opacity-20 animate-pulse",
-          game.winner === 1 
-            ? "bg-gradient-to-br from-blue-500 via-blue-400 to-blue-600" 
-            : "bg-gradient-to-br from-rose-500 via-rose-400 to-rose-600"
+          "bg-gradient-to-br from-foreground/50 via-foreground/30 to-foreground/50"
         )} />
         
         <DialogHeader className="relative">
           <div className="flex justify-center mb-2">
-            <div className={cn(
-              "p-4 rounded-full",
-              game.winner === 1 ? "bg-blue-500/20" : "bg-rose-500/20"
-            )}>
-              <Trophy className={cn(
-                "h-12 w-12 animate-bounce",
-                game.winner === 1 ? "text-blue-400" : "text-rose-400"
-              )} />
+            <div className="p-4 rounded-full bg-foreground/10">
+              <Trophy className="h-12 w-12 animate-bounce text-foreground" />
             </div>
           </div>
           <DialogTitle className="text-2xl flex items-center justify-center gap-2">
-            <Crown className="h-6 w-6 text-amber-400" />
+            <Crown className="h-6 w-6 text-foreground" />
             <span>مبروك الفوز!</span>
-            <Crown className="h-6 w-6 text-amber-400" />
+            <Crown className="h-6 w-6 text-foreground" />
           </DialogTitle>
         </DialogHeader>
 
         <div className="py-6 relative">
-          <div className={cn(
-            "text-4xl font-bold mb-4 flex items-center justify-center gap-2",
-            game.winner === 1 ? "text-blue-400" : "text-rose-400"
-          )}>
+          <div className="text-4xl font-bold mb-4 flex items-center justify-center gap-2 text-foreground">
             <Star className="h-6 w-6 fill-current" />
             {winnerName}
             <Star className="h-6 w-6 fill-current" />
           </div>
           
-          <div className={cn(
-            "text-7xl font-bold mb-2 tabular-nums",
-            game.winner === 1 ? "text-blue-400" : "text-rose-400"
-          )}>
+          <div className="text-7xl font-bold mb-2 tabular-nums text-foreground">
             {winnerScore}
           </div>
           
@@ -123,12 +107,7 @@ const WinnerModal = () => {
         <div className="flex gap-3 relative">
           <Button 
             onClick={resetGame} 
-            className={cn(
-              "flex-1 text-lg py-6 font-bold",
-              game.winner === 1 
-                ? "bg-blue-600 hover:bg-blue-700" 
-                : "bg-rose-600 hover:bg-rose-700"
-            )}
+            className="flex-1 text-lg py-6 font-bold"
           >
             لعبة جديدة
           </Button>
