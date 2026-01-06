@@ -251,31 +251,31 @@ const AddRound = () => {
             </button>
           </div>
 
-          {/* Buying Team - Compact Buttons */}
+          {/* Buying Team - Same style as Projects */}
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => setBuyingTeam(1)}
               className={cn(
-                "py-2 rounded-lg font-bold text-base transition-all border-2 flex flex-col items-center",
+                "flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
                 buyingTeam === 1 
-                  ? "bg-blue-600 border-blue-600 text-white" 
-                  : "bg-transparent border-blue-600/30 text-blue-400 hover:border-blue-600/60"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-600/30" 
+                  : "bg-muted/50 text-muted-foreground hover:bg-muted"
               )}
             >
-              {game.team1Name}
-              {buyingTeam === 1 && <span className="text-[10px] font-normal opacity-80">المشترى</span>}
+              <span className="text-[10px] opacity-70">المشترى</span>
+              <span className="text-sm font-medium">{game.team1Name}</span>
             </button>
             <button
               onClick={() => setBuyingTeam(2)}
               className={cn(
-                "py-2 rounded-lg font-bold text-base transition-all border-2 flex flex-col items-center",
+                "flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
                 buyingTeam === 2 
-                  ? "bg-rose-600 border-rose-600 text-white" 
-                  : "bg-transparent border-rose-600/30 text-rose-400 hover:border-rose-600/60"
+                  ? "bg-rose-600 text-white shadow-md shadow-rose-600/30" 
+                  : "bg-muted/50 text-muted-foreground hover:bg-muted"
               )}
             >
-              {game.team2Name}
-              {buyingTeam === 2 && <span className="text-[10px] font-normal opacity-80">المشترى</span>}
+              <span className="text-[10px] opacity-70">المشترى</span>
+              <span className="text-sm font-medium">{game.team2Name}</span>
             </button>
           </div>
 
