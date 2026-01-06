@@ -368,6 +368,19 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     const grandTotalRawForSuccess = buyingTeamTotalRawForSuccess + otherTeamTotalRawForSuccess;
     const halfTotalRawForSuccess = grandTotalRawForSuccess / 2;
 
+    console.log('=== تشخيص نجاح المشتري ===');
+    console.log('المشتري:', buyingTeam === 1 ? 'فريق 1' : 'فريق 2');
+    console.log('أبناط المشتري (بعد التعديل):', buyingTeamRaw);
+    console.log('مشاريع المشتري (خام):', buyingTeamProjectsRawEq);
+    console.log('بلوت المشتري (خام):', buyingTeamBalootRawEq);
+    console.log('مجموع المشتري الكلي:', buyingTeamTotalRawForSuccess);
+    console.log('أبناط الخصم (بعد التعديل):', otherTeamRaw);
+    console.log('مشاريع الخصم (خام):', otherTeamProjectsRawEq);
+    console.log('مجموع الخصم الكلي:', otherTeamTotalRawForSuccess);
+    console.log('المجموع الكلي:', grandTotalRawForSuccess);
+    console.log('النصف:', halfTotalRawForSuccess);
+    console.log('نجح المشتري؟', buyingTeamTotalRawForSuccess >= halfTotalRawForSuccess);
+
     const buyingTeamSucceeded = buyingTeamTotalRawForSuccess >= halfTotalRawForSuccess;
 
     let winningTeam: 1 | 2;
