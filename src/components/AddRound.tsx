@@ -300,7 +300,7 @@ const AddRound = () => {
 
           {/* Projects - Team Selection as Grid */}
           <div className="space-y-2">
-            <span className="text-xs text-muted-foreground">المشاريع</span>
+            <span className="text-xs text-muted-foreground">المشاريع لمن؟</span>
             {kabootTeam ? (
               // When kaboot is active, show only the kaboot team (locked)
               <div className="grid grid-cols-2 gap-2">
