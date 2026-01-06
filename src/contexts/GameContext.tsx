@@ -326,14 +326,16 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     let team2AdjustedRaw = team2TotalRaw;
 
     // المجموع الكلي للبنط (أكلات + أرض فقط)
-    // ملاحظة: المشاريع في هذا التطبيق تُحسب كنقاط (بنط) وليست كنقاط خام، لذا عند التحقق من نجاح المشتري
-    // نُحوّل المشاريع إلى مكافئها الخام (×10) حتى تكون المقارنة بنفس وحدة الإدخال (0-162 / 0-130).
     const totalRaw = team1TotalRaw + team2TotalRaw;
 
-    const team1ProjectsRawEq = team1ProjectsWithoutBaloot * 10;
-    const team2ProjectsRawEq = team2ProjectsWithoutBaloot * 10;
-    const team1BalootRawEq = team1Baloot * 10;
-    const team2BalootRawEq = team2Baloot * 10;
+    // تحويل المشاريع إلى مكافئها الخام للتحقق من نجاح المشتري
+    // في الحكم: النقاط × 10 لأن التقريب /10
+    // في الصن: النقاط كما هي لأن التقريب غير مطلوب (1 نقطة = 1 بنط)
+    const projectMultiplier = gameType === 'حكم' ? 10 : 1;
+    const team1ProjectsRawEq = team1ProjectsWithoutBaloot * projectMultiplier;
+    const team2ProjectsRawEq = team2ProjectsWithoutBaloot * projectMultiplier;
+    const team1BalootRawEq = team1Baloot * projectMultiplier;
+    const team2BalootRawEq = team2Baloot * projectMultiplier;
 
     // التحقق من نجاح المشتري
     let buyingTeamRaw = buyingTeam === 1 ? team1AdjustedRaw : team2AdjustedRaw;
