@@ -98,7 +98,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
                   حكم عادي بدون أبناط
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  تقريب النتيجة للعشرات (76 → 8)
+                  إذا آحاد المشتري 6-9: +5 للمشتري و -5 للخصم
                 </p>
               </div>
             </div>
@@ -112,11 +112,10 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
           {/* Explanation for Hokm mode */}
           {settings.hokmWithoutPointsMode && (
             <div className="p-3 rounded-lg bg-primary/10 text-sm space-y-2">
-              <p className="font-medium text-primary">شرح التقريب:</p>
+              <p className="font-medium text-primary">مثال سريع:</p>
               <ul className="text-muted-foreground space-y-1 pr-4 list-disc">
-                <li>76 أبناط → 8 (لأن 6 أكبر من 5)</li>
-                <li>85 أبناط → 8 (لأن 5 يُكسر)</li>
-                <li>86 + سرا (2) → 9 (88 ÷ 10 → 9)</li>
+                <li>المشتري 76 → 81 (لأن الآحاد 6)</li>
+                <li>الخصم 86 → 81 (يُنقص 5)</li>
               </ul>
             </div>
           )}
