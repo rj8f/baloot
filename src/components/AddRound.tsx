@@ -245,7 +245,7 @@ const AddRound = () => {
           </div>
 
           {/* Buying Team - Large Buttons */}
-          <span className="text-xs text-muted-foreground">من المشتري؟</span>
+          <span className="text-xs text-muted-foreground text-center block">المشترى</span>
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => setBuyingTeam(1)}
@@ -301,7 +301,7 @@ const AddRound = () => {
 
           {/* Projects - Team Selection as Grid */}
           <div className="space-y-2">
-            <span className="text-xs text-muted-foreground">المشاريع لمن؟</span>
+            <span className="text-xs text-muted-foreground text-center block">المشاريع</span>
             {kabootTeam ? (
               // When kaboot is active, show only the kaboot team (locked)
               <div className="grid grid-cols-2 gap-2">
