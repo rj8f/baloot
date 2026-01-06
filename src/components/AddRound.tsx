@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { useGame } from '@/contexts/GameContext';
+import { Undo2 } from 'lucide-react';
 import { GameType, Multiplier, TeamProjects, createEmptyProjects, PROJECT_VALUES } from '@/types/baloot';
 import { cn } from '@/lib/utils';
 import { Camera, Zap } from 'lucide-react';
@@ -28,7 +29,7 @@ const arabicToWestern = (str: string): string => {
 type ProjectKey = keyof TeamProjects;
 
 const AddRound = () => {
-  const { game, addRound, canDoubleSun, previewRoundResult } = useGame();
+  const { game, addRound, canDoubleSun, previewRoundResult, simpleHistory, undoSimpleHistory, undoLastRound } = useGame();
   const [gameType, setGameType] = useState<GameType>('حكم');
   const [buyingTeam, setBuyingTeam] = useState<1 | 2>(1);
   const [entryTeam, setEntryTeam] = useState<1 | 2>(1);
@@ -485,14 +486,32 @@ const AddRound = () => {
             </div>
           )}
 
-          {/* Submit Button */}
-          <Button 
-            onClick={handleSubmit} 
-            className="w-full text-lg py-5"
-            size="lg"
-          >
-            أضف الجولة
-          </Button>
+          {/* Submit and Undo Buttons */}
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleSubmit} 
+              className="flex-1 text-lg py-5"
+              size="lg"
+            >
+              احسب
+            </Button>
+            <Button 
+              variant="outline"
+              size="lg"
+              onClick={() => {
+                if (simpleHistory.length > 0) {
+                  undoSimpleHistory();
+                } else if (game && game.rounds.length > 0) {
+                  undoLastRound();
+                }
+              }}
+              disabled={simpleHistory.length === 0 && (!game || game.rounds.length === 0)}
+              className="py-5 px-4"
+              title="تراجع"
+            >
+              <Undo2 className="h-5 w-5" />
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

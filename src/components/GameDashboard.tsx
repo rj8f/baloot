@@ -6,7 +6,7 @@ import RoundHistory from './RoundHistory';
 import WinnerModal from './WinnerModal';
 
 import MatchHistory from './MatchHistory';
-import { RotateCcw, Undo2, History, Calculator, Home } from 'lucide-react';
+import { RotateCcw, History, Calculator, Home } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Sheet,
@@ -17,27 +17,9 @@ import {
 } from '@/components/ui/sheet';
 
 const GameDashboard = () => {
-  const { game, resetGame, undoLastRound, switchToSimple, goToSelection, simpleHistory, undoSimpleHistory } = useGame();
+  const { game, resetGame, switchToSimple, goToSelection } = useGame();
 
   if (!game) return null;
-
-  const canUndo = game.rounds.length > 0 || simpleHistory.length > 0;
-
-  const handleUndo = () => {
-    // أولاً نتراجع عن آخر إدخال من السجل المختصر إن وجد
-    if (simpleHistory.length > 0) {
-      undoSimpleHistory();
-      toast.success('تم التراجع عن آخر إدخال');
-      return;
-    }
-    // ثم نتراجع عن الجولات المتقدمة
-    if (game.rounds.length > 0) {
-      undoLastRound();
-      toast.success('تم التراجع عن آخر جولة');
-      return;
-    }
-    toast.error('لا توجد جولات للتراجع عنها');
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 pb-8">
@@ -75,15 +57,6 @@ const GameDashboard = () => {
               title="الحاسبة المختصرة"
             >
               <Calculator className="h-4 w-4" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={handleUndo}
-              disabled={!canUndo}
-              title="تراجع"
-            >
-              <Undo2 className="h-4 w-4" />
             </Button>
             
             <Button variant="ghost" size="icon" onClick={goToSelection} title="الرئيسية">
