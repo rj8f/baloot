@@ -77,7 +77,12 @@ const GameDashboard = () => {
           <Button variant="ghost" size="icon" onClick={goToSelection} className="h-9 w-9">
             <Home className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => setShowNewGameConfirm(true)} className="h-9 px-3 text-sm">
+          <Button 
+            variant="secondary" 
+            size="sm" 
+            onClick={() => setShowNewGameConfirm(true)} 
+            className="h-9 px-3 text-sm shadow-md hover:shadow-lg transition-shadow"
+          >
             صكة جديدة
           </Button>
         </div>
