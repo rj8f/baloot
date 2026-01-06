@@ -298,118 +298,72 @@ const AddRound = () => {
             </button>
           </div>
 
-          {/* Points Entry - Only show if not Kaboot */}
-          {!kabootTeam && (
-            <div className="space-y-2">
-              {/* Entry Team Toggle - Inline with Input */}
-              <div className="flex items-center gap-2">
-                <div className="flex bg-muted rounded-lg p-0.5">
-                  <button
-                    onClick={() => setEntryTeam(1)}
-                    className={cn(
-                      "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
-                      entryTeam === 1 
-                        ? "bg-blue-600 text-white" 
-                        : "text-muted-foreground"
-                    )}
-                  >
-                    {game.team1Name}
-                  </button>
-                  <button
-                    onClick={() => setEntryTeam(2)}
-                    className={cn(
-                      "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
-                      entryTeam === 2 
-                        ? "bg-rose-600 text-white" 
-                        : "text-muted-foreground"
-                    )}
-                  >
-                    {game.team2Name}
-                  </button>
-                </div>
-                <Input
-                  type="tel"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={entryTeamCardsRaw}
-                  onChange={(e) => setEntryTeamCardsRaw(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
-                  placeholder="البنط"
-                  className="text-center text-xl h-12 flex-1 font-bold"
-                  disabled={multiplier === 'قهوة'}
-                />
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  onClick={() => setShowScanner(true)}
-                  disabled={multiplier === 'قهوة'}
-                  className="h-12 w-12 shrink-0"
-                >
-                  <Camera className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* Projects - Compact Inline */}
+          {/* Projects - Team Selection as Grid */}
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">المشاريع</span>
-              {kabootTeam ? (
-                // When kaboot is active, show only the kaboot team (locked)
-                <div className="flex bg-muted rounded-lg p-0.5">
-                  <span className={cn(
-                    "px-3 py-1 rounded-md text-xs font-medium",
-                    kabootTeam === 1 
-                      ? "bg-blue-600 text-white" 
-                      : "bg-rose-600 text-white"
-                  )}>
-                    {kabootTeam === 1 ? game.team1Name : game.team2Name}
-                  </span>
+            <span className="text-xs text-muted-foreground">المشاريع</span>
+            {kabootTeam ? (
+              // When kaboot is active, show only the kaboot team (locked)
+              <div className="grid grid-cols-2 gap-2">
+                <div className={cn(
+                  "flex items-center justify-center rounded-xl py-2 px-3",
+                  kabootTeam === 1 
+                    ? "bg-blue-600 text-white" 
+                    : "bg-muted/50 text-muted-foreground"
+                )}>
+                  <span className="text-sm font-medium">{game.team1Name}</span>
                 </div>
-              ) : (
-                // Normal mode - allow team selection
-                <div className="flex bg-muted rounded-lg p-0.5">
-                  <button
-                    onClick={() => {
-                      if (projectsTeam === 1) {
-                        setProjectsTeam(null);
-                        setProjects(createEmptyProjects());
-                      } else {
-                        setProjectsTeam(1);
-                        setProjects(createEmptyProjects());
-                      }
-                    }}
-                    className={cn(
-                      "px-3 py-1 rounded-md text-xs font-medium transition-all",
-                      projectsTeam === 1 
-                        ? "bg-blue-600 text-white" 
-                        : "text-muted-foreground"
-                    )}
-                  >
-                    {game.team1Name}
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (projectsTeam === 2) {
-                        setProjectsTeam(null);
-                        setProjects(createEmptyProjects());
-                      } else {
-                        setProjectsTeam(2);
-                        setProjects(createEmptyProjects());
-                      }
-                    }}
-                    className={cn(
-                      "px-3 py-1 rounded-md text-xs font-medium transition-all",
-                      projectsTeam === 2 
-                        ? "bg-rose-600 text-white" 
-                        : "text-muted-foreground"
-                    )}
-                  >
-                    {game.team2Name}
-                  </button>
+                <div className={cn(
+                  "flex items-center justify-center rounded-xl py-2 px-3",
+                  kabootTeam === 2 
+                    ? "bg-rose-600 text-white" 
+                    : "bg-muted/50 text-muted-foreground"
+                )}>
+                  <span className="text-sm font-medium">{game.team2Name}</span>
                 </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              // Normal mode - allow team selection
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => {
+                    if (projectsTeam === 1) {
+                      setProjectsTeam(null);
+                      setProjects(createEmptyProjects());
+                    } else {
+                      setProjectsTeam(1);
+                      setProjects(createEmptyProjects());
+                    }
+                  }}
+                  className={cn(
+                    "flex items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
+                    projectsTeam === 1 
+                      ? "bg-blue-600 text-white shadow-md shadow-blue-600/30" 
+                      : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                  )}
+                >
+                  <span className="text-sm font-medium">{game.team1Name}</span>
+                </button>
+                <button
+                  onClick={() => {
+                    if (projectsTeam === 2) {
+                      setProjectsTeam(null);
+                      setProjects(createEmptyProjects());
+                    } else {
+                      setProjectsTeam(2);
+                      setProjects(createEmptyProjects());
+                    }
+                  }}
+                  className={cn(
+                    "flex items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
+                    projectsTeam === 2 
+                      ? "bg-rose-600 text-white shadow-md shadow-rose-600/30" 
+                      : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                  )}
+                >
+                  <span className="text-sm font-medium">{game.team2Name}</span>
+                </button>
+              </div>
+            )}
 
             {/* Project Chips - Tap to cycle */}
             {projectsTeam && (
@@ -465,6 +419,58 @@ const AddRound = () => {
                     </button>
                   );
                 })}
+              </div>
+            </div>
+          )}
+
+          {/* Points Entry - Only show if not Kaboot */}
+          {!kabootTeam && (
+            <div className="space-y-2">
+              {/* Entry Team Toggle - Inline with Input */}
+              <div className="flex items-center gap-2">
+                <div className="flex bg-muted rounded-lg p-0.5">
+                  <button
+                    onClick={() => setEntryTeam(1)}
+                    className={cn(
+                      "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                      entryTeam === 1 
+                        ? "bg-blue-600 text-white" 
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {game.team1Name}
+                  </button>
+                  <button
+                    onClick={() => setEntryTeam(2)}
+                    className={cn(
+                      "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                      entryTeam === 2 
+                        ? "bg-rose-600 text-white" 
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {game.team2Name}
+                  </button>
+                </div>
+                <Input
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={entryTeamCardsRaw}
+                  onChange={(e) => setEntryTeamCardsRaw(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
+                  placeholder="البنط"
+                  className="text-center text-xl h-12 flex-1 font-bold"
+                  disabled={multiplier === 'قهوة'}
+                />
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  onClick={() => setShowScanner(true)}
+                  disabled={multiplier === 'قهوة'}
+                  className="h-12 w-12 shrink-0"
+                >
+                  <Camera className="h-5 w-5" />
+                </Button>
               </div>
             </div>
           )}
