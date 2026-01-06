@@ -7,6 +7,13 @@ import { GameType, Multiplier, TeamProjects, createEmptyProjects, PROJECT_VALUES
 import { cn } from '@/lib/utils';
 import { Camera, Zap } from 'lucide-react';
 import CardScanner from './CardScanner';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 // Convert Arabic numerals to Western numerals
 const arabicToWestern = (str: string): string => {
@@ -31,6 +38,11 @@ const AddRound = () => {
   const [multiplier, setMultiplier] = useState<Multiplier>('عادي');
   const [showScanner, setShowScanner] = useState(false);
   const [kabootTeam, setKabootTeam] = useState<1 | 2 | null>(null);
+  const [showMiyaDialog, setShowMiyaDialog] = useState(false);
+  const [pendingSubmit, setPendingSubmit] = useState<{
+    team1Projects: TeamProjects;
+    team2Projects: TeamProjects;
+  } | null>(null);
 
   // Reset when game type changes
   useEffect(() => {
@@ -113,9 +125,33 @@ const AddRound = () => {
   const team1Projects: TeamProjects = projectsTeam === 1 ? projects : createEmptyProjects();
   const team2Projects: TeamProjects = projectsTeam === 2 ? projects : createEmptyProjects();
 
+  // تحديد إذا كان الخصم يملك مية في حكم مع ×3 أو ×4
+  const shouldAskForMiyaMultiplier = () => {
+    if (gameType !== 'حكم') return false;
+    if (multiplier !== '×3' && multiplier !== '×4') return false;
+    if (kabootTeam) return false;
+    
+    // الخصم هو الفريق الذي لم يشتري
+    const opponentTeam = buyingTeam === 1 ? 2 : 1;
+    const opponentProjects = opponentTeam === 1 ? team1Projects : team2Projects;
+    
+    return opponentProjects.مية > 0;
+  };
+
   const handleSubmit = () => {
     if ((totals.team1Cards === 0 && totals.team2Cards === 0) && multiplier !== 'قهوة' && !kabootTeam) return;
 
+    // تحقق إذا كان يجب سؤال الخصم عن طريقة حساب المية
+    if (shouldAskForMiyaMultiplier()) {
+      setPendingSubmit({ team1Projects, team2Projects });
+      setShowMiyaDialog(true);
+      return;
+    }
+
+    submitRound(team1Projects, team2Projects, false);
+  };
+
+  const submitRound = (t1Projects: TeamProjects, t2Projects: TeamProjects, miyaDoubleOnly: boolean) => {
     const team1Raw = kabootTeam ? 0 : totals.team1Cards;
     const team2Raw = kabootTeam ? 0 : totals.team2Cards;
 
@@ -124,10 +160,11 @@ const AddRound = () => {
       buyingTeam,
       team1RawPoints: team1Raw,
       team2RawPoints: team2Raw,
-      team1Projects,
-      team2Projects,
+      team1Projects: t1Projects,
+      team2Projects: t2Projects,
       multiplier,
       kabootTeam,
+      miyaDoubleOnly,
     });
 
     // Reset form
@@ -136,6 +173,21 @@ const AddRound = () => {
     setProjects(createEmptyProjects());
     setMultiplier('عادي');
     setKabootTeam(null);
+    setPendingSubmit(null);
+  };
+
+  // الخصم يريد المية فقط ×2
+  const handleMiyaDoubleOnly = () => {
+    if (!pendingSubmit) return;
+    setShowMiyaDialog(false);
+    submitRound(pendingSubmit.team1Projects, pendingSubmit.team2Projects, true);
+  };
+
+  // الخصم يريد المية على حسب المضاعف
+  const handleMiyaWithMultiplier = () => {
+    if (!pendingSubmit) return;
+    setShowMiyaDialog(false);
+    submitRound(pendingSubmit.team1Projects, pendingSubmit.team2Projects, false);
   };
 
   const handleScanSuccess = (totalPoints: number) => {
@@ -456,6 +508,33 @@ const AddRound = () => {
           onSuccess={handleScanSuccess}
         />
       )}
+
+      {/* Dialog سؤال الخصم عن المية */}
+      <Dialog open={showMiyaDialog} onOpenChange={setShowMiyaDialog}>
+        <DialogContent className="max-w-sm" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-center">مشروع المية للخصم</DialogTitle>
+            <DialogDescription className="text-center">
+              الخصم عنده مشروع مية، كيف يبي تُحسب؟
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-3 mt-4">
+            <Button
+              variant="outline"
+              onClick={handleMiyaDoubleOnly}
+              className="py-6 text-lg"
+            >
+              ×2 فقط
+            </Button>
+            <Button
+              onClick={handleMiyaWithMultiplier}
+              className="py-6 text-lg"
+            >
+              {multiplier}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
