@@ -60,16 +60,16 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
             />
           </div>
 
-          {/* Miya Popup Toggle */}
+          {/* Miya Always x2 Toggle */}
           <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
             <div className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4" />
-              <Label htmlFor="miya-popup" className="text-sm">تأكيد المية</Label>
+              <span className="text-xs font-bold">×2</span>
+              <Label htmlFor="miya-double" className="text-sm">دبل المية</Label>
             </div>
             <Switch
-              id="miya-popup"
-              checked={settings.showMiyaPopup}
-              onCheckedChange={(checked) => updateSettings({ showMiyaPopup: checked })}
+              id="miya-double"
+              checked={settings.miyaAlwaysDouble}
+              onCheckedChange={(checked) => updateSettings({ miyaAlwaysDouble: checked })}
             />
           </div>
 

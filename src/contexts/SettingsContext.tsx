@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface Settings {
-  showMiyaPopup: boolean;        // إظهار popup المية في حكم مع ×3 أو ×4
+  miyaAlwaysDouble: boolean;     // المية دائماً ×2 في حكم مع ×3 أو ×4
   darkMode: boolean;             // الوضع الليلي
   hokmWithoutPointsMode: boolean; // حكم عادي بدون أبناط (تقريب العشرات)
   isMuted: boolean;              // كتم صوت الإعلان
@@ -16,7 +16,7 @@ interface SettingsContextType {
 }
 
 const defaultSettings: Settings = {
-  showMiyaPopup: true,
+  miyaAlwaysDouble: false,
   darkMode: true,
   hokmWithoutPointsMode: false,
   isMuted: false,
