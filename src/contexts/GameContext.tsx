@@ -331,10 +331,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     let buyingTeamRaw = buyingTeam === 1 ? team1AdjustedRaw : team2AdjustedRaw;
     let otherTeamRaw = buyingTeam === 1 ? team2AdjustedRaw : team1AdjustedRaw;
 
-    // إذا كانت الخاصية مفعلة: ننقل 5 أبناط من الخصم للمشتري إذا آحاد أبناط المشتري 6/7/8/9
+    // إذا كانت الخاصية مفعلة: ننقل 5 أبناط من الخصم للمشتري إذا آحاد أبناط المشتري 0/6/7/8/9
     if (hokmWithoutPointsMode && gameType === 'حكم' && multiplier === 'عادي') {
       const ones = ((buyingTeamRaw % 10) + 10) % 10;
-      if (ones >= 6) {
+      if (ones >= 6 || ones === 0) {
         const transfer = Math.min(5, Math.max(0, otherTeamRaw));
 
         buyingTeamRaw += transfer;

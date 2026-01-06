@@ -98,7 +98,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
                   حكم عادي بدون أبناط
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  إذا آحاد المشتري 6-9: +5 للمشتري و -5 للخصم
+                  إذا آحاد المشتري 0/6/7/8/9: +5 للمشتري و -5 للخصم
                 </p>
               </div>
             </div>
@@ -114,8 +114,8 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
             <div className="p-3 rounded-lg bg-primary/10 text-sm space-y-2">
               <p className="font-medium text-primary">مثال سريع:</p>
               <ul className="text-muted-foreground space-y-1 pr-4 list-disc">
-                <li>المشتري 76 → 81 (لأن الآحاد 6)</li>
-                <li>الخصم 86 → 81 (يُنقص 5)</li>
+                <li>المشتري 76 → 81 | الخصم 86 → 81</li>
+                <li>المشتري 80 → 85 | الخصم 82 → 77</li>
               </ul>
             </div>
           )}
