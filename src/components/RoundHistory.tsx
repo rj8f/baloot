@@ -45,8 +45,8 @@ const RoundHistory = () => {
                   className={cn(
                     "flex items-center justify-between p-3 rounded-lg border",
                     round.winningTeam === 1
-                      ? "bg-blue-500/10 border-blue-500/30"
-                      : "bg-rose-500/10 border-rose-500/30"
+                      ? "bg-blue-500/20 border-blue-500/50 dark:bg-blue-500/10 dark:border-blue-500/30"
+                      : "bg-rose-500/20 border-rose-500/50 dark:bg-rose-500/10 dark:border-rose-500/30"
                   )}
                 >
                   <div className="flex items-center gap-3">
