@@ -607,14 +607,32 @@ const AddRound = () => {
                 })}
               </div>
             )}
+
+            {/* Preview in Kaboot */}
+            {kabootTeam && (
+              <div className="flex items-center justify-center gap-4 py-2 px-3 rounded-lg bg-muted/50">
+                <div className="text-center">
+                  <span className="text-xs text-muted-foreground">{game.team1Name}</span>
+                  <p className="text-lg font-bold text-blue-500">{game.team1Score + preview.finalTeam1Points}</p>
+                </div>
+                <span className="text-muted-foreground">-</span>
+                <div className="text-center">
+                  <span className="text-xs text-muted-foreground">{game.team2Name}</span>
+                  <p className="text-lg font-bold text-rose-500">{game.team2Score + preview.finalTeam2Points}</p>
+                </div>
+              </div>
+            )}
           </div>
 
           <Button 
-            onClick={() => setShowKabootDialog(false)} 
+            onClick={() => {
+              handleSubmit();
+              setShowKabootDialog(false);
+            }} 
             className="w-full mt-2"
             disabled={!kabootTeam}
           >
-            تأكيد
+            احسب
           </Button>
         </DialogContent>
       </Dialog>
