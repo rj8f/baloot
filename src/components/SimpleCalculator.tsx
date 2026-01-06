@@ -13,13 +13,15 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
 import MatchHistory from './MatchHistory';
 import confetti from 'canvas-confetti';
 import { cn } from '@/lib/utils';
-import { useGame } from '@/contexts/GameContext';
+import { useGame, SimpleHistoryEntry } from '@/contexts/GameContext';
+import { Round } from '@/types/baloot';
 
 interface SimpleCalculatorProps {
   onBack: () => void;
@@ -51,9 +53,11 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     switchToAdvanced,
     simpleHistory,
     addSimpleHistoryEntry,
-    undoSimpleHistory,
-    clearSimpleHistory,
+    getUnifiedHistory,
+    undoLast,
   } = useGame();
+  
+  const [showUndoConfirm, setShowUndoConfirm] = useState(false);
   
   // تهيئة اللعبة عند الفتح
   useEffect(() => {
@@ -144,9 +148,10 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     announceScore(newTeam1Score, newTeam2Score);
   };
 
+  const unifiedHistory = getUnifiedHistory();
+
   const handleUndo = () => {
-    if (simpleHistory.length === 0) return;
-    undoSimpleHistory();
+    setShowUndoConfirm(true);
   };
 
   const saveAndReset = async () => {
@@ -337,7 +342,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
 
       {/* Action Buttons */}
       <div className="flex-shrink-0 flex justify-center items-center gap-4 py-4">
-        <Button variant="outline" onClick={handleUndo} disabled={simpleHistory.length === 0}>
+        <Button variant="outline" onClick={handleUndo} disabled={unifiedHistory.length === 0}>
           تراجع
         </Button>
         <Button variant="outline" onClick={saveAndReset}>
@@ -346,51 +351,71 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
         </Button>
       </div>
 
-      {/* History */}
+      {/* History - موحد بترتيب زمني */}
       <div className="flex-1 overflow-auto min-h-0 border-t border-border">
         <div className="max-w-sm mx-auto">
-          {game?.rounds?.length ? (
-            <>
-              <div className="py-2 text-center text-xs text-muted-foreground">الجولات المتقدمة</div>
-              {[...game.rounds].slice().reverse().map((round) => (
-                <div
-                  key={round.id}
-                  className="flex items-center justify-center gap-4 py-3 border-b border-border/50"
-                >
-                  <span className="text-xs text-muted-foreground w-8">#{round.roundNumber}</span>
-                  <span className="text-blue-400 font-bold text-xl tabular-nums">{round.finalTeam1Points}</span>
-                  <span className="text-muted-foreground text-lg">-</span>
-                  <span className="text-rose-400 font-bold text-xl tabular-nums">{round.finalTeam2Points}</span>
-                </div>
-              ))}
-            </>
-          ) : null}
-
-          {simpleHistory.length ? (
-            <>
-              <div
-                className={cn(
-                  "py-2 text-center text-xs text-muted-foreground",
-                  game?.rounds?.length && "border-t border-border/60"
-                )}
-              >
-                إضافات المختصر
-              </div>
-              {simpleHistory.map((entry, index) => (
+          {unifiedHistory.map((item, index) => {
+            if (item.type === 'simple') {
+              const entry = item.entry as SimpleHistoryEntry;
+              return (
                 <div
                   key={entry.id}
                   className="flex items-center justify-center gap-4 py-3 border-b border-border/50"
                 >
-                  <span className="text-xs text-muted-foreground w-8">#{simpleHistory.length - index}</span>
+                  <span className="text-xs text-muted-foreground w-8">#{unifiedHistory.length - index}</span>
                   <span className="text-blue-400 font-bold text-xl tabular-nums">{entry.team1}</span>
                   <span className="text-muted-foreground text-lg">-</span>
                   <span className="text-rose-400 font-bold text-xl tabular-nums">{entry.team2}</span>
                 </div>
-              ))}
-            </>
-          ) : null}
+              );
+            } else {
+              const round = item.entry as Round;
+              return (
+                <div
+                  key={round.id}
+                  className="flex items-center justify-center gap-4 py-3 border-b border-border/50"
+                >
+                  <span className="text-xs text-muted-foreground w-8">#{unifiedHistory.length - index}</span>
+                  <span className="text-blue-400 font-bold text-xl tabular-nums">{round.finalTeam1Points}</span>
+                  <span className="text-muted-foreground text-lg">-</span>
+                  <span className="text-rose-400 font-bold text-xl tabular-nums">{round.finalTeam2Points}</span>
+                </div>
+              );
+            }
+          })}
         </div>
       </div>
+
+      {/* تأكيد التراجع */}
+      <Dialog open={showUndoConfirm} onOpenChange={setShowUndoConfirm}>
+        <DialogContent className="max-w-sm" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-center">تأكيد التراجع</DialogTitle>
+            <DialogDescription className="text-center">
+              هل تريد حذف آخر جولة مسجلة؟
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-3 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowUndoConfirm(false)}
+              className="py-4"
+            >
+              إلغاء
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                undoLast();
+                setShowUndoConfirm(false);
+              }}
+              className="py-4"
+            >
+              تراجع
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -43,6 +43,7 @@ export interface Round {
   winningTeam: 1 | 2;
   finalTeam1Points: number;
   finalTeam2Points: number;
+  createdAt: number;  // timestamp للترتيب الزمني
   // للتوافق مع الكود القديم
   team1Points: number;
   team2Points: number;

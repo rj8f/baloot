@@ -22,10 +22,17 @@ interface RoundInput {
   miyaDoubleOnly?: boolean; // في حكم مع ×3 أو ×4، الخصم يريد المية ×2 فقط
 }
 
+export interface SimpleHistoryEntry {
+  id: string;
+  team1: number;
+  team2: number;
+  createdAt: number;  // timestamp للترتيب الزمني
+}
+
 interface GameContextType {
   game: Game | null;
   calculatorMode: 'simple' | 'advanced' | null;
-  simpleHistory: { id: string; team1: number; team2: number }[];
+  simpleHistory: SimpleHistoryEntry[];
   startGame: (team1Name: string, team2Name: string, winningScore: number) => void;
   startSimpleMode: () => void;
   switchToAdvanced: () => void;
@@ -33,14 +40,14 @@ interface GameContextType {
   goToSelection: () => void;
   addRound: (round: RoundInput) => void;
   deleteRound: (roundId: string) => void;
-  undoLastRound: () => void;
+  deleteSimpleEntry: (entryId: string) => void;
+  undoLast: () => void;  // تراجع موحد
   resetGame: () => void;
   canDoubleSun: () => boolean;
   previewRoundResult: (round: RoundInput) => { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number };
   setScores: (team1Score: number, team2Score: number) => void;
   addSimpleHistoryEntry: (entry: { id: string; team1: number; team2: number }) => void;
-  undoSimpleHistory: () => void;
-  clearSimpleHistory: () => void;
+  getUnifiedHistory: () => Array<{ type: 'simple' | 'advanced'; entry: SimpleHistoryEntry | Round; createdAt: number }>;
 }
 
 export type { RoundInput };
@@ -72,10 +79,17 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     return localStorage.getItem('baloot_mode') as 'simple' | 'advanced' | null;
   });
 
-  const [simpleHistory, setSimpleHistory] = useState<{ id: string; team1: number; team2: number }[]>(() => {
+  const [simpleHistory, setSimpleHistory] = useState<SimpleHistoryEntry[]>(() => {
     const saved = localStorage.getItem('baloot_simple_history');
     if (saved) {
-      try { return JSON.parse(saved); } catch { return []; }
+      try { 
+        const parsed = JSON.parse(saved);
+        // إضافة createdAt للسجلات القديمة
+        return parsed.map((e: any, i: number) => ({
+          ...e,
+          createdAt: e.createdAt ?? Date.now() - (parsed.length - i) * 1000
+        }));
+      } catch { return []; }
     }
     return [];
   });
@@ -172,22 +186,52 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addSimpleHistoryEntry = (entry: { id: string; team1: number; team2: number }) => {
-    setSimpleHistory(prev => [entry, ...prev]);
+    const entryWithTime: SimpleHistoryEntry = {
+      ...entry,
+      createdAt: Date.now(),
+    };
+    setSimpleHistory(prev => [entryWithTime, ...prev]);
   };
 
-  const undoSimpleHistory = () => {
-    if (simpleHistory.length === 0) return;
-    const lastEntry = simpleHistory[0];
+  const deleteSimpleEntry = (entryId: string) => {
+    const entry = simpleHistory.find(e => e.id === entryId);
+    if (!entry) return;
     if (game) {
-      const newTeam1Score = game.team1Score - lastEntry.team1;
-      const newTeam2Score = game.team2Score - lastEntry.team2;
+      const newTeam1Score = game.team1Score - entry.team1;
+      const newTeam2Score = game.team2Score - entry.team2;
       setScores(newTeam1Score, newTeam2Score);
     }
-    setSimpleHistory(prev => prev.slice(1));
+    setSimpleHistory(prev => prev.filter(e => e.id !== entryId));
   };
 
-  const clearSimpleHistory = () => {
-    setSimpleHistory([]);
+  // الحصول على السجل الموحد مرتب من الأحدث
+  const getUnifiedHistory = () => {
+    const simpleEntries = simpleHistory.map(e => ({
+      type: 'simple' as const,
+      entry: e,
+      createdAt: e.createdAt,
+    }));
+    
+    const advancedEntries = (game?.rounds ?? []).map(r => ({
+      type: 'advanced' as const,
+      entry: r,
+      createdAt: r.createdAt ?? 0,
+    }));
+    
+    return [...simpleEntries, ...advancedEntries].sort((a, b) => b.createdAt - a.createdAt);
+  };
+
+  // تراجع موحد - يحذف آخر إدخال بغض النظر عن نوعه
+  const undoLast = () => {
+    const unified = getUnifiedHistory();
+    if (unified.length === 0) return;
+    
+    const last = unified[0];
+    if (last.type === 'simple') {
+      deleteSimpleEntry((last.entry as SimpleHistoryEntry).id);
+    } else {
+      deleteRound((last.entry as Round).id);
+    }
   };
 
   const canDoubleSun = (): boolean => {
@@ -404,6 +448,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       ...roundData,
       id: crypto.randomUUID(),
       roundNumber: game.rounds.length + 1,
+      createdAt: Date.now(),
       ...result,
       // للتوافق مع الكود القديم
       team1Points: roundData.team1RawPoints,
@@ -475,11 +520,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const undoLastRound = () => {
-    if (!game || game.rounds.length === 0) return;
-    const lastRound = game.rounds[game.rounds.length - 1];
-    deleteRound(lastRound.id);
-  };
 
   const resetGame = () => {
     setGame(null);
@@ -527,15 +567,15 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       switchToSimple,
       goToSelection,
       addRound, 
-      deleteRound, 
-      undoLastRound, 
+      deleteRound,
+      deleteSimpleEntry,
+      undoLast,
       resetGame, 
       canDoubleSun, 
       previewRoundResult, 
       setScores,
       addSimpleHistoryEntry,
-      undoSimpleHistory,
-      clearSimpleHistory,
+      getUnifiedHistory,
     }}>
       {children}
     </GameContext.Provider>
