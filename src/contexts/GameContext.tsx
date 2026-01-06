@@ -454,6 +454,25 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     let team1RawScore = rawToScore(team1FinalRaw, gameType);
     let team2RawScore = rawToScore(team2FinalRaw, gameType);
 
+    // حالة خاصة: في الحكم العادي، إذا كان المشتري 86 والخصم 76
+    // التقريب العادي يعطي 9+8=17، لكن المجموع الصحيح 16
+    // القاعدة: المشتري يأخذ 9 والخصم يأخذ 7
+    if (gameType === 'حكم' && !hasMultiplier && buyingTeamSucceeded) {
+      const buyingRaw = buyingTeam === 1 ? team1FinalRaw : team2FinalRaw;
+      const otherRaw = buyingTeam === 1 ? team2FinalRaw : team1FinalRaw;
+      
+      // إذا المشتري 86 والخصم 76
+      if (buyingRaw === 86 && otherRaw === 76) {
+        if (buyingTeam === 1) {
+          team1RawScore = 9;
+          team2RawScore = 7;
+        } else {
+          team1RawScore = 7;
+          team2RawScore = 9;
+        }
+      }
+    }
+
     // تطبيق المضاعفة
     const multiplierFactor =
       multiplier === 'عادي' ? 1 :
