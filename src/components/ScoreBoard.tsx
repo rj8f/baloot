@@ -1,5 +1,4 @@
 import { useGame } from '@/contexts/GameContext';
-import { Progress } from '@/components/ui/progress';
 
 interface ScoreBoardProps {
   previewTeam1?: number;
@@ -17,51 +16,73 @@ const ScoreBoard = ({ previewTeam1, previewTeam2 }: ScoreBoardProps) => {
   const hasPreview = previewTeam1 !== undefined && previewTeam2 !== undefined;
 
   return (
-    <div className="grid grid-cols-2 gap-3 p-4">
-      {/* Team 1 */}
-      <div className="relative rounded-2xl p-4 text-center transition-all overflow-hidden bg-team-bg border border-border shadow-lg">
-        <div className="absolute inset-0 bg-gradient-to-b from-team-start/10 via-transparent to-team-end/5" />
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-team-start via-team-end to-team-start" />
-        
-        <div className="relative z-10">
-          <h2 className="text-lg font-bold text-team-text truncate">{game.team1Name}</h2>
-          <div className="text-5xl font-black my-2 bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">
-            {game.team1Score}
-          </div>
-          {hasPreview && (
-            <div className="text-sm text-team-text/60 mb-2 font-medium" dir="ltr">
-              + {previewTeam1}
+    <div className="relative p-4">
+      {/* Floating decorative elements */}
+      <div className="absolute top-2 left-8 w-16 h-16 rounded-full bg-gradient-to-br from-team-start/5 to-transparent animate-float blur-xl" />
+      <div className="absolute bottom-4 right-12 w-20 h-20 rounded-full bg-gradient-to-br from-team-end/5 to-transparent animate-float-delayed blur-xl" />
+      
+      <div className="grid grid-cols-2 gap-3 relative z-10">
+        {/* Team 1 - 3D Card */}
+        <div className="card-3d relative rounded-2xl p-4 text-center overflow-hidden bg-team-bg border border-border/50 shadow-xl">
+          {/* Glass overlay */}
+          <div className="absolute inset-0 glass opacity-50" />
+          {/* Gradient accent line */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-team-start to-transparent" />
+          {/* Shimmer effect */}
+          <div className="absolute inset-0 shimmer opacity-30" />
+          
+          <div className="relative z-10">
+            <h2 className="text-lg font-bold text-team-text truncate">{game.team1Name}</h2>
+            <div className="text-5xl font-black my-3 bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent drop-shadow-sm">
+              {game.team1Score}
             </div>
-          )}
-          <div className="h-2 bg-muted rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-team-start to-team-end transition-all duration-500"
-              style={{ width: `${team1Progress}%` }}
-            />
+            {hasPreview && (
+              <div className="text-sm text-team-text/60 mb-2 font-medium animate-pulse" dir="ltr">
+                + {previewTeam1}
+              </div>
+            )}
+            {/* 3D Progress bar */}
+            <div className="h-3 bg-muted/50 rounded-full overflow-hidden shadow-inner">
+              <div 
+                className="h-full bg-gradient-to-r from-team-start via-team-end to-team-start rounded-full transition-all duration-700 ease-out shadow-lg"
+                style={{ 
+                  width: `${team1Progress}%`,
+                  backgroundSize: '200% 100%',
+                }}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Team 2 */}
-      <div className="relative rounded-2xl p-4 text-center transition-all overflow-hidden bg-team-bg border border-border shadow-lg">
-        <div className="absolute inset-0 bg-gradient-to-b from-team-start/10 via-transparent to-team-end/5" />
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-team-start via-team-end to-team-start" />
-        
-        <div className="relative z-10">
-          <h2 className="text-lg font-bold text-team-text truncate">{game.team2Name}</h2>
-          <div className="text-5xl font-black my-2 bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">
-            {game.team2Score}
-          </div>
-          {hasPreview && (
-            <div className="text-sm text-team-text/60 mb-2 font-medium" dir="ltr">
-              + {previewTeam2}
+        {/* Team 2 - 3D Card */}
+        <div className="card-3d relative rounded-2xl p-4 text-center overflow-hidden bg-team-bg border border-border/50 shadow-xl">
+          {/* Glass overlay */}
+          <div className="absolute inset-0 glass opacity-50" />
+          {/* Gradient accent line */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-team-start to-transparent" />
+          {/* Shimmer effect */}
+          <div className="absolute inset-0 shimmer opacity-30" />
+          
+          <div className="relative z-10">
+            <h2 className="text-lg font-bold text-team-text truncate">{game.team2Name}</h2>
+            <div className="text-5xl font-black my-3 bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent drop-shadow-sm">
+              {game.team2Score}
             </div>
-          )}
-          <div className="h-2 bg-muted rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-team-start to-team-end transition-all duration-500"
-              style={{ width: `${team2Progress}%` }}
-            />
+            {hasPreview && (
+              <div className="text-sm text-team-text/60 mb-2 font-medium animate-pulse" dir="ltr">
+                + {previewTeam2}
+              </div>
+            )}
+            {/* 3D Progress bar */}
+            <div className="h-3 bg-muted/50 rounded-full overflow-hidden shadow-inner">
+              <div 
+                className="h-full bg-gradient-to-r from-team-start via-team-end to-team-start rounded-full transition-all duration-700 ease-out shadow-lg"
+                style={{ 
+                  width: `${team2Progress}%`,
+                  backgroundSize: '200% 100%',
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -34,7 +34,7 @@ const RoundHistory = () => {
 
   return (
     <>
-      <Card className="mx-4 mb-4">
+      <Card className="mx-4 mb-4 glass border-border/50 shadow-lg">
         <CardContent className="space-y-2 pt-4">
           {unifiedHistory.map((item, index) => {
             if (item.type === 'advanced') {
@@ -42,10 +42,10 @@ const RoundHistory = () => {
               return (
                 <div
                   key={round.id}
-                  className="relative flex items-center justify-between p-3 rounded-xl border bg-team-bg overflow-hidden"
+                  className="relative flex items-center justify-between p-3 rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm overflow-hidden hover:bg-card/80 transition-all duration-300 group"
                 >
-                  {/* Left accent bar */}
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-team-start to-team-end" />
+                  {/* Gradient accent bar */}
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-team-start to-team-end opacity-60 group-hover:opacity-100 transition-opacity" />
                   
                   <div className="flex items-center gap-3 mr-2">
                     <span className="text-xs text-muted-foreground font-medium">#{unifiedHistory.length - index}</span>
@@ -84,7 +84,7 @@ const RoundHistory = () => {
                       variant="ghost"
                       size="icon"
                       onClick={() => setDeleteConfirm({ type: 'round', id: round.id })}
-                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -96,7 +96,7 @@ const RoundHistory = () => {
               return (
                 <div
                   key={entry.id}
-                  className="flex items-center justify-between p-3 rounded-xl border bg-card"
+                  className="flex items-center justify-between p-3 rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 group"
                 >
                   <span className="text-xs text-muted-foreground font-medium">#{unifiedHistory.length - index}</span>
                   <div className="flex items-center gap-4">
@@ -112,7 +112,7 @@ const RoundHistory = () => {
                     variant="ghost"
                     size="icon"
                     onClick={() => setDeleteConfirm({ type: 'simple', id: entry.id })}
-                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -125,7 +125,7 @@ const RoundHistory = () => {
 
       {/* تأكيد الحذف */}
       <Dialog open={deleteConfirm !== null} onOpenChange={() => setDeleteConfirm(null)}>
-        <DialogContent className="max-w-xs p-4" dir="rtl">
+        <DialogContent className="max-w-xs p-4 glass" dir="rtl">
           <DialogHeader className="pb-2">
             <DialogTitle className="text-center text-base">حذف؟</DialogTitle>
           </DialogHeader>
@@ -133,14 +133,14 @@ const RoundHistory = () => {
             <Button
               variant="outline"
               onClick={() => setDeleteConfirm(null)}
-              className="py-5 text-lg font-bold"
+              className="py-5 text-lg font-bold btn-press"
             >
               لا
             </Button>
             <Button
               variant="destructive"
               onClick={handleDelete}
-              className="py-5 text-lg font-bold"
+              className="py-5 text-lg font-bold btn-press"
             >
               نعم
             </Button>
