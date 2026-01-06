@@ -78,21 +78,21 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 text-sm">
-                        <span className={game.winner === 1 ? "font-bold text-team1-text" : ""}>
+                        <span className={game.winner === 1 ? "font-bold text-team-text" : ""}>
                           {game.team1_name}
                         </span>
-                        <span className="text-xl font-black bg-gradient-to-b from-team1-start to-team1-end bg-clip-text text-transparent">
+                        <span className="text-xl font-black bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">
                           {game.team1_score}
                         </span>
                         <span className="text-muted-foreground font-light">—</span>
-                        <span className="text-xl font-black bg-gradient-to-b from-team2-start to-team2-end bg-clip-text text-transparent">
+                        <span className="text-xl font-black bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">
                           {game.team2_score}
                         </span>
-                        <span className={game.winner === 2 ? "font-bold text-team2-text" : ""}>
+                        <span className={game.winner === 2 ? "font-bold text-team-text" : ""}>
                           {game.team2_name}
                         </span>
                         {game.winner && (
-                          <Trophy className="h-4 w-4 text-foreground" />
+                          <Trophy className="h-4 w-4 text-amber-500" />
                         )}
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">
@@ -144,21 +144,21 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 text-sm">
-                        <span className={game.winner === 1 ? "font-bold text-team1-text" : ""}>
+                        <span className={game.winner === 1 ? "font-bold text-team-text" : ""}>
                           {game.team1_name}
                         </span>
-                        <span className="text-xl font-black bg-gradient-to-b from-team1-start to-team1-end bg-clip-text text-transparent">
+                        <span className="text-xl font-black bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">
                           {game.team1_score}
                         </span>
                         <span className="text-muted-foreground font-light">—</span>
-                        <span className="text-xl font-black bg-gradient-to-b from-team2-start to-team2-end bg-clip-text text-transparent">
+                        <span className="text-xl font-black bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">
                           {game.team2_score}
                         </span>
-                        <span className={game.winner === 2 ? "font-bold text-team2-text" : ""}>
+                        <span className={game.winner === 2 ? "font-bold text-team-text" : ""}>
                           {game.team2_name}
                         </span>
                         {game.winner && (
-                          <Trophy className="h-4 w-4 text-foreground" />
+                          <Trophy className="h-4 w-4 text-amber-500" />
                         )}
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">

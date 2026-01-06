@@ -57,17 +57,11 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        team1: {
-          start: "hsl(var(--team1-start))",
-          end: "hsl(var(--team1-end))",
-          text: "hsl(var(--team1-text))",
-          bg: "hsl(var(--team1-bg))",
-        },
-        team2: {
-          start: "hsl(var(--team2-start))",
-          end: "hsl(var(--team2-end))",
-          text: "hsl(var(--team2-text))",
-          bg: "hsl(var(--team2-bg))",
+        team: {
+          start: "hsl(var(--team-start))",
+          end: "hsl(var(--team-end))",
+          text: "hsl(var(--team-text))",
+          bg: "hsl(var(--team-bg))",
         },
       },
       borderRadius: {

@@ -40,16 +40,11 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
-    /* Team colors - elegant contrast */
-    --team1-start: 0 0% 15%;
-    --team1-end: 0 0% 30%;
-    --team1-text: 0 0% 20%;
-    --team1-bg: 0 0% 92%;
-    
-    --team2-start: 0 0% 55%;
-    --team2-end: 0 0% 70%;
-    --team2-text: 0 0% 55%;
-    --team2-bg: 0 0% 96%;
+    /* Unified team colors */
+    --team-start: 0 0% 20%;
+    --team-end: 0 0% 35%;
+    --team-text: 0 0% 20%;
+    --team-bg: 0 0% 94%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 0 0% 26%;
@@ -90,16 +85,11 @@ All colors MUST be HSL.
     --input: 0 0% 18%;
     --ring: 0 0% 80%;
 
-    /* Team colors - dark mode elegant */
-    --team1-start: 0 0% 100%;
-    --team1-end: 0 0% 80%;
-    --team1-text: 0 0% 98%;
-    --team1-bg: 0 0% 18%;
-    
-    --team2-start: 0 0% 50%;
-    --team2-end: 0 0% 35%;
-    --team2-text: 0 0% 55%;
-    --team2-bg: 0 0% 12%;
+    /* Unified team colors - dark mode */
+    --team-start: 0 0% 95%;
+    --team-end: 0 0% 75%;
+    --team-text: 0 0% 92%;
+    --team-bg: 0 0% 14%;
 
     --sidebar-background: 0 0% 8%;
     --sidebar-foreground: 0 0% 85%;
