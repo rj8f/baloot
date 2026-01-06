@@ -272,7 +272,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
                   className={cn(
                     "w-10 rounded-md text-xs font-medium transition-all flex items-center justify-center",
                     entryTeam === 1 
-                      ? "bg-foreground text-background" 
+                      ? "bg-gradient-to-b from-team1-start to-team1-end text-primary-foreground shadow-sm" 
                       : "text-muted-foreground"
                   )}
                 >
@@ -283,7 +283,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
                   className={cn(
                     "w-10 rounded-md text-xs font-medium transition-all flex items-center justify-center",
                     entryTeam === 2 
-                      ? "bg-muted-foreground text-background" 
+                      ? "bg-gradient-to-b from-team2-start to-team2-end text-primary-foreground shadow-sm" 
                       : "text-muted-foreground"
                   )}
                 >
@@ -342,9 +342,9 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
             <button
               onClick={() => setBuyingTeam(1)}
               className={cn(
-                "flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
+                "relative flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95 overflow-hidden",
                 buyingTeam === 1 
-                  ? "bg-foreground text-background shadow-md" 
+                  ? "bg-gradient-to-b from-team1-start to-team1-end text-primary-foreground shadow-lg" 
                   : "bg-muted/50 text-muted-foreground hover:bg-muted"
               )}
             >
@@ -354,9 +354,9 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
             <button
               onClick={() => setBuyingTeam(2)}
               className={cn(
-                "flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95",
+                "relative flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95 overflow-hidden",
                 buyingTeam === 2 
-                  ? "bg-muted-foreground text-background shadow-md" 
+                  ? "bg-gradient-to-b from-team2-start to-team2-end text-primary-foreground shadow-lg" 
                   : "bg-muted/50 text-muted-foreground hover:bg-muted"
               )}
             >
@@ -379,8 +379,8 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
             className={cn(
               "w-full py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-1",
               kabootTeam 
-                ? "bg-foreground text-background" 
-                : "bg-foreground/10 text-foreground hover:bg-foreground/20"
+                ? "bg-gradient-to-r from-team1-start via-team1-end to-team2-start text-primary-foreground shadow-lg" 
+                : "bg-muted text-foreground hover:bg-muted/80"
             )}
           >
             <Zap className="h-3.5 w-3.5" />
@@ -406,7 +406,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
                   className={cn(
                     "flex flex-col items-center justify-center rounded-xl py-2 px-2 transition-all active:scale-95",
                     projectsTeam === 1 
-                      ? "bg-foreground text-background shadow-md" 
+                      ? "bg-gradient-to-b from-team1-start to-team1-end text-primary-foreground shadow-lg" 
                       : "bg-muted/50 text-muted-foreground hover:bg-muted"
                   )}
                 >
@@ -428,7 +428,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
                   className={cn(
                     "flex flex-col items-center justify-center rounded-xl py-2 px-2 transition-all active:scale-95",
                     projectsTeam === 2 
-                      ? "bg-muted-foreground text-background shadow-md" 
+                      ? "bg-gradient-to-b from-team2-start to-team2-end text-primary-foreground shadow-lg" 
                       : "bg-muted/50 text-muted-foreground hover:bg-muted"
                   )}
                 >
@@ -451,7 +451,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
                     className={cn(
                       "flex flex-col items-center justify-center rounded-xl py-2 px-2 transition-all active:scale-95",
                       balootTeam === 1 
-                        ? "bg-foreground text-background shadow-md" 
+                        ? "bg-gradient-to-b from-team1-start to-team1-end text-primary-foreground shadow-lg" 
                         : "bg-muted/50 text-muted-foreground hover:bg-muted"
                     )}
                   >
@@ -475,7 +475,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
                     className={cn(
                       "flex flex-col items-center justify-center rounded-xl py-2 px-2 transition-all active:scale-95",
                       balootTeam === 2 
-                        ? "bg-muted-foreground text-background shadow-md" 
+                        ? "bg-gradient-to-b from-team2-start to-team2-end text-primary-foreground shadow-lg" 
                         : "bg-muted/50 text-muted-foreground hover:bg-muted"
                     )}
                   >
@@ -604,8 +604,8 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
                 className={cn(
                   "py-2 rounded-lg font-bold text-sm transition-all border-2 flex flex-col items-center",
                   kabootTeam === 1 
-                    ? "bg-foreground border-foreground text-background" 
-                    : "bg-transparent border-foreground/30 text-foreground hover:border-foreground/60"
+                    ? "bg-gradient-to-b from-team1-start to-team1-end border-transparent text-primary-foreground shadow-lg" 
+                    : "bg-transparent border-team1-text/30 text-team1-text hover:border-team1-text/60"
                 )}
               >
                 {game.team1Name}
@@ -619,8 +619,8 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
                 className={cn(
                   "py-2 rounded-lg font-bold text-sm transition-all border-2 flex flex-col items-center",
                   kabootTeam === 2 
-                    ? "bg-muted-foreground border-muted-foreground text-background" 
-                    : "bg-transparent border-muted-foreground/30 text-muted-foreground hover:border-muted-foreground/60"
+                    ? "bg-gradient-to-b from-team2-start to-team2-end border-transparent text-primary-foreground shadow-lg" 
+                    : "bg-transparent border-team2-text/30 text-team2-text hover:border-team2-text/60"
                 )}
               >
                 {game.team2Name}

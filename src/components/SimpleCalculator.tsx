@@ -372,9 +372,9 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
                   className="grid grid-cols-[2rem_1fr_1.5rem_1fr] items-center py-3 border-b border-border/50"
                 >
                   <span className="text-xs text-muted-foreground">#{unifiedHistory.length - index}</span>
-                  <span className="text-team1 font-bold text-xl tabular-nums text-center">{entry.team1}</span>
-                  <span className="text-muted-foreground text-lg text-center">-</span>
-                  <span className="text-team2 font-bold text-xl tabular-nums text-center">{entry.team2}</span>
+                  <span className="font-black text-xl tabular-nums text-center bg-gradient-to-b from-team1-start to-team1-end bg-clip-text text-transparent">{entry.team1}</span>
+                  <span className="text-muted-foreground text-lg text-center font-light">—</span>
+                  <span className="font-black text-xl tabular-nums text-center bg-gradient-to-b from-team2-start to-team2-end bg-clip-text text-transparent">{entry.team2}</span>
                 </div>
               );
             } else {
@@ -385,9 +385,9 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
                   className="grid grid-cols-[2rem_1fr_1.5rem_1fr] items-center py-3 border-b border-border/50"
                 >
                   <span className="text-xs text-muted-foreground">#{unifiedHistory.length - index}</span>
-                  <span className="text-team1 font-bold text-xl tabular-nums text-center">{round.finalTeam1Points}</span>
-                  <span className="text-muted-foreground text-lg text-center">-</span>
-                  <span className="text-team2 font-bold text-xl tabular-nums text-center">{round.finalTeam2Points}</span>
+                  <span className="font-black text-xl tabular-nums text-center bg-gradient-to-b from-team1-start to-team1-end bg-clip-text text-transparent">{round.finalTeam1Points}</span>
+                  <span className="text-muted-foreground text-lg text-center font-light">—</span>
+                  <span className="font-black text-xl tabular-nums text-center bg-gradient-to-b from-team2-start to-team2-end bg-clip-text text-transparent">{round.finalTeam2Points}</span>
                 </div>
               );
             }

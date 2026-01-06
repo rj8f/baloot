@@ -73,22 +73,22 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
         ) : (
           <div className="space-y-2">
             {games.map((game) => (
-              <Card key={game.id} className="bg-muted/30">
+              <Card key={game.id} className="bg-card border">
                 <CardContent className="p-3">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 text-sm">
-                        <span className={game.winner === 1 ? "font-bold text-team1" : ""}>
+                        <span className={game.winner === 1 ? "font-bold text-team1-text" : ""}>
                           {game.team1_name}
                         </span>
-                        <span className="text-xl font-bold">
+                        <span className="text-xl font-black bg-gradient-to-b from-team1-start to-team1-end bg-clip-text text-transparent">
                           {game.team1_score}
                         </span>
-                        <span className="text-muted-foreground">-</span>
-                        <span className="text-xl font-bold">
+                        <span className="text-muted-foreground font-light">—</span>
+                        <span className="text-xl font-black bg-gradient-to-b from-team2-start to-team2-end bg-clip-text text-transparent">
                           {game.team2_score}
                         </span>
-                        <span className={game.winner === 2 ? "font-bold text-team2" : ""}>
+                        <span className={game.winner === 2 ? "font-bold text-team2-text" : ""}>
                           {game.team2_name}
                         </span>
                         {game.winner && (
@@ -139,22 +139,22 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
         ) : (
           <div className="space-y-2">
             {games.map((game) => (
-              <Card key={game.id} className="bg-muted/30">
+              <Card key={game.id} className="bg-card border">
                 <CardContent className="p-3">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 text-sm">
-                        <span className={game.winner === 1 ? "font-bold text-team1" : ""}>
+                        <span className={game.winner === 1 ? "font-bold text-team1-text" : ""}>
                           {game.team1_name}
                         </span>
-                        <span className="text-xl font-bold">
+                        <span className="text-xl font-black bg-gradient-to-b from-team1-start to-team1-end bg-clip-text text-transparent">
                           {game.team1_score}
                         </span>
-                        <span className="text-muted-foreground">-</span>
-                        <span className="text-xl font-bold">
+                        <span className="text-muted-foreground font-light">—</span>
+                        <span className="text-xl font-black bg-gradient-to-b from-team2-start to-team2-end bg-clip-text text-transparent">
                           {game.team2_score}
                         </span>
-                        <span className={game.winner === 2 ? "font-bold text-team2" : ""}>
+                        <span className={game.winner === 2 ? "font-bold text-team2-text" : ""}>
                           {game.team2_name}
                         </span>
                         {game.winner && (
