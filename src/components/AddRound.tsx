@@ -225,13 +225,13 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
   useEffect(() => {
     if (showPreview && onPreviewChange) {
       onPreviewChange({
-        team1: game.team1Score + preview.finalTeam1Points,
-        team2: game.team2Score + preview.finalTeam2Points,
+        team1: preview.finalTeam1Points,
+        team2: preview.finalTeam2Points,
       });
     } else if (onPreviewChange) {
       onPreviewChange(null);
     }
-  }, [showPreview, preview.finalTeam1Points, preview.finalTeam2Points, game.team1Score, game.team2Score, onPreviewChange]);
+  }, [showPreview, preview.finalTeam1Points, preview.finalTeam2Points, onPreviewChange]);
 
   return (
     <>
