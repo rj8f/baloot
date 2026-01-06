@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowUp, RotateCcw, Home, History, Trophy, Crown, Star, Settings2 } from 'lucide-react';
-import ThemeToggle from './ThemeToggle';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Sheet,
@@ -248,8 +247,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
       </Dialog>
 
       {/* Header */}
-      <div className="flex justify-between items-center p-4">
-        <ThemeToggle />
+      <div className="flex justify-end items-center p-4">
         <div className="flex items-center gap-1">
           {/* زر التبديل للحاسبة المتقدمة */}
           <Button 
@@ -350,10 +348,17 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
 
       {/* History */}
       <div className="flex-1 overflow-auto min-h-0 border-t border-border">
-        {simpleHistory.map((entry) => (
-          <div key={entry.id} className="flex justify-between items-center px-8 py-3 border-b border-border/50">
-            <span className="text-lg">{entry.team1}</span>
-            <span className="text-lg">{entry.team2}</span>
+        {simpleHistory.map((entry, index) => (
+          <div 
+            key={entry.id} 
+            className="flex items-center justify-between px-6 py-3 border-b border-border/50"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-muted-foreground w-6">#{simpleHistory.length - index}</span>
+              <span className="text-blue-400 font-bold text-lg">{entry.team1}</span>
+            </div>
+            <span className="text-muted-foreground">-</span>
+            <span className="text-rose-400 font-bold text-lg">{entry.team2}</span>
           </div>
         ))}
       </div>

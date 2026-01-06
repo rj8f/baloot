@@ -4,7 +4,7 @@ import ScoreBoard from './ScoreBoard';
 import AddRound from './AddRound';
 import RoundHistory from './RoundHistory';
 import WinnerModal from './WinnerModal';
-import ThemeToggle from './ThemeToggle';
+
 import MatchHistory from './MatchHistory';
 import { RotateCcw, Undo2, History, Calculator, Home } from 'lucide-react';
 import { toast } from 'sonner';
@@ -76,7 +76,7 @@ const GameDashboard = () => {
             >
               <Undo2 className="h-4 w-4" />
             </Button>
-            <ThemeToggle />
+            
             <Button variant="ghost" size="icon" onClick={goToSelection} title="الرئيسية">
               <Home className="h-4 w-4" />
             </Button>
