@@ -263,7 +263,35 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
             </button>
           </div>
 
-          {/* Points Entry - Under Game Type */}
+          {/* Buying Team - Above Points Entry */}
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => setBuyingTeam(1)}
+              className={cn(
+                "relative flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95 overflow-hidden",
+                buyingTeam === 1 
+                  ? "bg-gradient-to-b from-team-start to-team-end text-primary-foreground shadow-lg" 
+                  : "bg-muted/50 text-muted-foreground hover:bg-muted"
+              )}
+            >
+              <span className="text-[10px] opacity-70">المشترى</span>
+              <span className="text-sm font-medium">{game.team1Name}</span>
+            </button>
+            <button
+              onClick={() => setBuyingTeam(2)}
+              className={cn(
+                "relative flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95 overflow-hidden",
+                buyingTeam === 2 
+                  ? "bg-gradient-to-b from-team-start to-team-end text-primary-foreground shadow-lg" 
+                  : "bg-muted/50 text-muted-foreground hover:bg-muted"
+              )}
+            >
+              <span className="text-[10px] opacity-70">المشترى</span>
+              <span className="text-sm font-medium">{game.team2Name}</span>
+            </button>
+          </div>
+
+          {/* Points Entry - Under Buying Team */}
           {!kabootTeam && (
             <div className="flex items-center gap-2">
               <div className="flex bg-muted rounded-lg p-0.5 h-12">
@@ -335,34 +363,6 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
             >
               <Undo2 className="h-5 w-5" />
             </Button>
-          </div>
-
-          {/* Buying Team - Same style as Projects */}
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => setBuyingTeam(1)}
-              className={cn(
-                "relative flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95 overflow-hidden",
-                buyingTeam === 1 
-                  ? "bg-gradient-to-b from-team-start to-team-end text-primary-foreground shadow-lg" 
-                  : "bg-muted/50 text-muted-foreground hover:bg-muted"
-              )}
-            >
-              <span className="text-[10px] opacity-70">المشترى</span>
-              <span className="text-sm font-medium">{game.team1Name}</span>
-            </button>
-            <button
-              onClick={() => setBuyingTeam(2)}
-              className={cn(
-                "relative flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95 overflow-hidden",
-                buyingTeam === 2 
-                  ? "bg-gradient-to-b from-team-start to-team-end text-primary-foreground shadow-lg" 
-                  : "bg-muted/50 text-muted-foreground hover:bg-muted"
-              )}
-            >
-              <span className="text-[10px] opacity-70">المشترى</span>
-              <span className="text-sm font-medium">{game.team2Name}</span>
-            </button>
           </div>
 
           {/* Kaboot Button - Single */}
