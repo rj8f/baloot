@@ -42,6 +42,7 @@ const AddRound = () => {
   const [multiplier, setMultiplier] = useState<Multiplier>('عادي');
   const [showScanner, setShowScanner] = useState(false);
   const [kabootTeam, setKabootTeam] = useState<1 | 2 | null>(null);
+  const [showKabootDialog, setShowKabootDialog] = useState(false);
   const [showMiyaDialog, setShowMiyaDialog] = useState(false);
   const [pendingSubmit, setPendingSubmit] = useState<{
     team1Projects: TeamProjects;
@@ -278,60 +279,31 @@ const AddRound = () => {
             </button>
           </div>
 
-          {/* Kaboot Toggle - Compact */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setKabootTeam(kabootTeam === 1 ? null : 1)}
-              className={cn(
-                "flex-1 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-1",
-                kabootTeam === 1 
-                  ? "bg-amber-500 text-white" 
-                  : "bg-amber-500/10 text-amber-500 hover:bg-amber-500/20"
-              )}
-            >
-              <Zap className="h-3.5 w-3.5" />
-              كبوت
-            </button>
-            <button
-              onClick={() => setKabootTeam(kabootTeam === 2 ? null : 2)}
-              className={cn(
-                "flex-1 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-1",
-                kabootTeam === 2 
-                  ? "bg-amber-500 text-white" 
-                  : "bg-amber-500/10 text-amber-500 hover:bg-amber-500/20"
-              )}
-            >
-              <Zap className="h-3.5 w-3.5" />
-              كبوت
-            </button>
-          </div>
+          {/* Kaboot Button - Single */}
+          <button
+            onClick={() => {
+              if (kabootTeam) {
+                setKabootTeam(null);
+                setProjectsTeam(null);
+                setProjects(createEmptyProjects());
+              } else {
+                setShowKabootDialog(true);
+              }
+            }}
+            className={cn(
+              "w-full py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-1",
+              kabootTeam 
+                ? "bg-amber-500 text-white" 
+                : "bg-amber-500/10 text-amber-500 hover:bg-amber-500/20"
+            )}
+          >
+            <Zap className="h-3.5 w-3.5" />
+            {kabootTeam ? `كبوت ${kabootTeam === 1 ? game.team1Name : game.team2Name}` : 'كبوت'}
+          </button>
 
-          {/* Projects - Team Selection as Grid */}
-          <div className="space-y-2">
-            {kabootTeam ? (
-              // When kaboot is active, show only the kaboot team (locked)
-              <div className="grid grid-cols-2 gap-2">
-                <div className={cn(
-                  "flex flex-col items-center justify-center rounded-xl py-2 px-3",
-                  kabootTeam === 1 
-                    ? "bg-blue-600 text-white" 
-                    : "bg-muted/50 text-muted-foreground"
-                )}>
-                  <span className="text-sm font-medium">{game.team1Name}</span>
-                  {kabootTeam === 1 && <span className="text-[10px] font-normal opacity-80">المشاريع</span>}
-                </div>
-                <div className={cn(
-                  "flex flex-col items-center justify-center rounded-xl py-2 px-3",
-                  kabootTeam === 2 
-                    ? "bg-rose-600 text-white" 
-                    : "bg-muted/50 text-muted-foreground"
-                )}>
-                  <span className="text-sm font-medium">{game.team2Name}</span>
-                  {kabootTeam === 2 && <span className="text-[10px] font-normal opacity-80">المشاريع</span>}
-                </div>
-              </div>
-            ) : (
-              // Normal mode - allow team selection
+          {/* Projects - Team Selection as Grid (only when not kaboot) */}
+          {!kabootTeam && (
+            <div className="space-y-2">
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => {
@@ -374,34 +346,34 @@ const AddRound = () => {
                   {projectsTeam === 2 && <span className="text-[10px] font-normal opacity-80">المشاريع</span>}
                 </button>
               </div>
-            )}
 
-            {/* Project Chips - Tap to cycle */}
-            {projectsTeam && (
-              <div className="grid grid-cols-4 gap-2">
-                {availableProjects.map((p) => {
-                  const count = projects[p.key];
-                  return (
-                    <button
-                      key={p.key}
-                      onClick={() => cycleProject(p.key)}
-                      className={cn(
-                        "flex items-center justify-center gap-1 rounded-xl py-2 px-3 transition-all active:scale-95",
-                        count > 0 
-                          ? "bg-primary text-primary-foreground shadow-md shadow-primary/30" 
-                          : "bg-muted/50 text-muted-foreground hover:bg-muted"
-                      )}
-                    >
-                      <span className="text-sm font-medium">{p.label}</span>
-                      {count > 0 && (
-                        <span className="text-xs font-bold">x{count}</span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+              {/* Project Chips - Tap to cycle */}
+              {projectsTeam && (
+                <div className="grid grid-cols-4 gap-2">
+                  {availableProjects.map((p) => {
+                    const count = projects[p.key];
+                    return (
+                      <button
+                        key={p.key}
+                        onClick={() => cycleProject(p.key)}
+                        className={cn(
+                          "flex items-center justify-center gap-1 rounded-xl py-2 px-3 transition-all active:scale-95",
+                          count > 0 
+                            ? "bg-primary text-primary-foreground shadow-md shadow-primary/30" 
+                            : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                        )}
+                      >
+                        <span className="text-sm font-medium">{p.label}</span>
+                        {count > 0 && (
+                          <span className="text-xs font-bold">x{count}</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Multiplier - Same style as projects */}
           {!kabootTeam && (
@@ -560,6 +532,90 @@ const AddRound = () => {
               {multiplier}
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Kaboot Dialog */}
+      <Dialog open={showKabootDialog} onOpenChange={setShowKabootDialog}>
+        <DialogContent className="max-w-sm p-4" dir="rtl">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="text-center flex items-center justify-center gap-2">
+              <Zap className="h-5 w-5 text-amber-500" />
+              كبوت
+            </DialogTitle>
+          </DialogHeader>
+          
+          {/* Team Selection */}
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => {
+                  setKabootTeam(1);
+                  setProjectsTeam(1);
+                  setProjects(createEmptyProjects());
+                }}
+                className={cn(
+                  "py-3 rounded-lg font-bold text-base transition-all border-2 flex flex-col items-center",
+                  kabootTeam === 1 
+                    ? "bg-blue-600 border-blue-600 text-white" 
+                    : "bg-transparent border-blue-600/30 text-blue-400 hover:border-blue-600/60"
+                )}
+              >
+                {game.team1Name}
+                {kabootTeam === 1 && <span className="text-[10px] font-normal opacity-80">كبوت</span>}
+              </button>
+              <button
+                onClick={() => {
+                  setKabootTeam(2);
+                  setProjectsTeam(2);
+                  setProjects(createEmptyProjects());
+                }}
+                className={cn(
+                  "py-3 rounded-lg font-bold text-base transition-all border-2 flex flex-col items-center",
+                  kabootTeam === 2 
+                    ? "bg-rose-600 border-rose-600 text-white" 
+                    : "bg-transparent border-rose-600/30 text-rose-400 hover:border-rose-600/60"
+                )}
+              >
+                {game.team2Name}
+                {kabootTeam === 2 && <span className="text-[10px] font-normal opacity-80">كبوت</span>}
+              </button>
+            </div>
+
+            {/* Projects in Kaboot */}
+            {kabootTeam && (
+              <div className="grid grid-cols-4 gap-2">
+                {availableProjects.map((p) => {
+                  const count = projects[p.key];
+                  return (
+                    <button
+                      key={p.key}
+                      onClick={() => cycleProject(p.key)}
+                      className={cn(
+                        "flex items-center justify-center gap-1 rounded-xl py-2 px-3 transition-all active:scale-95",
+                        count > 0 
+                          ? "bg-primary text-primary-foreground shadow-md shadow-primary/30" 
+                          : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                      )}
+                    >
+                      <span className="text-sm font-medium">{p.label}</span>
+                      {count > 0 && (
+                        <span className="text-xs font-bold">x{count}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <Button 
+            onClick={() => setShowKabootDialog(false)} 
+            className="w-full mt-2"
+            disabled={!kabootTeam}
+          >
+            تأكيد
+          </Button>
         </DialogContent>
       </Dialog>
 
