@@ -19,6 +19,7 @@ interface RoundInput {
   team2Projects: TeamProjects;
   multiplier: Multiplier;
   kabootTeam?: 1 | 2 | null; // الفريق الذي حصل على كبوت (إن وجد)
+  miyaDoubleOnly?: boolean; // في حكم مع ×3 أو ×4، الخصم يريد المية ×2 فقط
 }
 
 interface GameContextType {
@@ -202,7 +203,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const calculateRoundResult = (
     roundData: RoundInput
   ): { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number } => {
-    const { gameType, buyingTeam, team1RawPoints, team2RawPoints, team1Projects, team2Projects, multiplier, kabootTeam } = roundData;
+    const { gameType, buyingTeam, team1RawPoints, team2RawPoints, team1Projects, team2Projects, multiplier, kabootTeam, miyaDoubleOnly } = roundData;
     const otherTeam: 1 | 2 = buyingTeam === 1 ? 2 : 1;
 
     // كبوت: الفريق الفائز يحصل على 25 في الحكم أو 44 في الصن + مشاريعه
@@ -330,10 +331,38 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     // المشاريع لا تُضرب في sunFactor لأن قيمها في PROJECT_VALUES مضاعفة مسبقاً
     const sunFactor = gameType === 'صن' ? 2 : 1;
 
+    // حساب نقاط المية للخصم إذا اختار ×2 فقط
+    // في حكم مع ×3 أو ×4، إذا الخصم اختار miyaDoubleOnly
+    // المية في الحكم = 10 نقاط
+    // إذا ×3 والخصم يبي ×2: المية = 20 بدل 30
+    // إذا ×4 والخصم يبي ×2: المية = 20 بدل 40
+    let miyaAdjustment = 0;
+    if (miyaDoubleOnly && gameType === 'حكم' && (multiplier === '×3' || multiplier === '×4')) {
+      const opponentProjects = otherTeam === 1 ? team1Projects : team2Projects;
+      const miyaCount = opponentProjects.مية;
+      if (miyaCount > 0) {
+        // المية = 10 نقاط في الحكم
+        // الفرق = مية × (المضاعف - 2) × 10
+        const miyaBaseValue = 10; // قيمة المية في الحكم
+        miyaAdjustment = miyaCount * miyaBaseValue * (multiplierFactor - 2);
+      }
+    }
+
     // النقاط النهائية = (بنط ÷ 10 × مضاعف الصن + مشاريع) × المضاعف + بلوت
     // البلوت لا يتضاعف
-    const finalTeam1Points = Math.round((team1RawScore * sunFactor + team1FinalProjects) * multiplierFactor) + team1FinalBaloot;
-    const finalTeam2Points = Math.round((team2RawScore * sunFactor + team2FinalProjects) * multiplierFactor) + team2FinalBaloot;
+    let finalTeam1Points = Math.round((team1RawScore * sunFactor + team1FinalProjects) * multiplierFactor) + team1FinalBaloot;
+    let finalTeam2Points = Math.round((team2RawScore * sunFactor + team2FinalProjects) * multiplierFactor) + team2FinalBaloot;
+
+    // تطبيق تعديل المية - نطرح الفرق من الفائز (المشتري) ونضيفه للخصم
+    if (miyaAdjustment > 0) {
+      if (winningTeam === 1) {
+        finalTeam1Points -= miyaAdjustment;
+        finalTeam2Points += miyaAdjustment;
+      } else {
+        finalTeam2Points -= miyaAdjustment;
+        finalTeam1Points += miyaAdjustment;
+      }
+    }
 
     return {
       winningTeam,
