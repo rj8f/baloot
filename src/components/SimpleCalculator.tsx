@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowUp, RotateCcw, Home, History, Trophy, Crown, Star, Settings2 } from 'lucide-react';
+import { ArrowUp, RotateCcw, Home, History, Trophy, Crown, Star, Calculator } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Sheet,
@@ -256,7 +256,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
             onClick={switchToAdvanced}
             title="الحاسبة المتقدمة"
           >
-            <Settings2 className="h-5 w-5" />
+            <Calculator className="h-5 w-5" />
           </Button>
           {/* Match History Sheet */}
           <Sheet>
@@ -348,19 +348,19 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
 
       {/* History */}
       <div className="flex-1 overflow-auto min-h-0 border-t border-border">
-        {simpleHistory.map((entry, index) => (
-          <div 
-            key={entry.id} 
-            className="flex items-center justify-between px-6 py-3 border-b border-border/50"
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-muted-foreground w-6">#{simpleHistory.length - index}</span>
-              <span className="text-blue-400 font-bold text-lg">{entry.team1}</span>
+        <div className="max-w-xs mx-auto">
+          {simpleHistory.map((entry, index) => (
+            <div 
+              key={entry.id} 
+              className="flex items-center justify-between px-4 py-3 border-b border-border/50"
+            >
+              <span className="text-xs text-muted-foreground w-8">#{simpleHistory.length - index}</span>
+              <span className="text-blue-400 font-bold text-xl">{entry.team1}</span>
+              <span className="text-muted-foreground text-lg">-</span>
+              <span className="text-rose-400 font-bold text-xl">{entry.team2}</span>
             </div>
-            <span className="text-muted-foreground">-</span>
-            <span className="text-rose-400 font-bold text-lg">{entry.team2}</span>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
