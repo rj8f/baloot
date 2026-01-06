@@ -17,7 +17,7 @@ const GameSetup = () => {
   // Mode Selection Screen
   return (
     <div className="h-screen overflow-hidden flex flex-col items-center justify-center p-4 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
-      <div className="absolute top-4 left-4">
+      <div className="absolute top-4 right-4">
         <Button
           variant="ghost"
           size="icon"

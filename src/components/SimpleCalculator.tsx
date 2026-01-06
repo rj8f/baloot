@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowUp, RotateCcw, Home, History, Trophy, Crown, Star, Calculator, Volume2, VolumeX } from 'lucide-react';
+import { ArrowUp, RotateCcw, Home, History, Trophy, Crown, Star, Calculator, Volume2, VolumeX, Settings } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Sheet,
@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import MatchHistory from './MatchHistory';
+import SettingsDialog from './SettingsDialog';
 import confetti from 'canvas-confetti';
 import { cn } from '@/lib/utils';
 import { useGame, SimpleHistoryEntry } from '@/contexts/GameContext';
@@ -60,6 +61,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const { settings, toggleMute } = useSettings();
   
   const [showUndoConfirm, setShowUndoConfirm] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   
   // تهيئة اللعبة عند الفتح
   useEffect(() => {
@@ -256,10 +258,15 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
 
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b bg-background/80 backdrop-blur-sm">
-        {/* Left: Home */}
-        <Button variant="ghost" size="icon" onClick={onBack} className="h-9 w-9">
-          <Home className="h-5 w-5" />
-        </Button>
+        {/* Left: Home + New Game */}
+        <div className="flex items-center gap-0.5">
+          <Button variant="ghost" size="icon" onClick={onBack} className="h-9 w-9">
+            <Home className="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={saveAndReset} className="h-9 w-9">
+            <RotateCcw className="h-5 w-5" />
+          </Button>
+        </div>
         
         {/* Right: Actions */}
         <div className="flex items-center gap-0.5">
@@ -301,12 +308,19 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
             <Calculator className="h-5 w-5" />
           </Button>
           
-          <Button variant="outline" size="sm" onClick={saveAndReset} className="h-9 px-3">
-            <RotateCcw className="h-4 w-4 ml-1" />
-            جديدة
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-9 w-9"
+            onClick={() => setShowSettings(true)}
+          >
+            <Settings className="h-5 w-5" />
           </Button>
         </div>
       </div>
+
+      {/* Settings Dialog */}
+      <SettingsDialog open={showSettings} onOpenChange={setShowSettings} />
 
       {/* Scores Display */}
       <div className="flex-shrink-0 flex justify-center items-center gap-8 py-6">
