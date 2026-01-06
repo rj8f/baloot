@@ -33,9 +33,6 @@ const GameDashboard = () => {
         <div className="flex items-center justify-between p-4 border-b bg-background/80 backdrop-blur-sm sticky top-0 z-10">
           <h1 className="text-xl font-bold text-primary">البلوت</h1>
           <div className="flex items-center gap-1">
-            <span className="text-sm text-muted-foreground ml-2">
-              الجولة {game.rounds.length + 1}
-            </span>
             
             {/* Match History Sheet */}
             <Sheet>
