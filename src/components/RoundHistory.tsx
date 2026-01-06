@@ -35,11 +35,7 @@ const RoundHistory = () => {
   return (
     <>
       <Card className="mx-4 mb-4">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-center text-lg">السجل</CardTitle>
-        </CardHeader>
-
-        <CardContent className="space-y-2">
+        <CardContent className="space-y-2 pt-4">
           {unifiedHistory.map((item, index) => {
             if (item.type === 'advanced') {
               const round = item.entry as Round;

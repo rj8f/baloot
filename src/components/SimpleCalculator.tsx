@@ -386,19 +386,19 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
 
       {/* History - موحد بترتيب زمني */}
       <div className="flex-1 overflow-auto min-h-0 border-t border-border">
-        <div className="max-w-sm mx-auto">
+        <div className="max-w-sm mx-auto px-4">
           {unifiedHistory.map((item, index) => {
             if (item.type === 'simple') {
               const entry = item.entry as SimpleHistoryEntry;
               return (
                 <div
                   key={entry.id}
-                  className="flex items-center justify-center py-3 border-b border-border/50"
+                  className="grid grid-cols-[2rem_1fr_1.5rem_1fr] items-center py-3 border-b border-border/50"
                 >
-                  <span className="text-xs text-muted-foreground w-8 text-center">#{unifiedHistory.length - index}</span>
-                  <span className="text-blue-400 font-bold text-xl tabular-nums w-16 text-left">{entry.team1}</span>
-                  <span className="text-muted-foreground text-lg w-6 text-center">-</span>
-                  <span className="text-rose-400 font-bold text-xl tabular-nums w-16 text-right">{entry.team2}</span>
+                  <span className="text-xs text-muted-foreground">#{unifiedHistory.length - index}</span>
+                  <span className="text-blue-400 font-bold text-xl tabular-nums text-center">{entry.team1}</span>
+                  <span className="text-muted-foreground text-lg text-center">-</span>
+                  <span className="text-rose-400 font-bold text-xl tabular-nums text-center">{entry.team2}</span>
                 </div>
               );
             } else {
@@ -406,12 +406,12 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
               return (
                 <div
                   key={round.id}
-                  className="flex items-center justify-center py-3 border-b border-border/50"
+                  className="grid grid-cols-[2rem_1fr_1.5rem_1fr] items-center py-3 border-b border-border/50"
                 >
-                  <span className="text-xs text-muted-foreground w-8 text-center">#{unifiedHistory.length - index}</span>
-                  <span className="text-blue-400 font-bold text-xl tabular-nums w-16 text-left">{round.finalTeam1Points}</span>
-                  <span className="text-muted-foreground text-lg w-6 text-center">-</span>
-                  <span className="text-rose-400 font-bold text-xl tabular-nums w-16 text-right">{round.finalTeam2Points}</span>
+                  <span className="text-xs text-muted-foreground">#{unifiedHistory.length - index}</span>
+                  <span className="text-blue-400 font-bold text-xl tabular-nums text-center">{round.finalTeam1Points}</span>
+                  <span className="text-muted-foreground text-lg text-center">-</span>
+                  <span className="text-rose-400 font-bold text-xl tabular-nums text-center">{round.finalTeam2Points}</span>
                 </div>
               );
             }
