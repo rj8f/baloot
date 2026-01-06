@@ -98,20 +98,20 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
           {/* Project Multiplier Mode */}
           <div className="p-3 rounded-lg bg-muted/50 space-y-2">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold">×2</span>
+              <Calculator className="h-4 w-4" />
               <Label className="text-sm">حسبة المشاريع في الثري والفور</Label>
             </div>
             <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
               <button
-                onClick={() => updateSettings({ projectMultiplierMode: 'full' })}
+                onClick={() => updateSettings({ projectMultiplierMode: 'all-x2' })}
                 className={cn(
                   "flex-1 py-2 px-2 rounded-md text-xs font-medium transition-all text-center",
-                  settings.projectMultiplierMode === 'full' 
+                  settings.projectMultiplierMode === 'all-x2' 
                     ? "bg-background shadow-sm" 
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                مع الـ x3 او الـ x4
+                الكل ×2
               </button>
               <button
                 onClick={() => updateSettings({ projectMultiplierMode: 'miya-x2' })}
@@ -125,15 +125,15 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
                 المية بس x2
               </button>
               <button
-                onClick={() => updateSettings({ projectMultiplierMode: 'all-x2' })}
+                onClick={() => updateSettings({ projectMultiplierMode: 'full' })}
                 className={cn(
                   "flex-1 py-2 px-2 rounded-md text-xs font-medium transition-all text-center",
-                  settings.projectMultiplierMode === 'all-x2' 
+                  settings.projectMultiplierMode === 'full' 
                     ? "bg-background shadow-sm" 
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                الكل ×2
+                مع الـ x3 او الـ x4
               </button>
             </div>
           </div>
