@@ -110,7 +110,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       const announcement = `${team1Name} ${team1Score}، ${team2Name} ${team2Score}`;
       const utterance = new SpeechSynthesisUtterance(announcement);
       utterance.lang = 'ar-SA';
-      utterance.rate = 1.3;
+      utterance.rate = 1.6;
       utterance.pitch = 1;
       utterance.volume = 1;
       
