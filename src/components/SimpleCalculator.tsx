@@ -109,7 +109,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
       const announcement = `لنا ${score1}، لهم ${score2}`;
       const utterance = new SpeechSynthesisUtterance(announcement);
       utterance.lang = 'ar-SA';
-      utterance.rate = 1.3;
+      utterance.rate = 1.2;
       utterance.pitch = 1;
       utterance.volume = 1;
       const voices = window.speechSynthesis.getVoices();
