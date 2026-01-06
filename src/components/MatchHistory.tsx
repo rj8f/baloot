@@ -78,7 +78,7 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 text-sm">
-                        <span className={game.winner === 1 ? "font-bold text-blue-500" : ""}>
+                        <span className={game.winner === 1 ? "font-bold text-team1" : ""}>
                           {game.team1_name}
                         </span>
                         <span className="text-xl font-bold">
@@ -88,11 +88,11 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
                         <span className="text-xl font-bold">
                           {game.team2_score}
                         </span>
-                        <span className={game.winner === 2 ? "font-bold text-rose-500" : ""}>
+                        <span className={game.winner === 2 ? "font-bold text-team2" : ""}>
                           {game.team2_name}
                         </span>
                         {game.winner && (
-                          <Trophy className="h-4 w-4 text-amber-500" />
+                          <Trophy className="h-4 w-4 text-foreground" />
                         )}
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">
@@ -102,7 +102,7 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-destructive/50 hover:text-destructive"
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
                       onClick={() => deleteGame(game.id)}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -144,7 +144,7 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 text-sm">
-                        <span className={game.winner === 1 ? "font-bold text-blue-500" : ""}>
+                        <span className={game.winner === 1 ? "font-bold text-team1" : ""}>
                           {game.team1_name}
                         </span>
                         <span className="text-xl font-bold">
@@ -154,11 +154,11 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
                         <span className="text-xl font-bold">
                           {game.team2_score}
                         </span>
-                        <span className={game.winner === 2 ? "font-bold text-rose-500" : ""}>
+                        <span className={game.winner === 2 ? "font-bold text-team2" : ""}>
                           {game.team2_name}
                         </span>
                         {game.winner && (
-                          <Trophy className="h-4 w-4 text-amber-500" />
+                          <Trophy className="h-4 w-4 text-foreground" />
                         )}
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">
@@ -168,7 +168,7 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-destructive/50 hover:text-destructive"
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
                       onClick={() => deleteGame(game.id)}
                     >
                       <Trash2 className="h-4 w-4" />

@@ -50,7 +50,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
           {/* Dark Mode Toggle */}
           <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
             <div className="flex items-center gap-2">
-              {settings.darkMode ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4 text-amber-500" />}
+              {settings.darkMode ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
               <Label htmlFor="dark-mode" className="text-sm">المظهر</Label>
             </div>
             <Switch

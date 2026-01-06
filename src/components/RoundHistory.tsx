@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useGame, SimpleHistoryEntry } from '@/contexts/GameContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -45,8 +45,8 @@ const RoundHistory = () => {
                   className={cn(
                     "flex items-center justify-between p-3 rounded-lg border",
                     round.winningTeam === 1
-                      ? "bg-blue-500/20 border-blue-500/50 dark:bg-blue-500/10 dark:border-blue-500/30"
-                      : "bg-rose-500/20 border-rose-500/50 dark:bg-rose-500/10 dark:border-rose-500/30"
+                      ? "bg-foreground/10 border-foreground/30"
+                      : "bg-muted-foreground/10 border-muted-foreground/30"
                   )}
                 >
                   <div className="flex items-center gap-3">
@@ -59,8 +59,8 @@ const RoundHistory = () => {
                             className={cn(
                               "text-xs px-2 py-0.5 rounded",
                               round.multiplier === 'قهوة'
-                                ? "bg-amber-500/30 text-amber-300"
-                                : "bg-primary/30"
+                                ? "bg-foreground/20"
+                                : "bg-primary/20"
                             )}
                           >
                             {round.multiplier}
@@ -76,14 +76,14 @@ const RoundHistory = () => {
                   <div className="flex items-center gap-3">
                     <div className="text-left flex gap-3">
                       <div className="text-center">
-                        <span className="text-blue-400 font-bold text-lg tabular-nums">
+                        <span className="text-team1 font-bold text-lg tabular-nums">
                           {round.finalTeam1Points}
                         </span>
                         <span className="text-xs text-muted-foreground block">{game.team1Name}</span>
                       </div>
                       <span className="text-muted-foreground self-center">-</span>
                       <div className="text-center">
-                        <span className="text-rose-400 font-bold text-lg tabular-nums">
+                        <span className="text-team2 font-bold text-lg tabular-nums">
                           {round.finalTeam2Points}
                         </span>
                         <span className="text-xs text-muted-foreground block">{game.team2Name}</span>
@@ -93,7 +93,7 @@ const RoundHistory = () => {
                       variant="ghost"
                       size="icon"
                       onClick={() => setDeleteConfirm({ type: 'round', id: round.id })}
-                      className="h-8 w-8 text-destructive hover:text-destructive"
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -109,15 +109,15 @@ const RoundHistory = () => {
                 >
                   <span className="text-xs text-muted-foreground">#{unifiedHistory.length - index}</span>
                   <div className="flex items-center gap-4">
-                    <span className="text-blue-400 font-bold text-lg tabular-nums">{entry.team1}</span>
+                    <span className="text-team1 font-bold text-lg tabular-nums">{entry.team1}</span>
                     <span className="text-muted-foreground">-</span>
-                    <span className="text-rose-400 font-bold text-lg tabular-nums">{entry.team2}</span>
+                    <span className="text-team2 font-bold text-lg tabular-nums">{entry.team2}</span>
                   </div>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => setDeleteConfirm({ type: 'simple', id: entry.id })}
-                    className="h-8 w-8 text-destructive hover:text-destructive"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

@@ -92,9 +92,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   // Check for winner and trigger celebration
   useEffect(() => {
     if (winner) {
-      const colors = winner === 1 
-        ? ['#3b82f6', '#60a5fa', '#93c5fd']
-        : ['#f43f5e', '#fb7185', '#fda4af'];
+      const colors = ['#ffffff', '#a0a0a0', '#606060', '#303030'];
 
       confetti({
         particleCount: 100,
@@ -192,46 +190,29 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
       {/* Winner Modal */}
       <Dialog open={winner !== null} onOpenChange={() => saveAndReset()}>
         <DialogContent className="text-center max-w-sm border-2 overflow-hidden">
-          <div className={cn(
-            "absolute inset-0 opacity-20 animate-pulse",
-            winner === 1 
-              ? "bg-gradient-to-br from-blue-500 via-blue-400 to-blue-600" 
-              : "bg-gradient-to-br from-rose-500 via-rose-400 to-rose-600"
-          )} />
+          <div className="absolute inset-0 opacity-20 animate-pulse bg-gradient-to-br from-foreground/50 via-foreground/30 to-foreground/50" />
           
           <DialogHeader className="relative">
             <div className="flex justify-center mb-2">
-              <div className={cn(
-                "p-4 rounded-full",
-                winner === 1 ? "bg-blue-500/20" : "bg-rose-500/20"
-              )}>
-                <Trophy className={cn(
-                  "h-12 w-12 animate-bounce",
-                  winner === 1 ? "text-blue-400" : "text-rose-400"
-                )} />
+              <div className="p-4 rounded-full bg-foreground/10">
+                <Trophy className="h-12 w-12 animate-bounce text-foreground" />
               </div>
             </div>
             <DialogTitle className="text-2xl flex items-center justify-center gap-2">
-              <Crown className="h-6 w-6 text-amber-400" />
+              <Crown className="h-6 w-6 text-foreground" />
               <span>مبروك الفوز!</span>
-              <Crown className="h-6 w-6 text-amber-400" />
+              <Crown className="h-6 w-6 text-foreground" />
             </DialogTitle>
           </DialogHeader>
 
           <div className="py-6 relative">
-            <div className={cn(
-              "text-4xl font-bold mb-4 flex items-center justify-center gap-2",
-              winner === 1 ? "text-blue-400" : "text-rose-400"
-            )}>
+            <div className="text-4xl font-bold mb-4 flex items-center justify-center gap-2 text-foreground">
               <Star className="h-6 w-6 fill-current" />
               {winner === 1 ? 'لنا' : 'لهم'}
               <Star className="h-6 w-6 fill-current" />
             </div>
             
-            <div className={cn(
-              "text-7xl font-bold mb-2 tabular-nums",
-              winner === 1 ? "text-blue-400" : "text-rose-400"
-            )}>
+            <div className="text-7xl font-bold mb-2 tabular-nums text-foreground">
               {winner === 1 ? team1Score : team2Score}
             </div>
             
@@ -243,12 +224,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
           <div className="flex gap-3 relative">
             <Button 
               onClick={saveAndReset} 
-              className={cn(
-                "flex-1 text-lg py-6 font-bold",
-                winner === 1 
-                  ? "bg-blue-600 hover:bg-blue-700" 
-                  : "bg-rose-600 hover:bg-rose-700"
-              )}
+              className="flex-1 text-lg py-6 font-bold"
             >
               صكة جديدة
             </Button>
@@ -396,9 +372,9 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
                   className="grid grid-cols-[2rem_1fr_1.5rem_1fr] items-center py-3 border-b border-border/50"
                 >
                   <span className="text-xs text-muted-foreground">#{unifiedHistory.length - index}</span>
-                  <span className="text-blue-400 font-bold text-xl tabular-nums text-center">{entry.team1}</span>
+                  <span className="text-team1 font-bold text-xl tabular-nums text-center">{entry.team1}</span>
                   <span className="text-muted-foreground text-lg text-center">-</span>
-                  <span className="text-rose-400 font-bold text-xl tabular-nums text-center">{entry.team2}</span>
+                  <span className="text-team2 font-bold text-xl tabular-nums text-center">{entry.team2}</span>
                 </div>
               );
             } else {
@@ -409,9 +385,9 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
                   className="grid grid-cols-[2rem_1fr_1.5rem_1fr] items-center py-3 border-b border-border/50"
                 >
                   <span className="text-xs text-muted-foreground">#{unifiedHistory.length - index}</span>
-                  <span className="text-blue-400 font-bold text-xl tabular-nums text-center">{round.finalTeam1Points}</span>
+                  <span className="text-team1 font-bold text-xl tabular-nums text-center">{round.finalTeam1Points}</span>
                   <span className="text-muted-foreground text-lg text-center">-</span>
-                  <span className="text-rose-400 font-bold text-xl tabular-nums text-center">{round.finalTeam2Points}</span>
+                  <span className="text-team2 font-bold text-xl tabular-nums text-center">{round.finalTeam2Points}</span>
                 </div>
               );
             }
