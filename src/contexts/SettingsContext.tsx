@@ -37,7 +37,14 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const saved = localStorage.getItem('baloot_settings');
     if (saved) {
       try {
-        return { ...defaultSettings, ...JSON.parse(saved) };
+        const parsed = JSON.parse(saved);
+
+        // توافق مع الإصدارات السابقة: miyaAlwaysDouble => miyaFollowsMultiplier
+        if (typeof parsed?.miyaFollowsMultiplier !== 'boolean' && typeof parsed?.miyaAlwaysDouble === 'boolean') {
+          parsed.miyaFollowsMultiplier = !parsed.miyaAlwaysDouble;
+        }
+
+        return { ...defaultSettings, ...parsed };
       } catch {
         return defaultSettings;
       }
