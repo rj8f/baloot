@@ -530,7 +530,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
 
           {/* Multiplier */}
           {!kabootTeam && (
-            <div className="grid grid-cols-4 gap-2">
+            <div className={cn("grid gap-2", gameType === 'صن' ? "grid-cols-1" : "grid-cols-4")}>
               {availableMultipliers.map((m) => {
                 const isDisabled = gameType === 'صن' && m === 'دبل' && !canDouble;
                 const isSelected = multiplier === m;
