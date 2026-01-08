@@ -252,14 +252,14 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
       <Card className="mx-4 mb-4 overflow-hidden glass border-border/50 shadow-xl">
         <CardContent className="p-4 space-y-4">
           {/* Top Bar: Game Type Toggle */}
-          <div className="flex items-center justify-center gap-1 p-1 bg-muted/50 rounded-lg backdrop-blur-sm">
+          <div className="flex bg-muted rounded-lg p-0.5 h-12">
             <button
               onClick={() => { setGameType('حكم'); setMultiplier('عادي'); }}
               className={cn(
-                "flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all",
+                "flex-1 rounded-md text-sm font-medium transition-all flex items-center justify-center",
                 gameType === 'حكم' 
-                  ? "bg-background shadow-sm" 
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-gradient-to-b from-team-start to-team-end text-primary-foreground shadow-sm" 
+                  : "text-muted-foreground"
               )}
             >
               حكم
@@ -267,10 +267,10 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
             <button
               onClick={() => { setGameType('صن'); setMultiplier('عادي'); }}
               className={cn(
-                "flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all",
+                "flex-1 rounded-md text-sm font-medium transition-all flex items-center justify-center",
                 gameType === 'صن' 
-                  ? "bg-background shadow-sm" 
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-gradient-to-b from-team-start to-team-end text-primary-foreground shadow-sm" 
+                  : "text-muted-foreground"
               )}
             >
               صن
@@ -278,30 +278,30 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
           </div>
 
           {/* Buying Team - Above Points Entry */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="flex bg-muted rounded-lg p-0.5 h-12">
             <button
               onClick={() => setBuyingTeam(1)}
               className={cn(
-                "relative flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95 overflow-hidden",
+                "flex-1 rounded-md text-sm font-medium transition-all flex flex-col items-center justify-center",
                 buyingTeam === 1 
-                  ? "bg-gradient-to-b from-team-start to-team-end text-primary-foreground shadow-lg" 
-                  : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                  ? "bg-gradient-to-b from-team-start to-team-end text-primary-foreground shadow-sm" 
+                  : "text-muted-foreground"
               )}
             >
-              <span className="text-[10px] opacity-70">المشترى</span>
-              <span className="text-sm font-medium">{game.team1Name}</span>
+              <span className="text-[9px] opacity-70 leading-none">المشترى</span>
+              <span className="text-sm font-medium leading-tight">{game.team1Name}</span>
             </button>
             <button
               onClick={() => setBuyingTeam(2)}
               className={cn(
-                "relative flex flex-col items-center justify-center rounded-xl py-2 px-3 transition-all active:scale-95 overflow-hidden",
+                "flex-1 rounded-md text-sm font-medium transition-all flex flex-col items-center justify-center",
                 buyingTeam === 2 
-                  ? "bg-gradient-to-b from-team-start to-team-end text-primary-foreground shadow-lg" 
-                  : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                  ? "bg-gradient-to-b from-team-start to-team-end text-primary-foreground shadow-sm" 
+                  : "text-muted-foreground"
               )}
             >
-              <span className="text-[10px] opacity-70">المشترى</span>
-              <span className="text-sm font-medium">{game.team2Name}</span>
+              <span className="text-[9px] opacity-70 leading-none">المشترى</span>
+              <span className="text-sm font-medium leading-tight">{game.team2Name}</span>
             </button>
           </div>
 
