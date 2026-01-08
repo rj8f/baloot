@@ -138,17 +138,42 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
             </div>
           </div>
 
-          {/* Hokm Without Points Mode */}
-          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+          {/* Hokm Calculation Mode */}
+          <div className="p-3 rounded-lg bg-muted/50 space-y-2">
             <div className="flex items-center gap-2">
               <Calculator className="h-4 w-4" />
-              <Label htmlFor="hokm-mode" className="text-sm">بدون أبناط</Label>
+              <Label className="text-sm">حسبة الحكم</Label>
             </div>
-            <Switch
-              id="hokm-mode"
-              checked={settings.hokmWithoutPointsMode}
-              onCheckedChange={(checked) => updateSettings({ hokmWithoutPointsMode: checked })}
-            />
+            <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
+              <button
+                onClick={() => updateSettings({ hokmWithoutPointsMode: false })}
+                className={cn(
+                  "flex-1 py-2 px-2 rounded-md text-xs font-medium transition-all text-center",
+                  !settings.hokmWithoutPointsMode 
+                    ? "bg-background shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                بالأبناط
+              </button>
+              <button
+                onClick={() => updateSettings({ hokmWithoutPointsMode: true })}
+                className={cn(
+                  "flex-1 py-2 px-2 rounded-md text-xs font-medium transition-all text-center",
+                  settings.hokmWithoutPointsMode 
+                    ? "bg-background shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                بدون أبناط
+              </button>
+            </div>
+            <p className="text-[10px] text-muted-foreground leading-relaxed">
+              {settings.hokmWithoutPointsMode 
+                ? "مثال: إذا الحكم صافي والمشتري وصلت أبناطه 76 ياخذ 8 وتنجح"
+                : "على المشتري أن يتعادل بالأبناط على الأقل عشان ينجح"
+              }
+            </p>
           </div>
 
           {/* Reset Game Button */}
