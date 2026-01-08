@@ -171,7 +171,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
             <p className="text-[10px] text-muted-foreground leading-relaxed">
               {settings.hokmWithoutPointsMode 
                 ? "مثال: إذا الحكم صافي والمشتري وصلت أبناطه 76 ياخذ 8 وتنجح"
-                : "على المشتري أن يتعادل بالأبناط على الأقل عشان ينجح"
+                : "على المشتري أن يتعادل بالأبناط على الأقل حتى ينجح المشترى"
               }
             </p>
           </div>
