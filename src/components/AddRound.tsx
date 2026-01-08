@@ -254,17 +254,6 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
           {/* Top Bar: Game Type Toggle */}
           <div className="flex bg-muted rounded-lg p-0.5 h-12">
             <button
-              onClick={() => { setGameType('حكم'); setMultiplier('عادي'); }}
-              className={cn(
-                "flex-1 rounded-md text-sm font-medium transition-all flex items-center justify-center",
-                gameType === 'حكم' 
-                  ? "bg-gradient-to-b from-team-start to-team-end text-primary-foreground shadow-sm" 
-                  : "text-muted-foreground"
-              )}
-            >
-              حكم
-            </button>
-            <button
               onClick={() => { setGameType('صن'); setMultiplier('عادي'); }}
               className={cn(
                 "flex-1 rounded-md text-sm font-medium transition-all flex items-center justify-center",
@@ -274,6 +263,17 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
               )}
             >
               صن
+            </button>
+            <button
+              onClick={() => { setGameType('حكم'); setMultiplier('عادي'); }}
+              className={cn(
+                "flex-1 rounded-md text-sm font-medium transition-all flex items-center justify-center",
+                gameType === 'حكم' 
+                  ? "bg-gradient-to-b from-team-start to-team-end text-primary-foreground shadow-sm" 
+                  : "text-muted-foreground"
+              )}
+            >
+              حكم
             </button>
           </div>
 
