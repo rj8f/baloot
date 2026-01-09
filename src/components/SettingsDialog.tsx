@@ -20,10 +20,40 @@ interface SettingsDialogProps {
   isFirstTime?: boolean;
 }
 
+// Store the install prompt globally
+let deferredPrompt: any = null;
+
+// Listen for the beforeinstallprompt event
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+  });
+}
+
 const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDialogProps) => {
   const { settings, updateSettings, setFirstTimeComplete } = useSettings();
   const { resetGame } = useGame();
   const [showInstallGuide, setShowInstallGuide] = useState(false);
+  const [canInstall, setCanInstall] = useState(false);
+
+  // Check if we can show install prompt
+  useState(() => {
+    setCanInstall(!!deferredPrompt);
+  });
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        deferredPrompt = null;
+        setCanInstall(false);
+      }
+    } else {
+      setShowInstallGuide(!showInstallGuide);
+    }
+  };
 
   const handleComplete = () => {
     if (isFirstTime) {
@@ -183,7 +213,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
               variant="outline" 
               size="sm"
               className="w-full gap-2" 
-              onClick={() => setShowInstallGuide(!showInstallGuide)}
+              onClick={handleInstallClick}
             >
               <Smartphone className="h-4 w-4" />
               حفظ التطبيق على الشاشة الرئيسية
@@ -193,15 +223,15 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
               <div className="space-y-3 pt-2 text-sm">
                 {/* Arabic Instructions */}
                 <div className="space-y-2 border-b border-border/50 pb-3">
-                  <p className="font-medium text-xs text-muted-foreground">للآيفون:</p>
+                  <p className="font-medium text-xs text-muted-foreground">للآيفون (Safari):</p>
                   <div className="space-y-1.5 text-xs">
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">1</span>
-                      <span className="flex items-center gap-1">اضغط على زر المشاركة <Share className="h-3 w-3 inline" /></span>
+                      <span className="flex items-center gap-1">اضغط على زر المشاركة <Share className="h-3 w-3 inline" /> (أسفل الشاشة)</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">2</span>
-                      <span className="flex items-center gap-1">اختر "إضافة إلى الشاشة الرئيسية" <SquarePlus className="h-3 w-3 inline" /></span>
+                      <span className="flex items-center gap-1">اسحب القائمة للأسفل واختر "إضافة إلى الشاشة الرئيسية" <SquarePlus className="h-3 w-3 inline" /></span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">3</span>
@@ -212,15 +242,15 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
                 
                 {/* English Instructions */}
                 <div className="space-y-2" dir="ltr">
-                  <p className="font-medium text-xs text-muted-foreground">For iPhone:</p>
+                  <p className="font-medium text-xs text-muted-foreground">For iPhone (Safari):</p>
                   <div className="space-y-1.5 text-xs">
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">1</span>
-                      <span className="flex items-center gap-1">Tap the Share button <Share className="h-3 w-3 inline" /></span>
+                      <span className="flex items-center gap-1">Tap the Share button <Share className="h-3 w-3 inline" /> (bottom of screen)</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">2</span>
-                      <span className="flex items-center gap-1">Select "Add to Home Screen" <SquarePlus className="h-3 w-3 inline" /></span>
+                      <span className="flex items-center gap-1">Scroll down and tap "Add to Home Screen" <SquarePlus className="h-3 w-3 inline" /></span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">3</span>
