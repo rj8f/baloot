@@ -313,8 +313,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
     // ==================== حساب الصن ====================
     if (gameType === 'صن') {
-      // التحقق من وجود مشروع خمسين
-      const has50Project = team1Projects.خمسين > 0 || team2Projects.خمسين > 0;
+      // التحقق من وجود مشروع خمسين واحد فقط (ليس اثنين)
+      const total50Projects = (team1Projects.خمسين || 0) + (team2Projects.خمسين || 0);
+      const has50Project = total50Projects === 1;
       const buyingTeamRawPoints = buyingTeam === 1 ? team1RawPoints : team2RawPoints;
 
       // ==================== قواعد الخمسين في الصن ====================
