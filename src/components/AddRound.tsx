@@ -37,7 +37,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
   const { game, addRound, canDoubleSun, previewRoundResult, getUnifiedHistory, undoLast } = useGame();
   const { settings } = useSettings();
   const [showUndoConfirm, setShowUndoConfirm] = useState(false);
-  const [gameType, setGameType] = useState<GameType>('حكم');
+  const [gameType, setGameType] = useState<GameType>('صن');
   const [buyingTeam, setBuyingTeam] = useState<1 | 2>(1);
   const [entryTeam, setEntryTeam] = useState<1 | 2>(1);
   const [entryTeamCardsRaw, setEntryTeamCardsRaw] = useState('');
