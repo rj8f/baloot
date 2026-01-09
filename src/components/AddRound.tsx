@@ -337,7 +337,16 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
                 inputMode="numeric"
                 pattern="[0-9]*"
                 value={entryTeamCardsRaw}
-                onChange={(e) => setEntryTeamCardsRaw(arabicToWestern(e.target.value).replace(/[^0-9]/g, ''))}
+                onChange={(e) => {
+                  const cleaned = arabicToWestern(e.target.value).replace(/[^0-9]/g, '');
+                  const value = parseInt(cleaned) || 0;
+                  // الحد الأقصى: صن = 130، حكم = 162
+                  if (value <= totalPoints) {
+                    setEntryTeamCardsRaw(cleaned);
+                  } else {
+                    setEntryTeamCardsRaw(totalPoints.toString());
+                  }
+                }}
                 placeholder="عدد الأبناط"
                 className="text-center text-xl h-12 flex-1 font-bold placeholder:text-muted-foreground/40 placeholder:text-sm"
                 disabled={multiplier === 'قهوة'}

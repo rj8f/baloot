@@ -85,6 +85,8 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   // تتبع أي خانة بدأ منها المستخدم
   const [startedFromTeam1, setStartedFromTeam1] = useState<boolean | null>(null);
 
+  const MAX_TOTAL = 152;
+
   const handleInputChange = (
     value: string, 
     setter: (val: string) => void, 
@@ -93,6 +95,20 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   ) => {
     const converted = arabicToEnglish(value);
     const cleaned = converted.replace(/[^0-9]/g, '');
+    
+    // التحقق من أن مجموع الخانتين لا يتجاوز 152
+    const currentOther = isTeam1 ? (parseInt(team2Input) || 0) : (parseInt(team1Input) || 0);
+    const newValue = parseInt(cleaned) || 0;
+    
+    if (newValue + currentOther > MAX_TOTAL) {
+      // لا تسمح بإدخال قيمة تجعل المجموع أكثر من 152
+      const maxAllowed = MAX_TOTAL - currentOther;
+      if (maxAllowed >= 0) {
+        setter(maxAllowed.toString());
+      }
+      return;
+    }
+    
     setter(cleaned);
     
     // تحديد نقطة البداية
