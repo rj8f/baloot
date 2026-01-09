@@ -53,15 +53,20 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
 
   const unifiedHistory = getUnifiedHistory();
 
-  // Reset when game type changes
+  // Reset when game type changes (preserve points entry)
   useEffect(() => {
     setProjectsTeam(null);
     setProjects(createEmptyProjects());
-    setEntryTeamCardsRaw('');
     setKabootTeam(null);
     setMultiplier('عادي');
     setBalootTeam(null);
     setBalootCount(0);
+    // Validate existing points against new max
+    const currentPoints = parseInt(entryTeamCardsRaw) || 0;
+    const newMax = gameType === 'صن' ? 130 : 162;
+    if (currentPoints > newMax) {
+      setEntryTeamCardsRaw(newMax.toString());
+    }
   }, [gameType]);
 
   // Auto-set projects team when kaboot is selected
