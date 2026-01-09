@@ -83,23 +83,23 @@ export const calculateRoundResult = (roundData) => {
 
   // ======== تقريب البنط في الصن (قبل المشاريع) ========
   // في الصن: نقرب البنط لأقرب 10 قبل إضافة المشاريع
-  // الآحاد >= 5: نقرب للأعلى (نأخذ من الخصم)
-  // الآحاد < 5: نقرب للأسفل (نعطي الخصم)
+  // الآحاد = 5: لا تقريب، نضرب على طول
+  // الآحاد > 5 (6,7,8,9): نقرب للأعلى (نأخذ من الخصم)
+  // الآحاد < 5 (1,2,3,4): نقرب للأسفل (نعطي الخصم)
   if (gameType === 'صن') {
     const team1Ones = team1RawPoints % 10;
-    const team2Ones = team2RawPoints % 10;
     
-    if (team1Ones >= 5) {
+    if (team1Ones > 5) {
       // الفريق 1 يقرب للأعلى - يأخذ من الفريق 2
       const toAdd = 10 - team1Ones;
       team1AdjustedRaw = team1RawPoints + toAdd;
       team2AdjustedRaw = team2RawPoints - toAdd;
-    } else if (team1Ones > 0) {
+    } else if (team1Ones > 0 && team1Ones < 5) {
       // الفريق 1 يقرب للأسفل - يعطي الفريق 2
       team1AdjustedRaw = team1RawPoints - team1Ones;
       team2AdjustedRaw = team2RawPoints + team1Ones;
     }
-    // إذا team1Ones === 0، لا حاجة للتقريب
+    // إذا team1Ones === 0 أو === 5، لا حاجة للتقريب
   }
 
   // تحويل المشاريع لمكافئها الخام (×10)
