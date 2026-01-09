@@ -81,6 +81,27 @@ export const calculateRoundResult = (roundData) => {
   let team2AdjustedRaw = team2RawPoints;
   const totalRaw = team1RawPoints + team2RawPoints;
 
+  // ======== تقريب البنط في الصن (قبل المشاريع) ========
+  // في الصن: نقرب البنط لأقرب 10 قبل إضافة المشاريع
+  // الآحاد >= 5: نقرب للأعلى (نأخذ من الخصم)
+  // الآحاد < 5: نقرب للأسفل (نعطي الخصم)
+  if (gameType === 'صن') {
+    const team1Ones = team1RawPoints % 10;
+    const team2Ones = team2RawPoints % 10;
+    
+    if (team1Ones >= 5) {
+      // الفريق 1 يقرب للأعلى - يأخذ من الفريق 2
+      const toAdd = 10 - team1Ones;
+      team1AdjustedRaw = team1RawPoints + toAdd;
+      team2AdjustedRaw = team2RawPoints - toAdd;
+    } else if (team1Ones > 0) {
+      // الفريق 1 يقرب للأسفل - يعطي الفريق 2
+      team1AdjustedRaw = team1RawPoints - team1Ones;
+      team2AdjustedRaw = team2RawPoints + team1Ones;
+    }
+    // إذا team1Ones === 0، لا حاجة للتقريب
+  }
+
   // تحويل المشاريع لمكافئها الخام (×10)
   const team1ProjectsRawEq = team1ProjectsWithoutBaloot * 10;
   const team2ProjectsRawEq = team2ProjectsWithoutBaloot * 10;
@@ -155,7 +176,9 @@ export const calculateRoundResult = (roundData) => {
       }
     } else {
       // عادي: كل فريق يأخذ نقاطه
-      const useAdjusted = hokmWithoutPointsMode && gameType === 'حكم';
+      // في الصن: نستخدم القيم المقربة
+      // في الحكم: نستخدم القيم المعدلة فقط إذا كان وضع بدون أبناط مفعل
+      const useAdjusted = gameType === 'صن' || (hokmWithoutPointsMode && gameType === 'حكم');
       team1FinalRaw = useAdjusted ? team1AdjustedRaw : team1RawPoints;
       team2FinalRaw = useAdjusted ? team2AdjustedRaw : team2RawPoints;
       team1FinalProjects = team1ProjectsWithoutBaloot;
