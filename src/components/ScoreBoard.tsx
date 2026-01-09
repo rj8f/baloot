@@ -1,7 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useGame } from '@/contexts/GameContext';
 import { useSettings } from '@/contexts/SettingsContext';
-import { cn } from '@/lib/utils';
 
 interface ScoreBoardProps {
   previewTeam1?: number;
@@ -11,20 +10,16 @@ interface ScoreBoardProps {
 const ScoreBoard = ({ previewTeam1, previewTeam2 }: ScoreBoardProps) => {
   const { game } = useGame();
   const { settings } = useSettings();
-  const [isSpeaking, setIsSpeaking] = useState(false);
   
   const announceScore = useCallback(() => {
     if (!game || settings.isMuted) return;
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      setIsSpeaking(true);
       
       const message = `${game.team1Name} ${game.team1Score}، ${game.team2Name} ${game.team2Score}`;
       const utterance = new SpeechSynthesisUtterance(message);
       utterance.lang = 'ar-SA';
       utterance.rate = 1.2;
-      utterance.onend = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
       
       window.speechSynthesis.speak(utterance);
     }
@@ -38,15 +33,15 @@ const ScoreBoard = ({ previewTeam1, previewTeam2 }: ScoreBoardProps) => {
   const hasPreview = previewTeam1 !== undefined && previewTeam2 !== undefined;
 
   return (
-    <div className="relative p-4" onClick={announceScore}>
+    <div 
+      className="relative p-4 cursor-pointer active:scale-[0.98] transition-transform" 
+      onClick={announceScore}
+    >
       {/* Floating decorative elements */}
       <div className="absolute top-2 left-8 w-16 h-16 rounded-full bg-gradient-to-br from-team-start/5 to-transparent animate-float blur-xl" />
       <div className="absolute bottom-4 right-12 w-20 h-20 rounded-full bg-gradient-to-br from-team-end/5 to-transparent animate-float-delayed blur-xl" />
       
-      <div className={cn(
-        "grid grid-cols-2 gap-3 relative z-10 cursor-pointer transition-transform active:scale-[0.98]",
-        isSpeaking && "ring-2 ring-primary/50 rounded-2xl"
-      )}>
+      <div className="grid grid-cols-2 gap-3 relative z-10">
         {/* Team 1 - 3D Card */}
         <div className="relative rounded-2xl p-4 text-center overflow-hidden bg-team-bg border border-border/50 shadow-xl">
           {/* Glass overlay */}

@@ -356,13 +356,19 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
       <SettingsDialog open={showSettings} onOpenChange={setShowSettings} />
 
       {/* Scores Display */}
-      <div className="flex-shrink-0 flex justify-center items-center gap-4 py-6">
+      <div 
+        className="flex-shrink-0 flex justify-center items-center gap-4 py-6 cursor-pointer active:scale-[0.98] transition-transform"
+        onClick={() => announceScore(team1Score, team2Score)}
+      >
         <div className="text-center w-28">
           <div className="text-2xl font-bold text-muted-foreground">لنا</div>
           <div className="text-6xl font-bold tabular-nums">{team1Score}</div>
         </div>
         <button 
-          onClick={rotateArrow}
+          onClick={(e) => {
+            e.stopPropagation();
+            rotateArrow();
+          }}
           className="p-3 hover:bg-muted rounded-full transition-colors flex-shrink-0"
         >
           <ArrowUp 
