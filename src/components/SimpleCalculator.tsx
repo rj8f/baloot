@@ -83,16 +83,48 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const team1InputRef = useRef<HTMLInputElement>(null);
   const team2InputRef = useRef<HTMLInputElement>(null);
 
-  const handleInputChange = (value: string, setter: (val: string) => void, targetRef?: React.RefObject<HTMLInputElement>) => {
+  // تتبع أي خانة بدأ منها المستخدم
+  const [startedFromTeam1, setStartedFromTeam1] = useState<boolean | null>(null);
+
+  const handleInputChange = (
+    value: string, 
+    setter: (val: string) => void, 
+    isTeam1: boolean,
+    targetRef?: React.RefObject<HTMLInputElement>
+  ) => {
     const converted = arabicToEnglish(value);
     const cleaned = converted.replace(/[^0-9]/g, '');
     setter(cleaned);
     
+    // تحديد نقطة البداية
+    if (startedFromTeam1 === null && cleaned.length > 0) {
+      setStartedFromTeam1(isTeam1);
+    }
+    
     // انتقال تلقائي عند إدخال رقمين
-    if (cleaned.length >= 2 && targetRef?.current) {
-      targetRef.current.focus();
+    if (cleaned.length >= 2) {
+      const isSecondField = (startedFromTeam1 === true && !isTeam1) || (startedFromTeam1 === false && isTeam1);
+      
+      if (isSecondField) {
+        // الخانة الثانية - إنزال الكيبورد
+        if (isTeam1) {
+          team1InputRef.current?.blur();
+        } else {
+          team2InputRef.current?.blur();
+        }
+      } else if (targetRef?.current) {
+        // الخانة الأولى - انتقال للخانة الأخرى
+        targetRef.current.focus();
+      }
     }
   };
+
+  // إعادة تعيين نقطة البداية عند مسح الخانات
+  useEffect(() => {
+    if (team1Input === '' && team2Input === '') {
+      setStartedFromTeam1(null);
+    }
+  }, [team1Input, team2Input]);
 
   const rotateArrow = () => {
     setArrowRotation(prev => prev - 90);
@@ -195,7 +227,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   };
 
   return (
-    <div className="h-screen overflow-hidden flex flex-col bg-background text-foreground">
+    <div className="h-screen overflow-hidden flex flex-col bg-background text-foreground fixed inset-0">
       {/* Winner Modal */}
       <Dialog open={winner !== null} onOpenChange={() => saveAndReset()}>
         <DialogContent className="text-center max-w-sm border-2 overflow-hidden">
@@ -342,7 +374,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
           inputMode="numeric"
           pattern="[0-9]*"
           value={team1Input}
-          onChange={(e) => handleInputChange(e.target.value, setTeam1Input, team2InputRef)}
+          onChange={(e) => handleInputChange(e.target.value, setTeam1Input, true, team2InputRef)}
           placeholder="لنا"
           className="w-24 h-16 text-center text-2xl font-bold"
         />
@@ -363,7 +395,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
           inputMode="numeric"
           pattern="[0-9]*"
           value={team2Input}
-          onChange={(e) => handleInputChange(e.target.value, setTeam2Input, team1InputRef)}
+          onChange={(e) => handleInputChange(e.target.value, setTeam2Input, false, team1InputRef)}
           placeholder="لهم"
           className="w-24 h-16 text-center text-2xl font-bold"
         />
