@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useSettings } from '@/contexts/SettingsContext';
-import { Settings, Moon, Sun, Monitor, Calculator, MessageSquare, RotateCcw, Smartphone, Share, Plus, SquarePlus } from 'lucide-react';
+import { Settings, Moon, Sun, Monitor, Calculator, MessageSquare, RotateCcw, Smartphone, Share, SquarePlus, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useGame } from '@/contexts/GameContext';
 
@@ -20,40 +20,10 @@ interface SettingsDialogProps {
   isFirstTime?: boolean;
 }
 
-// Store the install prompt globally
-let deferredPrompt: any = null;
-
-// Listen for the beforeinstallprompt event
-if (typeof window !== 'undefined') {
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-  });
-}
-
 const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDialogProps) => {
   const { settings, updateSettings, setFirstTimeComplete } = useSettings();
   const { resetGame } = useGame();
   const [showInstallGuide, setShowInstallGuide] = useState(false);
-  const [canInstall, setCanInstall] = useState(false);
-
-  // Check if we can show install prompt
-  useState(() => {
-    setCanInstall(!!deferredPrompt);
-  });
-
-  const handleInstallClick = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        deferredPrompt = null;
-        setCanInstall(false);
-      }
-    } else {
-      setShowInstallGuide(!showInstallGuide);
-    }
-  };
 
   const handleComplete = () => {
     if (isFirstTime) {
@@ -213,7 +183,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
               variant="outline" 
               size="sm"
               className="w-full gap-2" 
-              onClick={handleInstallClick}
+              onClick={() => setShowInstallGuide(!showInstallGuide)}
             >
               <Smartphone className="h-4 w-4" />
               حفظ التطبيق على الشاشة الرئيسية
@@ -227,14 +197,18 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
                   <div className="space-y-1.5 text-xs">
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">1</span>
-                      <span className="flex items-center gap-1">اضغط على زر المشاركة <Share className="h-3 w-3 inline" /> (أسفل الشاشة)</span>
+                      <span className="flex items-center gap-1">اضغط على الثلاث نقاط <MoreHorizontal className="h-3 w-3 inline" /> (أعلى الشاشة)</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">2</span>
-                      <span className="flex items-center gap-1">اسحب القائمة للأسفل واختر "إضافة إلى الشاشة الرئيسية" <SquarePlus className="h-3 w-3 inline" /></span>
+                      <span className="flex items-center gap-1">اضغط على زر المشاركة <Share className="h-3 w-3 inline" /></span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">3</span>
+                      <span className="flex items-center gap-1">اسحب للأسفل واختر "إضافة إلى الشاشة الرئيسية" <SquarePlus className="h-3 w-3 inline" /></span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">4</span>
                       <span>اضغط "إضافة"</span>
                     </div>
                   </div>
@@ -246,14 +220,18 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
                   <div className="space-y-1.5 text-xs">
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">1</span>
-                      <span className="flex items-center gap-1">Tap the Share button <Share className="h-3 w-3 inline" /> (bottom of screen)</span>
+                      <span className="flex items-center gap-1">Tap the three dots <MoreHorizontal className="h-3 w-3 inline" /> (top of screen)</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">2</span>
-                      <span className="flex items-center gap-1">Scroll down and tap "Add to Home Screen" <SquarePlus className="h-3 w-3 inline" /></span>
+                      <span className="flex items-center gap-1">Tap the Share button <Share className="h-3 w-3 inline" /></span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">3</span>
+                      <span className="flex items-center gap-1">Scroll down and tap "Add to Home Screen" <SquarePlus className="h-3 w-3 inline" /></span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">4</span>
                       <span>Tap "Add"</span>
                     </div>
                   </div>
