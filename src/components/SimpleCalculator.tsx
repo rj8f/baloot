@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowUp, RotateCcw, Home, History, Trophy, Crown, Star, Calculator, Volume2, VolumeX, Settings, Sparkles } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import {
   Sheet,
   SheetContent,
@@ -50,7 +49,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     game, 
     setScores, 
     startSimpleMode, 
-    resetGame, 
+    resetGameKeepMode, 
     calculatorMode,
     switchToAdvanced,
     simpleHistory,
@@ -202,32 +201,12 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     setShowUndoConfirm(true);
   };
 
-  const saveAndReset = async () => {
-    // حفظ المباراة إذا كان هناك نقاط (فقط إذا لم يحفظ تلقائياً)
-    if ((team1Score > 0 || team2Score > 0) && !winner) {
-      try {
-        await supabase.from('games').insert([{
-          team1_name: 'لنا',
-          team2_name: 'لهم',
-          team1_score: team1Score,
-          team2_score: team2Score,
-          winner: null,
-          rounds: JSON.parse(JSON.stringify([...simpleHistory].reverse())),
-          finished_at: new Date().toISOString(),
-        }]);
-      } catch (error) {
-        console.error('Error saving game:', error);
-      }
-    }
-    
-    // إعادة تعيين
-    resetGame();
+  const saveAndReset = () => {
+    // إعادة تعيين مع الحفاظ على نوع الحاسبة
+    resetGameKeepMode();
     setTeam1Input('');
     setTeam2Input('');
     setArrowRotation(0);
-    
-    // إعادة تهيئة لعبة جديدة
-    setTimeout(() => startSimpleMode(), 0);
   };
 
   return (

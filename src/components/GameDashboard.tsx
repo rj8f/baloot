@@ -10,7 +10,6 @@ import SettingsDialog from './SettingsDialog';
 
 import MatchHistory from './MatchHistory';
 import { RotateCcw, History, Calculator, Home, Settings, Volume2, VolumeX } from 'lucide-react';
-import { toast } from 'sonner';
 import {
   Sheet,
   SheetContent,
@@ -24,10 +23,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { supabase } from '@/integrations/supabase/client';
 
 const GameDashboard = () => {
-  const { game, resetGame, switchToSimple, goToSelection, startGame } = useGame();
+  const { game, resetGameKeepMode, switchToSimple, goToSelection } = useGame();
   const { settings, toggleMute } = useSettings();
   const [showSettings, setShowSettings] = useState(false);
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
@@ -35,27 +33,9 @@ const GameDashboard = () => {
 
   if (!game) return null;
 
-  const saveAndReset = async () => {
-    // حفظ المباراة إذا كان هناك نقاط
-    if ((game.team1Score > 0 || game.team2Score > 0) && !game.winner) {
-      try {
-        await supabase.from('games').insert([{
-          team1_name: game.team1Name,
-          team2_name: game.team2Name,
-          team1_score: game.team1Score,
-          team2_score: game.team2Score,
-          winner: null,
-          rounds: JSON.parse(JSON.stringify(game.rounds)),
-          finished_at: new Date().toISOString(),
-        }]);
-      } catch (error) {
-        console.error('Error saving game:', error);
-      }
-    }
-    
-    // إعادة تعيين وبدء لعبة جديدة
-    resetGame();
-    setTimeout(() => startGame(game.team1Name, game.team2Name, game.winningScore), 0);
+  const saveAndReset = () => {
+    // إعادة تعيين مع الحفاظ على نوع الحاسبة
+    resetGameKeepMode();
   };
 
   if (!game) return null;
