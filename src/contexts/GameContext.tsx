@@ -313,25 +313,35 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
     // ==================== حساب الصن ====================
     if (gameType === 'صن') {
+      // التحقق من استثناء "الخمسين الوحيد" - لا تقريب إذا أحد الفريقين لديه مشروع 50 فقط
+      const team1ProjectCount = team1Projects.سرا + team1Projects.خمسين + team1Projects.مية + team1Projects.أربعمية + team1Projects.بلوت;
+      const team2ProjectCount = team2Projects.سرا + team2Projects.خمسين + team2Projects.مية + team2Projects.أربعمية + team2Projects.بلوت;
+      const team1HasOnly50 = team1ProjectCount === team1Projects.خمسين && team1Projects.خمسين > 0;
+      const team2HasOnly50 = team2ProjectCount === team2Projects.خمسين && team2Projects.خمسين > 0;
+      const skipRounding = team1HasOnly50 || team2HasOnly50;
+
       // 1. تقريب الأبناط لأقرب 10 قبل إضافة المشاريع
       // الآحاد = 5: لا تقريب، نضرب على طول
       // الآحاد > 5 (6,7,8,9): نقرب للأعلى (نأخذ من الخصم)
       // الآحاد < 5 (1,2,3,4): نقرب للأسفل (نعطي الخصم)
+      // استثناء: إذا أحد الفريقين لديه مشروع 50 فقط، لا تقريب
       let team1RoundedRaw = team1RawPoints;
       let team2RoundedRaw = team2RawPoints;
       
-      const team1Ones = team1RawPoints % 10;
-      if (team1Ones > 5) {
-        // نقرب للأعلى - نأخذ من الفريق 2
-        const toAdd = 10 - team1Ones;
-        team1RoundedRaw = team1RawPoints + toAdd;
-        team2RoundedRaw = team2RawPoints - toAdd;
-      } else if (team1Ones > 0 && team1Ones < 5) {
-        // نقرب للأسفل - نعطي الفريق 2
-        team1RoundedRaw = team1RawPoints - team1Ones;
-        team2RoundedRaw = team2RawPoints + team1Ones;
+      if (!skipRounding) {
+        const team1Ones = team1RawPoints % 10;
+        if (team1Ones > 5) {
+          // نقرب للأعلى - نأخذ من الفريق 2
+          const toAdd = 10 - team1Ones;
+          team1RoundedRaw = team1RawPoints + toAdd;
+          team2RoundedRaw = team2RawPoints - toAdd;
+        } else if (team1Ones > 0 && team1Ones < 5) {
+          // نقرب للأسفل - نعطي الفريق 2
+          team1RoundedRaw = team1RawPoints - team1Ones;
+          team2RoundedRaw = team2RawPoints + team1Ones;
+        }
+        // إذا team1Ones === 0 أو === 5، لا حاجة للتقريب
       }
-      // إذا team1Ones === 0 أو === 5، لا حاجة للتقريب
 
       // 2. حساب أبناط المشاريع (سرا=20، خمسين=50، مية=100، أربعمية=200)
       const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
