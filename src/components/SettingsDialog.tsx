@@ -197,7 +197,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
                   <div className="space-y-1.5 text-xs">
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">1</span>
-                      <span className="flex items-center gap-1">اضغط على الثلاث نقاط <MoreHorizontal className="h-3 w-3 inline" /> (أسفل الشاشة)</span>
+                      <span className="flex items-center gap-1">اضغط على الثلاث نقاط <MoreHorizontal className="h-3 w-3 inline" /></span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">2</span>
@@ -220,7 +220,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
                   <div className="space-y-1.5 text-xs">
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">1</span>
-                      <span className="flex items-center gap-1">Tap the three dots <MoreHorizontal className="h-3 w-3 inline" /> (bottom of screen)</span>
+                      <span className="flex items-center gap-1">Tap the three dots <MoreHorizontal className="h-3 w-3 inline" /></span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">2</span>
