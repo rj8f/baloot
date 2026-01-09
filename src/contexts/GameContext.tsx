@@ -314,11 +314,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     // ==================== حساب الصن ====================
     if (gameType === 'صن') {
       // التحقق من استثناء "الخمسين الوحيد" - لا تقريب إذا أحد الفريقين لديه مشروع 50 فقط
+      // هذا الاستثناء يعمل فقط عند تفعيل وضع "بالأبناط" (hokmWithoutPointsMode = false)
       const team1ProjectCount = team1Projects.سرا + team1Projects.خمسين + team1Projects.مية + team1Projects.أربعمية + team1Projects.بلوت;
       const team2ProjectCount = team2Projects.سرا + team2Projects.خمسين + team2Projects.مية + team2Projects.أربعمية + team2Projects.بلوت;
       const team1HasOnly50 = team1ProjectCount === team1Projects.خمسين && team1Projects.خمسين > 0;
       const team2HasOnly50 = team2ProjectCount === team2Projects.خمسين && team2Projects.خمسين > 0;
-      const skipRounding = team1HasOnly50 || team2HasOnly50;
+      const skipRounding = !hokmWithoutPointsMode && (team1HasOnly50 || team2HasOnly50);
 
       // 1. تقريب الأبناط لأقرب 10 قبل إضافة المشاريع
       // الآحاد = 5: لا تقريب، نضرب على طول
