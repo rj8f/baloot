@@ -313,27 +313,49 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
     // ==================== حساب الصن ====================
     if (gameType === 'صن') {
-      // 1. حساب أبناط المشاريع (سرا=20، خمسين=50، مية=100، أربعمية=200)
+      // 1. تقريب الأبناط لأقرب 10 قبل إضافة المشاريع
+      // الآحاد = 5: لا تقريب، نضرب على طول
+      // الآحاد > 5 (6,7,8,9): نقرب للأعلى (نأخذ من الخصم)
+      // الآحاد < 5 (1,2,3,4): نقرب للأسفل (نعطي الخصم)
+      let team1RoundedRaw = team1RawPoints;
+      let team2RoundedRaw = team2RawPoints;
+      
+      const team1Ones = team1RawPoints % 10;
+      if (team1Ones > 5) {
+        // نقرب للأعلى - نأخذ من الفريق 2
+        const toAdd = 10 - team1Ones;
+        team1RoundedRaw = team1RawPoints + toAdd;
+        team2RoundedRaw = team2RawPoints - toAdd;
+      } else if (team1Ones > 0 && team1Ones < 5) {
+        // نقرب للأسفل - نعطي الفريق 2
+        team1RoundedRaw = team1RawPoints - team1Ones;
+        team2RoundedRaw = team2RawPoints + team1Ones;
+      }
+      // إذا team1Ones === 0 أو === 5، لا حاجة للتقريب
+
+      // 2. حساب أبناط المشاريع (سرا=20، خمسين=50، مية=100، أربعمية=200)
       const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
       const team2ProjectsRaw = calculateSunProjectsRaw(team2Projects);
       const totalProjectsRaw = team1ProjectsRaw + team2ProjectsRaw;
 
-      // 2. المجموع الكلي للأبناط = 130 + مجموع أبناط المشاريع
+      // 3. المجموع الكلي للأبناط = 130 + مجموع أبناط المشاريع
       const totalRawWithProjects = 130 + totalProjectsRaw;
 
-      // 3. المجموع × 2
+      // 4. المجموع × 2
       const grandTotal = totalRawWithProjects * 2;
       const halfTotal = grandTotal / 2;
 
-      // 4. حساب أبناط كل فريق (أبناط اللعب + أبناط المشاريع) × 2
-      const team1TotalRaw = (team1RawPoints + team1ProjectsRaw) * 2;
-      const team2TotalRaw = (team2RawPoints + team2ProjectsRaw) * 2;
+      // 5. حساب أبناط كل فريق (أبناط اللعب المُقربة + أبناط المشاريع) × 2
+      const team1TotalRaw = (team1RoundedRaw + team1ProjectsRaw) * 2;
+      const team2TotalRaw = (team2RoundedRaw + team2ProjectsRaw) * 2;
 
-      // 5. التحقق من نجاح المشتري
+      // 6. التحقق من نجاح المشتري
       const buyingTeamTotalRaw = buyingTeam === 1 ? team1TotalRaw : team2TotalRaw;
       const buyingTeamSucceeded = buyingTeamTotalRaw >= halfTotal;
 
       console.log('=== تشخيص الصن ===');
+      console.log('أبناط فريق 1 الأصلية:', team1RawPoints, '→ بعد التقريب:', team1RoundedRaw);
+      console.log('أبناط فريق 2 الأصلية:', team2RawPoints, '→ بعد التقريب:', team2RoundedRaw);
       console.log('أبناط المشاريع فريق 1:', team1ProjectsRaw);
       console.log('أبناط المشاريع فريق 2:', team2ProjectsRaw);
       console.log('المجموع الكلي للأبناط (مع المشاريع):', totalRawWithProjects);
