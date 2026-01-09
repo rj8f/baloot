@@ -15,44 +15,15 @@ const WinnerModal = () => {
 
   useEffect(() => {
     if (game?.winner) {
-      // Fire confetti celebration - elegant grayscale with gold
-      const duration = 4000;
-      const end = Date.now() + duration;
+      const colors = ['#ffffff', '#a0a0a0', '#606060', '#303030'];
 
-      const colors = ['#ffffff', '#c0c0c0', '#808080', '#ffd700', '#ffa500'];
-
-      const frame = () => {
-        confetti({
-          particleCount: 4,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0, y: 0.7 },
-          colors,
-        });
-        confetti({
-          particleCount: 4,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1, y: 0.7 },
-          colors,
-        });
-
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      };
-
-      // Initial burst
       confetti({
-        particleCount: 150,
-        spread: 120,
+        particleCount: 100,
+        spread: 100,
         origin: { y: 0.6 },
         colors,
       });
 
-      frame();
-
-      // Vibrate if supported
       if (navigator.vibrate) {
         navigator.vibrate([100, 50, 100, 50, 200]);
       }
