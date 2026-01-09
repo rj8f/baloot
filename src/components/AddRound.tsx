@@ -4,11 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { useGame } from '@/contexts/GameContext';
 import { useSettings } from '@/contexts/SettingsContext';
-import { Undo2 } from 'lucide-react';
+import { Undo2, Zap } from 'lucide-react';
 import { GameType, Multiplier, TeamProjects, createEmptyProjects, PROJECT_VALUES } from '@/types/baloot';
 import { cn } from '@/lib/utils';
-import { Camera, Zap } from 'lucide-react';
-import CardScanner from './CardScanner';
 import {
   Dialog,
   DialogContent,
@@ -46,7 +44,6 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
   const [balootTeam, setBalootTeam] = useState<1 | 2 | null>(null);
   const [balootCount, setBalootCount] = useState(0);
   const [multiplier, setMultiplier] = useState<Multiplier>('عادي');
-  const [showScanner, setShowScanner] = useState(false);
   const [kabootTeam, setKabootTeam] = useState<1 | 2 | null>(null);
   const [showKabootDialog, setShowKabootDialog] = useState(false);
   
@@ -213,9 +210,6 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
   };
 
 
-  const handleScanSuccess = (totalPoints: number) => {
-    setEntryTeamCardsRaw(totalPoints.toString());
-  };
 
   // Calculate preview
   const getPreview = () => {
@@ -356,19 +350,6 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
                 className="text-center text-xl h-12 flex-1 font-bold placeholder:text-muted-foreground/40 placeholder:text-sm"
                 disabled={multiplier === 'قهوة'}
               />
-              <Button
-                variant="secondary"
-                size="icon"
-                onClick={() => {
-                  import('sonner').then(({ toast }) => {
-                    toast.info('قيد الإنشاء');
-                  });
-                }}
-                disabled={multiplier === 'قهوة'}
-                className="h-12 w-12 shrink-0"
-              >
-                <Camera className="h-5 w-5" />
-              </Button>
             </div>
           )}
 
@@ -573,15 +554,6 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
         </CardContent>
       </Card>
 
-      {showScanner && (
-        <CardScanner
-          gameType={gameType}
-          buyingTeam={buyingTeam}
-          multiplier={multiplier}
-          onClose={() => setShowScanner(false)}
-          onSuccess={handleScanSuccess}
-        />
-      )}
 
 
       {/* Kaboot Dialog */}
