@@ -143,7 +143,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
           <div className="p-3 rounded-lg bg-muted/50 space-y-2">
             <div className="flex items-center gap-2">
               <Calculator className="h-4 w-4" />
-              <Label className="text-sm">حسبة الحكم</Label>
+              <Label className="text-sm">حسبة الحكم والصن</Label>
             </div>
             <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
               <button
@@ -169,22 +169,16 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
                 بدون أبناط
               </button>
             </div>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">
-              {settings.hokmWithoutPointsMode 
-                ? "مثال: إذا الحكم صافي والمشتري وصلت أبناطه 76 ياخذ 8 وتنجح"
-                : "مثال: على المشتري أن يتعادل بالأبناط على الأقل حتى ينجح المشترى"
-              }
-            </p>
-            {!settings.hokmWithoutPointsMode && (
-              <div className="mt-2 pt-2 border-t border-border/30">
-                <p className="text-[10px] text-muted-foreground leading-relaxed">
-                  <span className="font-medium">استثناء الخمسين في الصن:</span> إذا كان أحد الفريقين لديه مشروع "خمسين" فقط، لا نقرب الأبناط ونضربها مباشرة × 2
-                </p>
-                <p className="text-[10px] text-muted-foreground leading-relaxed bg-background/50 p-1.5 rounded mt-1">
-                  مثال: فريق شرا صن ولديه خمسين، والخصم خذ 36 أبناط → (36 + 0) × 2 = 72 بدون تقريب
-                </p>
-              </div>
-            )}
+            <div className="text-[10px] text-muted-foreground leading-relaxed space-y-1">
+              {settings.hokmWithoutPointsMode ? (
+                <p>لا يلزم الفريق المشتري بالأبناط وإنما يتم التقريب إلا في دبل الحكم.</p>
+              ) : (
+                <>
+                  <p><span className="font-medium">في الحكم:</span> على المشتري أن يتعادل بالأبناط على الأقل لنجاح المشترى</p>
+                  <p><span className="font-medium">في الصن:</span> إن وجد مشروع خمسين في اللعب يُلزم المشتري بعدد أبناط أعلى من خصمه لنجاح المشترى.</p>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Install App Guide Button */}
