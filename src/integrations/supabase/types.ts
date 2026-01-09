@@ -14,42 +14,7 @@ export type Database = {
   }
   public: {
     Tables: {
-      games: {
-        Row: {
-          created_at: string
-          finished_at: string | null
-          id: string
-          rounds: Json
-          team1_name: string
-          team1_score: number
-          team2_name: string
-          team2_score: number
-          winner: number | null
-        }
-        Insert: {
-          created_at?: string
-          finished_at?: string | null
-          id?: string
-          rounds?: Json
-          team1_name?: string
-          team1_score?: number
-          team2_name?: string
-          team2_score?: number
-          winner?: number | null
-        }
-        Update: {
-          created_at?: string
-          finished_at?: string | null
-          id?: string
-          rounds?: Json
-          team1_name?: string
-          team1_score?: number
-          team2_name?: string
-          team2_score?: number
-          winner?: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
