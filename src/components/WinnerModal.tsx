@@ -11,7 +11,7 @@ import confetti from 'canvas-confetti';
 import { Trophy, Crown, Star, Sparkles } from 'lucide-react';
 
 const WinnerModal = () => {
-  const { game, resetGame } = useGame();
+  const { game, resetGameKeepMode } = useGame();
 
   useEffect(() => {
     if (game?.winner) {
@@ -37,7 +37,7 @@ const WinnerModal = () => {
   const loserScore = game.winner === 1 ? game.team2Score : game.team1Score;
 
   return (
-    <Dialog open={true} onOpenChange={() => resetGame()}>
+    <Dialog open={true} onOpenChange={() => resetGameKeepMode()}>
       <DialogContent className="text-center max-w-sm border-2 overflow-hidden glass">
         {/* Animated background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-team-start/20 via-transparent to-team-end/20 animate-pulse" />
@@ -84,7 +84,7 @@ const WinnerModal = () => {
 
         <div className="flex gap-3 relative">
           <Button 
-            onClick={resetGame} 
+            onClick={resetGameKeepMode} 
             className="flex-1 text-lg py-6 font-bold btn-press bg-gradient-to-r from-team-start to-team-end hover:opacity-90 shadow-xl"
           >
             لعبة جديدة

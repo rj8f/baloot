@@ -45,6 +45,7 @@ interface GameContextType {
   deleteSimpleEntry: (entryId: string) => void;
   undoLast: () => void;  // تراجع موحد
   resetGame: () => void;
+  resetGameKeepMode: () => void;  // إعادة تعيين مع الحفاظ على نوع الحاسبة
   canDoubleSun: () => boolean;
   previewRoundResult: (round: RoundInput) => { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number };
   setScores: (team1Score: number, team2Score: number) => void;
@@ -725,6 +726,29 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('baloot_simple_history');
   };
 
+  // إعادة تعيين اللعبة مع الحفاظ على نوع الحاسبة
+  const resetGameKeepMode = () => {
+    const currentMode = calculatorMode;
+    setSimpleHistory([]);
+    localStorage.removeItem('baloot_simple_history');
+    
+    if (currentMode === 'simple') {
+      setGame(createNewGame());
+    } else if (currentMode === 'advanced' && game) {
+      setGame({
+        id: crypto.randomUUID(),
+        team1Name: game.team1Name,
+        team2Name: game.team2Name,
+        team1Score: 0,
+        team2Score: 0,
+        winningScore: game.winningScore,
+        rounds: [],
+        winner: null,
+        createdAt: new Date(),
+      });
+    }
+  };
+
   const previewRoundResult = (roundData: RoundInput) => {
     return calculateRoundResult(roundData);
   };
@@ -765,7 +789,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       deleteRound,
       deleteSimpleEntry,
       undoLast,
-      resetGame, 
+      resetGame,
+      resetGameKeepMode,
       canDoubleSun, 
       previewRoundResult, 
       setScores,
