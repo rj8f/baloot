@@ -177,6 +177,21 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
             </p>
           </div>
 
+          {/* Sun Rounding Exception Explanation */}
+          <div className="p-3 rounded-lg bg-muted/50 space-y-2">
+            <div className="flex items-center gap-2">
+              <Calculator className="h-4 w-4" />
+              <Label className="text-sm">استثناء التقريب في الصن</Label>
+            </div>
+            <p className="text-[10px] text-muted-foreground leading-relaxed">
+              في الصن عادةً نقرب الأبناط لأقرب 10 (مثال: 36 → 40)، لكن إذا كان أحد الفريقين لديه مشروع "خمسين" فقط بدون مشاريع أخرى، لا نقرب ونضرب الأبناط مباشرة × 2
+            </p>
+            <p className="text-[10px] text-muted-foreground leading-relaxed bg-background/50 p-2 rounded">
+              مثال: فريق 1 شرا صن ولديه خمسين، وفريق 2 خذ 36 أبناط<br/>
+              النتيجة: (36 + 0) × 2 = 72 بدون تقريب
+            </p>
+          </div>
+
           {/* Install App Guide Button */}
           <div className="p-3 rounded-lg bg-muted/50 space-y-2">
             <Button 
