@@ -1,9 +1,15 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Input validation constants
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
+const VALID_GAME_TYPES = ['صن', 'حكم'];
+const VALID_TRUMP_SUITS = ['hearts', 'diamonds', 'clubs', 'spades'];
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -11,18 +17,80 @@ serve(async (req) => {
   }
 
   try {
+    // Verify authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: 'غير مصرح' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: authError } = await supabaseClient.auth.getClaims(token);
+
+    if (authError || !claimsData?.claims) {
+      return new Response(
+        JSON.stringify({ error: 'غير مصرح' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { imageBase64, gameType, trumpSuit } = await req.json();
     
-    if (!imageBase64) {
+    // Input validation
+    if (!imageBase64 || typeof imageBase64 !== 'string') {
       return new Response(
-        JSON.stringify({ error: 'No image provided' }),
+        JSON.stringify({ error: 'بيانات الصورة غير صالحة' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Check image size
+    if (imageBase64.length > MAX_IMAGE_SIZE) {
+      return new Response(
+        JSON.stringify({ error: 'الصورة كبيرة جداً (الحد الأقصى 10 ميجابايت)' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate base64 format
+    if (!imageBase64.match(/^data:image\/(jpeg|jpg|png|webp);base64,/)) {
+      return new Response(
+        JSON.stringify({ error: 'صيغة الصورة غير صالحة' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate gameType
+    if (!VALID_GAME_TYPES.includes(gameType)) {
+      return new Response(
+        JSON.stringify({ error: 'نوع اللعبة غير صالح' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate trumpSuit for حكم mode
+    if (gameType === 'حكم' && trumpSuit && !VALID_TRUMP_SUITS.includes(trumpSuit)) {
+      return new Response(
+        JSON.stringify({ error: 'نوع الحكم غير صالح' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
+      console.error('LOVABLE_API_KEY is not configured');
+      return new Response(
+        JSON.stringify({ error: 'خطأ في إعدادات الخادم' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const trumpSuitMap: Record<string, string> = {
@@ -142,26 +210,28 @@ ${gameType === 'صن' ? `
       const errorText = await response.text();
       console.error('AI gateway error:', response.status, errorText);
       
+      // Return generic error messages - don't reveal backend details
+      let userMessage = 'حدث خطأ في معالجة الطلب';
+      let statusCode = 500;
+      
       if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: 'تم تجاوز حد الطلبات، حاول مرة أخرى لاحقاً' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: 'يرجى إضافة رصيد لاستخدام الذكاء الاصطناعي' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        userMessage = 'الخدمة مشغولة حالياً، حاول مرة أخرى';
+        statusCode = 503;
+      } else if (response.status === 402) {
+        userMessage = 'الخدمة غير متاحة حالياً';
+        statusCode = 503;
       }
       
-      throw new Error(`AI gateway error: ${response.status}`);
+      return new Response(
+        JSON.stringify({ error: userMessage }),
+        { status: statusCode, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
     
-    console.log('AI response:', content);
+    console.log('AI response received');
 
     // Try to parse JSON from the response
     let result;
@@ -191,10 +261,12 @@ ${gameType === 'صن' ? `
     );
 
   } catch (error) {
+    // Log full details server-side only
     console.error('Error in analyze-cards function:', error);
-    const errorMessage = error instanceof Error ? error.message : 'حدث خطأ غير متوقع';
+    
+    // Return generic error to client - never leak internal details
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: 'حدث خطأ في الخادم' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
