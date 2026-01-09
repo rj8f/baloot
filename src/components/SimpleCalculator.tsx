@@ -126,13 +126,8 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     }
   }, [team1Input, team2Input]);
 
-  const rotateArrow = (forceRotate = false) => {
-    // Only rotate if forced or sum is >= 16
-    const t1 = parseInt(team1Input) || 0;
-    const t2 = parseInt(team2Input) || 0;
-    if (forceRotate || t1 + t2 >= 16) {
-      setArrowRotation(prev => prev - 90);
-    }
+  const rotateArrow = () => {
+    setArrowRotation(prev => prev - 90);
   };
 
   // Check for winner and trigger celebration
@@ -187,16 +182,11 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     const newTeam2Score = team2Score + t2;
     
     // تحديث النتيجة عبر GameContext
-    // Rotate arrow only if sum >= 16
-    const shouldRotate = t1 + t2 >= 16;
-    
     setScores(newTeam1Score, newTeam2Score);
     addSimpleHistoryEntry(newEntry);
     setTeam1Input('');
     setTeam2Input('');
-    if (shouldRotate) {
-      setArrowRotation(prev => prev - 90);
-    }
+    rotateArrow();
     
     // إعلان النتيجة صوتياً
     announceScore(newTeam1Score, newTeam2Score);
@@ -361,7 +351,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
           <div className="text-6xl font-bold tabular-nums">{team1Score}</div>
         </div>
         <button 
-          onClick={() => rotateArrow(true)}
+          onClick={rotateArrow}
           className="p-3 hover:bg-muted rounded-full transition-colors flex-shrink-0"
         >
           <ArrowUp 
