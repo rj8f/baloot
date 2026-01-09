@@ -1,7 +1,6 @@
 import React, { useState, useEffect, forwardRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
 import { History, Trophy, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -26,16 +25,15 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(expandedByDefault);
 
-  const fetchGames = async () => {
+  const fetchGames = () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('games')
-      .select('id, team1_name, team2_name, team1_score, team2_score, winner, created_at, finished_at')
-      .order('created_at', { ascending: false })
-      .limit(20);
-
-    if (!error && data) {
-      setGames(data);
+    try {
+      const savedHistory = localStorage.getItem('baloot_match_history');
+      const history = savedHistory ? JSON.parse(savedHistory) : [];
+      setGames(history);
+    } catch (error) {
+      console.error('Error loading match history:', error);
+      setGames([]);
     }
     setLoading(false);
   };
@@ -53,9 +51,22 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
     }
   }, [isOpen]);
 
-  const deleteGame = async (id: string) => {
-    await supabase.from('games').delete().eq('id', id);
-    setGames(games.filter(g => g.id !== id));
+  // Listen for storage changes to update when a new game is saved
+  useEffect(() => {
+    const handleStorageChange = () => {
+      if (isOpen || expandedByDefault) {
+        fetchGames();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [isOpen, expandedByDefault]);
+
+  const deleteGame = (id: string) => {
+    const updatedGames = games.filter(g => g.id !== id);
+    setGames(updatedGames);
+    localStorage.setItem('baloot_match_history', JSON.stringify(updatedGames));
   };
 
   const formatDate = (dateStr: string) => {
