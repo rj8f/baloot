@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useGame, SimpleHistoryEntry } from '@/contexts/GameContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Volume2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Round } from '@/types/baloot';
 import {
@@ -14,7 +15,31 @@ import {
 
 const RoundHistory = () => {
   const { game, deleteRound, deleteSimpleEntry, getUnifiedHistory } = useGame();
+  const { settings } = useSettings();
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'round' | 'simple'; id: string } | null>(null);
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
+
+  const announceRound = useCallback((team1Score: number, team2Score: number, itemId: string) => {
+    if (settings.isMuted) return;
+    if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      setSpeakingId(itemId);
+      
+      const team1Name = game?.team1Name || 'لنا';
+      const team2Name = game?.team2Name || 'لهم';
+      const message = `${team1Name} ${team1Score}، ${team2Name} ${team2Score}`;
+      
+      const utterance = new SpeechSynthesisUtterance(message);
+      utterance.lang = 'ar-SA';
+      utterance.rate = 1.2;
+      utterance.onend = () => setSpeakingId(null);
+      utterance.onerror = () => setSpeakingId(null);
+      
+      window.speechSynthesis.speak(utterance);
+    }
+  }, [game?.team1Name, game?.team2Name, settings.isMuted]);
 
   if (!game) return null;
 
@@ -42,7 +67,11 @@ const RoundHistory = () => {
               return (
                 <div
                   key={round.id}
-                  className="relative flex items-center justify-between p-3 rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm overflow-hidden hover:bg-card/80 transition-all duration-300 group"
+                  onClick={() => announceRound(round.finalTeam1Points, round.finalTeam2Points, round.id)}
+                  className={cn(
+                    "relative flex items-center justify-between p-3 rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm overflow-hidden hover:bg-card/80 transition-all duration-300 group cursor-pointer active:scale-[0.98]",
+                    speakingId === round.id && "ring-2 ring-primary/50"
+                  )}
                 >
                   {/* Gradient accent bar */}
                   <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-team-start to-team-end opacity-60 group-hover:opacity-100 transition-opacity" />
@@ -96,7 +125,11 @@ const RoundHistory = () => {
               return (
                 <div
                   key={entry.id}
-                  className="flex items-center justify-between p-3 rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 group"
+                  onClick={() => announceRound(entry.team1, entry.team2, entry.id)}
+                  className={cn(
+                    "flex items-center justify-between p-3 rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 group cursor-pointer active:scale-[0.98]",
+                    speakingId === entry.id && "ring-2 ring-primary/50"
+                  )}
                 >
                   <span className="text-xs text-muted-foreground font-medium">#{unifiedHistory.length - index}</span>
                   <div className="flex items-center gap-4">
