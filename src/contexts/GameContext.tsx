@@ -9,7 +9,6 @@ import {
   calculateBalootPoints,
   calculateSunProjectsRaw,
 } from '@/types/baloot';
-import { supabase } from '@/integrations/supabase/client';
 
 interface RoundInput {
   gameType: GameType;
@@ -668,17 +667,26 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const saveGameToHistory = async (gameData: Game) => {
+  const saveGameToHistory = (gameData: Game) => {
     try {
-      await supabase.from('games').insert([{
+      const savedHistory = localStorage.getItem('baloot_match_history');
+      const history = savedHistory ? JSON.parse(savedHistory) : [];
+      
+      const newEntry = {
+        id: crypto.randomUUID(),
         team1_name: gameData.team1Name,
         team2_name: gameData.team2Name,
         team1_score: gameData.team1Score,
         team2_score: gameData.team2Score,
         winner: gameData.winner,
-        rounds: JSON.parse(JSON.stringify(gameData.rounds)),
+        rounds: gameData.rounds,
+        created_at: gameData.createdAt.toISOString(),
         finished_at: new Date().toISOString(),
-      }]);
+      };
+      
+      // Keep only last 50 games
+      const updatedHistory = [newEntry, ...history].slice(0, 50);
+      localStorage.setItem('baloot_match_history', JSON.stringify(updatedHistory));
     } catch (error) {
       console.error('Error saving game:', error);
     }
