@@ -186,7 +186,11 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     addSimpleHistoryEntry(newEntry);
     setTeam1Input('');
     setTeam2Input('');
-    rotateArrow();
+    
+    // دوران السهم فقط إذا كان المجموع 16 أو أكثر
+    if (t1 + t2 >= 16) {
+      rotateArrow();
+    }
     
     // إعلان النتيجة صوتياً
     announceScore(newTeam1Score, newTeam2Score);
