@@ -205,7 +205,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">3</span>
-                      <span className="flex items-center gap-1">اسحب للأسفل واختر "إضافة إلى الشاشة الرئيسية" <SquarePlus className="h-3 w-3 inline" /></span>
+                      <span className="flex items-center gap-1">اسحب الشاشة واختر "إضافة إلى الشاشة الرئيسية" <SquarePlus className="h-3 w-3 inline" /></span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">4</span>
@@ -228,7 +228,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">3</span>
-                      <span className="flex items-center gap-1">Scroll down and tap "Add to Home Screen" <SquarePlus className="h-3 w-3 inline" /></span>
+                      <span className="flex items-center gap-1">Scroll and tap "Add to Home Screen" <SquarePlus className="h-3 w-3 inline" /></span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="bg-primary/20 text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">4</span>
