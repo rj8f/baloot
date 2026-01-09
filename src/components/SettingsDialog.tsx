@@ -171,7 +171,10 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
             </div>
             <div className="text-[10px] text-muted-foreground leading-relaxed space-y-1">
               {settings.hokmWithoutPointsMode ? (
-                <p>لا يلزم الفريق المشتري بالأبناط وإنما يتم التقريب إلا في دبل الحكم.</p>
+                <>
+                  <p><span className="font-medium">١- في الحكم:</span> لا يلزم الفريق المشتري بالأبناط وإنما يتم التقريب إلا في دبل الحكم.</p>
+                  <p><span className="font-medium">٢- في الصن:</span> إن وجد مشروع خمسين في اللعب يُلزم المشتري بعدد أبناط ٨٣ على الأقل لنجاح المشترى.</p>
+                </>
               ) : (
                 <>
                   <p><span className="font-medium">في الحكم:</span> على المشتري أن يتعادل بالأبناط على الأقل لنجاح المشترى</p>

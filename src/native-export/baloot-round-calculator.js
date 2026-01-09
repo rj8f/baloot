@@ -82,69 +82,103 @@ export const calculateRoundResult = (roundData) => {
   const totalRaw = team1RawPoints + team2RawPoints;
 
   // ======== تقريب البنط في الصن (قبل المشاريع) ========
-  // في الصن: نقرب البنط لأقرب 10 قبل إضافة المشاريع
-  // الآحاد = 5: لا تقريب، نضرب على طول
-  // الآحاد > 5 (6,7,8,9): نقرب للأعلى (نأخذ من الخصم)
-  // الآحاد < 5 (1,2,3,4): نقرب للأسفل (نعطي الخصم)
   if (gameType === 'صن') {
+    // التحقق من وجود مشروع خمسين
+    const has50Project = team1Projects.خمسين > 0 || team2Projects.خمسين > 0;
+    const buyingTeamRawPoints = buyingTeam === 1 ? team1RawPoints : team2RawPoints;
+
+    // ==================== قواعد الخمسين في الصن ====================
+    if (has50Project) {
+      // وضع "بالأبناط": يُحدد الفائز أولاً قبل التقريب
+      // 91+ = فوز، 90 = تعادل، <90 = خسارة
+      if (!hokmWithoutPointsMode) {
+        if (buyingTeamRawPoints >= 91) {
+          // المشتري فاز - نكمل الحساب الطبيعي أدناه
+        } else if (buyingTeamRawPoints === 90) {
+          // تعادل - كل فريق يأخذ نصف النقاط
+          const team1ProjectsRaw = (team1Projects.سرا * 20) + (team1Projects.خمسين * 50) + (team1Projects.مية * 100) + (team1Projects.أربعمية * 200);
+          const team2ProjectsRaw = (team2Projects.سرا * 20) + (team2Projects.خمسين * 50) + (team2Projects.مية * 100) + (team2Projects.أربعمية * 200);
+          
+          const team1TotalRaw = (team1RawPoints + team1ProjectsRaw) * 2;
+          const team2TotalRaw = (team2RawPoints + team2ProjectsRaw) * 2;
+          
+          let finalTeam1Points = Math.round(team1TotalRaw / 10);
+          let finalTeam2Points = Math.round(team2TotalRaw / 10);
+
+          const multiplierFactor = getMultiplierFactor(multiplier);
+          if (multiplierFactor > 1) {
+            finalTeam1Points = finalTeam1Points * multiplierFactor;
+            finalTeam2Points = finalTeam2Points * multiplierFactor;
+          }
+
+          return {
+            winningTeam: buyingTeam,
+            finalTeam1Points,
+            finalTeam2Points,
+          };
+        } else {
+          // المشتري خسر (<90) - الخصم يأخذ كل النقاط فوراً
+          const team1ProjectsRaw = (team1Projects.سرا * 20) + (team1Projects.خمسين * 50) + (team1Projects.مية * 100) + (team1Projects.أربعمية * 200);
+          const team2ProjectsRaw = (team2Projects.سرا * 20) + (team2Projects.خمسين * 50) + (team2Projects.مية * 100) + (team2Projects.أربعمية * 200);
+          const totalProjectsRaw = team1ProjectsRaw + team2ProjectsRaw;
+          const grandTotal = (TOTAL_RAW_POINTS.صن + totalProjectsRaw) * 2;
+          
+          let finalTeam1Points = Math.round((otherTeam === 1 ? grandTotal : 0) / 10);
+          let finalTeam2Points = Math.round((otherTeam === 2 ? grandTotal : 0) / 10);
+
+          const multiplierFactor = getMultiplierFactor(multiplier);
+          if (multiplierFactor > 1) {
+            finalTeam1Points = finalTeam1Points * multiplierFactor;
+            finalTeam2Points = finalTeam2Points * multiplierFactor;
+          }
+
+          return {
+            winningTeam: otherTeam,
+            finalTeam1Points,
+            finalTeam2Points,
+          };
+        }
+      } else {
+        // وضع "بدون أبناط": المشتري يحتاج 83+ للنجاح
+        if (buyingTeamRawPoints < 83) {
+          const team1ProjectsRaw = (team1Projects.سرا * 20) + (team1Projects.خمسين * 50) + (team1Projects.مية * 100) + (team1Projects.أربعمية * 200);
+          const team2ProjectsRaw = (team2Projects.سرا * 20) + (team2Projects.خمسين * 50) + (team2Projects.مية * 100) + (team2Projects.أربعمية * 200);
+          const totalProjectsRaw = team1ProjectsRaw + team2ProjectsRaw;
+          const grandTotal = (TOTAL_RAW_POINTS.صن + totalProjectsRaw) * 2;
+          
+          let finalTeam1Points = Math.round((otherTeam === 1 ? grandTotal : 0) / 10);
+          let finalTeam2Points = Math.round((otherTeam === 2 ? grandTotal : 0) / 10);
+
+          const multiplierFactor = getMultiplierFactor(multiplier);
+          if (multiplierFactor > 1) {
+            finalTeam1Points = finalTeam1Points * multiplierFactor;
+            finalTeam2Points = finalTeam2Points * multiplierFactor;
+          }
+
+          return {
+            winningTeam: otherTeam,
+            finalTeam1Points,
+            finalTeam2Points,
+          };
+        }
+        // المشتري نجح (83+) - نكمل الحساب الطبيعي
+      }
+    }
+
+    // الحساب الطبيعي للصن
     const team1Ones = team1RawPoints % 10;
     
     if (team1Ones > 5) {
-      // الفريق 1 يقرب للأعلى - يأخذ من الفريق 2
       const toAdd = 10 - team1Ones;
       team1AdjustedRaw = team1RawPoints + toAdd;
       team2AdjustedRaw = team2RawPoints - toAdd;
     } else if (team1Ones > 0 && team1Ones < 5) {
-      // الفريق 1 يقرب للأسفل - يعطي الفريق 2
       team1AdjustedRaw = team1RawPoints - team1Ones;
       team2AdjustedRaw = team2RawPoints + team1Ones;
     }
-    // إذا team1Ones === 0 أو === 5، لا حاجة للتقريب
   }
 
   // تحويل المشاريع لمكافئها الخام (×10)
-  const team1ProjectsRawEq = team1ProjectsWithoutBaloot * 10;
-  const team2ProjectsRawEq = team2ProjectsWithoutBaloot * 10;
-  const team1BalootRawEq = team1Baloot * 10;
-  const team2BalootRawEq = team2Baloot * 10;
-
-  // ======== حساب نجاح المشتري ========
-  let buyingTeamRaw = buyingTeam === 1 ? team1AdjustedRaw : team2AdjustedRaw;
-  let otherTeamRaw = buyingTeam === 1 ? team2AdjustedRaw : team1AdjustedRaw;
-
-  const buyingTeamProjectsRawEq = buyingTeam === 1 ? team1ProjectsRawEq : team2ProjectsRawEq;
-  const buyingTeamBalootRawEq = buyingTeam === 1 ? team1BalootRawEq : team2BalootRawEq;
-
-  // ======== وضع حكم بدون أبناط ========
-  // إذا آحاد مجموع المشتري (مع المشاريع والبلوت) 0/6/7/8/9، ننقل 5 أبناط من الخصم للمشتري
-  if (hokmWithoutPointsMode && gameType === 'حكم' && multiplier === 'عادي') {
-    const buyingTotalRawForRule = buyingTeamRaw + buyingTeamProjectsRawEq + buyingTeamBalootRawEq;
-    const ones = ((buyingTotalRawForRule % 10) + 10) % 10;
-    
-    if (ones >= 6 || ones === 0) {
-      const transfer = Math.min(5, Math.max(0, otherTeamRaw));
-      buyingTeamRaw += transfer;
-      otherTeamRaw -= transfer;
-
-      if (buyingTeam === 1) {
-        team1AdjustedRaw = buyingTeamRaw;
-        team2AdjustedRaw = otherTeamRaw;
-      } else {
-        team2AdjustedRaw = buyingTeamRaw;
-        team1AdjustedRaw = otherTeamRaw;
-      }
-    }
-  }
-
-  // ======== التحقق من نجاح المشتري ========
-  const buyingTeamTotalRawForSuccess = buyingTeamRaw + buyingTeamProjectsRawEq + buyingTeamBalootRawEq;
-  const otherTeamProjectsRawEq = buyingTeam === 1 ? team2ProjectsRawEq : team1ProjectsRawEq;
-  const otherTeamBalootRawEq = buyingTeam === 1 ? team2BalootRawEq : team1BalootRawEq;
-  const otherTeamTotalRawForSuccess = otherTeamRaw + otherTeamProjectsRawEq + otherTeamBalootRawEq;
-  const grandTotalRawForSuccess = buyingTeamTotalRawForSuccess + otherTeamTotalRawForSuccess;
-  const halfTotalRawForSuccess = grandTotalRawForSuccess / 2;
-
-  const buyingTeamSucceeded = buyingTeamTotalRawForSuccess >= halfTotalRawForSuccess;
 
   // ======== تحديد الفائز وتوزيع النقاط ========
   let winningTeam;

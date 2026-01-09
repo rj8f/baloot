@@ -313,36 +313,145 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
     // ==================== حساب الصن ====================
     if (gameType === 'صن') {
-      // التحقق من استثناء "الخمسين الوحيد" - لا تقريب إذا أحد الفريقين لديه مشروع 50 فقط
-      // هذا الاستثناء يعمل فقط عند تفعيل وضع "بالأبناط" (hokmWithoutPointsMode = false)
-      const team1ProjectCount = team1Projects.سرا + team1Projects.خمسين + team1Projects.مية + team1Projects.أربعمية + team1Projects.بلوت;
-      const team2ProjectCount = team2Projects.سرا + team2Projects.خمسين + team2Projects.مية + team2Projects.أربعمية + team2Projects.بلوت;
-      const team1HasOnly50 = team1ProjectCount === team1Projects.خمسين && team1Projects.خمسين > 0;
-      const team2HasOnly50 = team2ProjectCount === team2Projects.خمسين && team2Projects.خمسين > 0;
-      const skipRounding = !hokmWithoutPointsMode && (team1HasOnly50 || team2HasOnly50);
+      // التحقق من وجود مشروع خمسين
+      const has50Project = team1Projects.خمسين > 0 || team2Projects.خمسين > 0;
+      const buyingTeamRawPoints = buyingTeam === 1 ? team1RawPoints : team2RawPoints;
 
+      // ==================== قواعد الخمسين في الصن ====================
+      if (has50Project) {
+        // وضع "بالأبناط": يُحدد الفائز أولاً قبل التقريب
+        // 91+ = فوز، 90 = تعادل، <90 = خسارة
+        if (!hokmWithoutPointsMode) {
+          let winningTeam: 1 | 2;
+          let finalTeam1Points: number;
+          let finalTeam2Points: number;
+
+          if (buyingTeamRawPoints >= 91) {
+            // المشتري فاز - نقوم بالحسبة الطبيعية
+            winningTeam = buyingTeam;
+            // نكمل الحساب الطبيعي أدناه
+          } else if (buyingTeamRawPoints === 90) {
+            // تعادل - كل فريق يأخذ نصف النقاط
+            // لا تقريب في التعادل، نحسب كل فريق على حده
+            const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
+            const team2ProjectsRaw = calculateSunProjectsRaw(team2Projects);
+            
+            const team1TotalRaw = (team1RawPoints + team1ProjectsRaw) * 2;
+            const team2TotalRaw = (team2RawPoints + team2ProjectsRaw) * 2;
+            
+            finalTeam1Points = Math.round(team1TotalRaw / 10);
+            finalTeam2Points = Math.round(team2TotalRaw / 10);
+
+            // تطبيق المضاعفة
+            const multiplierFactor =
+              multiplier === 'عادي' ? 1 :
+              multiplier === 'دبل' ? 2 :
+              multiplier === '×3' ? 3 : 4;
+
+            if (multiplierFactor > 1) {
+              finalTeam1Points = finalTeam1Points * multiplierFactor;
+              finalTeam2Points = finalTeam2Points * multiplierFactor;
+            }
+
+            console.log('=== تعادل صن مع خمسين (بالأبناط) ===');
+            console.log('أبناط المشتري:', buyingTeamRawPoints, '(تعادل = 90)');
+            console.log('النتيجة:', finalTeam1Points, '-', finalTeam2Points);
+
+            return {
+              winningTeam: buyingTeam, // للتوافق مع النظام
+              finalTeam1Points,
+              finalTeam2Points,
+            };
+          } else {
+            // المشتري خسر (<90) - الخصم يأخذ كل النقاط فوراً
+            const otherTeam: 1 | 2 = buyingTeam === 1 ? 2 : 1;
+            const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
+            const team2ProjectsRaw = calculateSunProjectsRaw(team2Projects);
+            const totalProjectsRaw = team1ProjectsRaw + team2ProjectsRaw;
+            const grandTotal = (130 + totalProjectsRaw) * 2;
+            
+            finalTeam1Points = Math.round((otherTeam === 1 ? grandTotal : 0) / 10);
+            finalTeam2Points = Math.round((otherTeam === 2 ? grandTotal : 0) / 10);
+
+            // تطبيق المضاعفة
+            const multiplierFactor =
+              multiplier === 'عادي' ? 1 :
+              multiplier === 'دبل' ? 2 :
+              multiplier === '×3' ? 3 : 4;
+
+            if (multiplierFactor > 1) {
+              finalTeam1Points = finalTeam1Points * multiplierFactor;
+              finalTeam2Points = finalTeam2Points * multiplierFactor;
+            }
+
+            console.log('=== خسارة صن مع خمسين (بالأبناط) ===');
+            console.log('أبناط المشتري:', buyingTeamRawPoints, '(<90 = خسارة)');
+            console.log('النتيجة:', finalTeam1Points, '-', finalTeam2Points);
+
+            return {
+              winningTeam: otherTeam,
+              finalTeam1Points,
+              finalTeam2Points,
+            };
+          }
+        } else {
+          // وضع "بدون أبناط": المشتري يحتاج 83+ للنجاح
+          if (buyingTeamRawPoints < 83) {
+            // المشتري خسر - الخصم يأخذ كل النقاط
+            const otherTeam: 1 | 2 = buyingTeam === 1 ? 2 : 1;
+            const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
+            const team2ProjectsRaw = calculateSunProjectsRaw(team2Projects);
+            const totalProjectsRaw = team1ProjectsRaw + team2ProjectsRaw;
+            const grandTotal = (130 + totalProjectsRaw) * 2;
+            
+            let finalTeam1Points = Math.round((otherTeam === 1 ? grandTotal : 0) / 10);
+            let finalTeam2Points = Math.round((otherTeam === 2 ? grandTotal : 0) / 10);
+
+            // تطبيق المضاعفة
+            const multiplierFactor =
+              multiplier === 'عادي' ? 1 :
+              multiplier === 'دبل' ? 2 :
+              multiplier === '×3' ? 3 : 4;
+
+            if (multiplierFactor > 1) {
+              finalTeam1Points = finalTeam1Points * multiplierFactor;
+              finalTeam2Points = finalTeam2Points * multiplierFactor;
+            }
+
+            console.log('=== خسارة صن مع خمسين (بدون أبناط) ===');
+            console.log('أبناط المشتري:', buyingTeamRawPoints, '(<83 = خسارة)');
+            console.log('النتيجة:', finalTeam1Points, '-', finalTeam2Points);
+
+            return {
+              winningTeam: otherTeam,
+              finalTeam1Points,
+              finalTeam2Points,
+            };
+          }
+          // المشتري نجح (83+) - نكمل الحساب الطبيعي
+        }
+      }
+
+      // الحساب الطبيعي للصن (بدون خمسين أو بعد التحقق من النجاح)
       // 1. تقريب الأبناط لأقرب 10 قبل إضافة المشاريع
       // الآحاد = 5: لا تقريب، نضرب على طول
       // الآحاد > 5 (6,7,8,9): نقرب للأعلى (نأخذ من الخصم)
       // الآحاد < 5 (1,2,3,4): نقرب للأسفل (نعطي الخصم)
-      // استثناء: إذا أحد الفريقين لديه مشروع 50 فقط، لا تقريب
       let team1RoundedRaw = team1RawPoints;
       let team2RoundedRaw = team2RawPoints;
       
-      if (!skipRounding) {
-        const team1Ones = team1RawPoints % 10;
-        if (team1Ones > 5) {
-          // نقرب للأعلى - نأخذ من الفريق 2
-          const toAdd = 10 - team1Ones;
-          team1RoundedRaw = team1RawPoints + toAdd;
-          team2RoundedRaw = team2RawPoints - toAdd;
-        } else if (team1Ones > 0 && team1Ones < 5) {
-          // نقرب للأسفل - نعطي الفريق 2
-          team1RoundedRaw = team1RawPoints - team1Ones;
-          team2RoundedRaw = team2RawPoints + team1Ones;
-        }
-        // إذا team1Ones === 0 أو === 5، لا حاجة للتقريب
+      const team1Ones = team1RawPoints % 10;
+      if (team1Ones > 5) {
+        // نقرب للأعلى - نأخذ من الفريق 2
+        const toAdd = 10 - team1Ones;
+        team1RoundedRaw = team1RawPoints + toAdd;
+        team2RoundedRaw = team2RawPoints - toAdd;
+      } else if (team1Ones > 0 && team1Ones < 5) {
+        // نقرب للأسفل - نعطي الفريق 2
+        team1RoundedRaw = team1RawPoints - team1Ones;
+        team2RoundedRaw = team2RawPoints + team1Ones;
       }
+      // إذا team1Ones === 0 أو === 5، لا حاجة للتقريب
 
       // 2. حساب أبناط المشاريع (سرا=20، خمسين=50، مية=100، أربعمية=200)
       const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
