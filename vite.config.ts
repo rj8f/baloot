@@ -17,8 +17,8 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
       manifest: {
-        name: "baloot بلوت",
-        short_name: "baloot بلوت",
+        name: "بلوت - baloot",
+        short_name: "بلوت - baloot",
         description: "حاسبة نقاط لعبة البلوت",
         theme_color: "#1a1a2e",
         background_color: "#1a1a2e",
