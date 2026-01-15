@@ -226,7 +226,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   };
 
   return (
-    <div className="h-screen overflow-hidden flex flex-col bg-background text-foreground fixed inset-0">
+    <div className="h-screen overflow-hidden flex flex-col bg-background text-foreground fixed inset-0 pt-[env(safe-area-inset-top)]">
       {/* Winner Modal */}
       <Dialog open={winner !== null} onOpenChange={() => saveAndReset()}>
         <DialogContent className="text-center max-w-sm border-2 overflow-hidden glass">
