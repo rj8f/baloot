@@ -41,7 +41,7 @@ const GameDashboard = () => {
   if (!game) return null;
 
   return (
-    <div className="h-screen bg-background pb-8 relative overflow-hidden flex flex-col fixed inset-0">
+    <div className="h-screen bg-background pb-8 relative overflow-hidden flex flex-col fixed inset-0 pt-[env(safe-area-inset-top)]">
       {/* Decorative background elements */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-20 -right-20 w-64 h-64 rounded-full bg-gradient-to-br from-team-start/5 to-transparent blur-3xl animate-float" />
