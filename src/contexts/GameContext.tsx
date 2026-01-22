@@ -317,21 +317,27 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       const total50Projects = (team1Projects.خمسين || 0) + (team2Projects.خمسين || 0);
       const has50Project = total50Projects === 1;
       const buyingTeamRawPoints = buyingTeam === 1 ? team1RawPoints : team2RawPoints;
+      
+      // نقاط الخمسين للمشتري (50 نقطة إذا عنده المشروع)
+      const buyingTeamHas50 = buyingTeam === 1 ? (team1Projects.خمسين || 0) > 0 : (team2Projects.خمسين || 0) > 0;
+      const buyingTeam50Points = buyingTeamHas50 ? 50 : 0;
+      // مجموع أبناط المشتري مع المشروع
+      const buyingTeamTotalWithProject = buyingTeamRawPoints + buyingTeam50Points;
 
       // ==================== قواعد الخمسين في الصن ====================
       if (has50Project) {
         // وضع "بالأبناط": يُحدد الفائز أولاً قبل التقريب
-        // 91+ = فوز، 90 = تعادل، <90 = خسارة
+        // النقاط تشمل المشروع: 91+ = فوز، 90 = تعادل، <90 = خسارة
         if (!hokmWithoutPointsMode) {
           let winningTeam: 1 | 2;
           let finalTeam1Points: number;
           let finalTeam2Points: number;
 
-          if (buyingTeamRawPoints >= 91) {
+          if (buyingTeamTotalWithProject >= 91) {
             // المشتري فاز - نقوم بالحسبة الطبيعية
             winningTeam = buyingTeam;
             // نكمل الحساب الطبيعي أدناه
-          } else if (buyingTeamRawPoints === 90) {
+          } else if (buyingTeamTotalWithProject === 90) {
             // تعادل - كل فريق يأخذ نصف النقاط
             // لا تقريب في التعادل، نحسب كل فريق على حده
             const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
@@ -355,7 +361,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
             }
 
             console.log('=== تعادل صن مع خمسين (بالأبناط) ===');
-            console.log('أبناط المشتري:', buyingTeamRawPoints, '(تعادل = 90)');
+            console.log('أبناط المشتري:', buyingTeamRawPoints, '+ مشروع 50:', buyingTeam50Points, '= مجموع:', buyingTeamTotalWithProject, '(تعادل = 90)');
             console.log('النتيجة:', finalTeam1Points, '-', finalTeam2Points);
 
             return {
@@ -386,7 +392,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
             }
 
             console.log('=== خسارة صن مع خمسين (بالأبناط) ===');
-            console.log('أبناط المشتري:', buyingTeamRawPoints, '(<90 = خسارة)');
+            console.log('أبناط المشتري:', buyingTeamRawPoints, '+ مشروع 50:', buyingTeam50Points, '= مجموع:', buyingTeamTotalWithProject, '(<90 = خسارة)');
             console.log('النتيجة:', finalTeam1Points, '-', finalTeam2Points);
 
             return {
@@ -397,8 +403,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
           }
         } else {
           // وضع "بدون أبناط": المشتري يحتاج 83+ للنجاح
-          if (buyingTeamRawPoints < 83) {
-            // المشتري خسر - الخصم يأخذ كل النقاط
+        if (buyingTeamTotalWithProject < 83) {
+          // المشتري خسر - الخصم يأخذ كل النقاط
             const otherTeam: 1 | 2 = buyingTeam === 1 ? 2 : 1;
             const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
             const team2ProjectsRaw = calculateSunProjectsRaw(team2Projects);
@@ -420,7 +426,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
             }
 
             console.log('=== خسارة صن مع خمسين (بدون أبناط) ===');
-            console.log('أبناط المشتري:', buyingTeamRawPoints, '(<83 = خسارة)');
+            console.log('أبناط المشتري:', buyingTeamRawPoints, '+ مشروع 50:', buyingTeam50Points, '= مجموع:', buyingTeamTotalWithProject, '(<83 = خسارة)');
             console.log('النتيجة:', finalTeam1Points, '-', finalTeam2Points);
 
             return {
