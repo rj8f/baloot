@@ -402,9 +402,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
             };
           }
         } else {
-          // وضع "بدون أبناط": المشتري يحتاج 83+ للنجاح
-        if (buyingTeamTotalWithProject < 83) {
-          // المشتري خسر - الخصم يأخذ كل النقاط
+          // وضع "بدون أبناط": المشتري يحتاج 83+ للنجاح (مع احتساب المشروع)
+          if (buyingTeamTotalWithProject < 83) {
+            // المشتري خسر - الخصم يأخذ كل النقاط
             const otherTeam: 1 | 2 = buyingTeam === 1 ? 2 : 1;
             const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
             const team2ProjectsRaw = calculateSunProjectsRaw(team2Projects);
@@ -434,8 +434,39 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
               finalTeam1Points,
               finalTeam2Points,
             };
+          } else {
+            // المشتري نجح (83+) - كل فريق يأخذ نقاطه بالحساب الطبيعي
+            // لا تقريب في حالة الخمسين
+            const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
+            const team2ProjectsRaw = calculateSunProjectsRaw(team2Projects);
+            
+            const team1TotalRaw = (team1RawPoints + team1ProjectsRaw) * 2;
+            const team2TotalRaw = (team2RawPoints + team2ProjectsRaw) * 2;
+            
+            let finalTeam1Points = Math.round(team1TotalRaw / 10);
+            let finalTeam2Points = Math.round(team2TotalRaw / 10);
+
+            // تطبيق المضاعفة
+            const multiplierFactor =
+              multiplier === 'عادي' ? 1 :
+              multiplier === 'دبل' ? 2 :
+              multiplier === '×3' ? 3 : 4;
+
+            if (multiplierFactor > 1) {
+              finalTeam1Points = finalTeam1Points * multiplierFactor;
+              finalTeam2Points = finalTeam2Points * multiplierFactor;
+            }
+
+            console.log('=== نجاح صن مع خمسين (بدون أبناط) ===');
+            console.log('أبناط المشتري:', buyingTeamRawPoints, '+ مشروع 50:', buyingTeam50Points, '= مجموع:', buyingTeamTotalWithProject, '(>=83 = نجاح)');
+            console.log('النتيجة:', finalTeam1Points, '-', finalTeam2Points);
+
+            return {
+              winningTeam: buyingTeam,
+              finalTeam1Points,
+              finalTeam2Points,
+            };
           }
-          // المشتري نجح (83+) - نكمل الحساب الطبيعي
         }
       }
 
