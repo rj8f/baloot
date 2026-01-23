@@ -8,10 +8,17 @@ type ThemeMode = 'dark' | 'light' | 'auto';
 // 'all-x2' = السرا والخمسين والمية كلها أقصاها ×2
 type ProjectMultiplierMode = 'full' | 'miya-x2' | 'all-x2';
 
+// خيارات الصن مع مشروع الخمسين:
+// 'with-points-40' = الحسبة بالأبناط (40) - 90 تعادل، 91+ فوز، <90 خسارة
+// 'success-42' = النجاح من 42 (42+50=92)
+// 'success-43' = النجاح من 43 (43+50=93)
+type Sun50Mode = 'with-points-40' | 'success-42' | 'success-43';
+
 interface Settings {
   projectMultiplierMode: ProjectMultiplierMode; // وضع المشاريع حسب الدبل
   themeMode: ThemeMode;           // الوضع: ليلي، نهاري، تلقائي
   hokmWithoutPointsMode: boolean; // حكم عادي بدون أبناط (تقريب العشرات)
+  sun50Mode: Sun50Mode;           // حسبة الصن مع مشروع الخمسين
   isMuted: boolean;              // كتم صوت الإعلان
 }
 
@@ -28,6 +35,7 @@ const defaultSettings: Settings = {
   projectMultiplierMode: 'all-x2',  // الافتراضي: الكل ×2
   themeMode: 'dark',
   hokmWithoutPointsMode: false,
+  sun50Mode: 'with-points-40',
   isMuted: false,
 };
 

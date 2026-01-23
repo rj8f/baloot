@@ -22,6 +22,7 @@ interface RoundInput {
   miyaDoubleOnly?: boolean; // في حكم مع ×3 أو ×4، المية أقصاها ×2
   allProjectsDoubleOnly?: boolean; // في حكم مع ×3 أو ×4، كل المشاريع (سرا، 50، 100) أقصاها ×2
   hokmWithoutPointsMode?: boolean; // وضع حكم بدون أبناط
+  sun50Mode?: 'with-points-40' | 'success-42' | 'success-43'; // وضع الصن مع مشروع الخمسين
 }
 
 export interface SimpleHistoryEntry {
@@ -283,7 +284,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const calculateRoundResult = (
     roundData: RoundInput
   ): { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number } => {
-    const { gameType, buyingTeam, team1RawPoints, team2RawPoints, team1Projects, team2Projects, multiplier, kabootTeam, miyaDoubleOnly, allProjectsDoubleOnly, hokmWithoutPointsMode } = roundData;
+    const { gameType, buyingTeam, team1RawPoints, team2RawPoints, team1Projects, team2Projects, multiplier, kabootTeam, miyaDoubleOnly, allProjectsDoubleOnly, hokmWithoutPointsMode, sun50Mode = 'with-points-40' } = roundData;
     const otherTeam: 1 | 2 = buyingTeam === 1 ? 2 : 1;
 
     // كبوت: الفريق الفائز يحصل على 25 في الحكم أو 44 في الصن + مشاريعه
@@ -326,147 +327,124 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
       // ==================== قواعد الخمسين في الصن ====================
       if (has50Project) {
-        // وضع "بالأبناط": يُحدد الفائز أولاً قبل التقريب
-        // النقاط تشمل المشروع: 91+ = فوز، 90 = تعادل، <90 = خسارة
-        if (!hokmWithoutPointsMode) {
-          let winningTeam: 1 | 2;
-          let finalTeam1Points: number;
-          let finalTeam2Points: number;
-
-          if (buyingTeamTotalWithProject >= 91) {
-            // المشتري فاز - نقوم بالحسبة الطبيعية
-            winningTeam = buyingTeam;
-            // نكمل الحساب الطبيعي أدناه
-          } else if (buyingTeamTotalWithProject === 90) {
-            // تعادل - كل فريق يأخذ نصف النقاط
-            // لا تقريب في التعادل، نحسب كل فريق على حده
-            const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
-            const team2ProjectsRaw = calculateSunProjectsRaw(team2Projects);
-            
-            const team1TotalRaw = (team1RawPoints + team1ProjectsRaw) * 2;
-            const team2TotalRaw = (team2RawPoints + team2ProjectsRaw) * 2;
-            
-            finalTeam1Points = Math.round(team1TotalRaw / 10);
-            finalTeam2Points = Math.round(team2TotalRaw / 10);
-
-            // تطبيق المضاعفة
-            const multiplierFactor =
-              multiplier === 'عادي' ? 1 :
-              multiplier === 'دبل' ? 2 :
-              multiplier === '×3' ? 3 : 4;
-
-            if (multiplierFactor > 1) {
-              finalTeam1Points = finalTeam1Points * multiplierFactor;
-              finalTeam2Points = finalTeam2Points * multiplierFactor;
-            }
-
-            console.log('=== تعادل صن مع خمسين (بالأبناط) ===');
-            console.log('أبناط المشتري:', buyingTeamRawPoints, '+ مشروع 50:', buyingTeam50Points, '= مجموع:', buyingTeamTotalWithProject, '(تعادل = 90)');
-            console.log('النتيجة:', finalTeam1Points, '-', finalTeam2Points);
-
-            return {
-              winningTeam: buyingTeam, // للتوافق مع النظام
-              finalTeam1Points,
-              finalTeam2Points,
-            };
-          } else {
-            // المشتري خسر (<90) - الخصم يأخذ كل النقاط فوراً
-            const otherTeam: 1 | 2 = buyingTeam === 1 ? 2 : 1;
-            const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
-            const team2ProjectsRaw = calculateSunProjectsRaw(team2Projects);
-            const totalProjectsRaw = team1ProjectsRaw + team2ProjectsRaw;
-            const grandTotal = (130 + totalProjectsRaw) * 2;
-            
-            finalTeam1Points = Math.round((otherTeam === 1 ? grandTotal : 0) / 10);
-            finalTeam2Points = Math.round((otherTeam === 2 ? grandTotal : 0) / 10);
-
-            // تطبيق المضاعفة
-            const multiplierFactor =
-              multiplier === 'عادي' ? 1 :
-              multiplier === 'دبل' ? 2 :
-              multiplier === '×3' ? 3 : 4;
-
-            if (multiplierFactor > 1) {
-              finalTeam1Points = finalTeam1Points * multiplierFactor;
-              finalTeam2Points = finalTeam2Points * multiplierFactor;
-            }
-
-            console.log('=== خسارة صن مع خمسين (بالأبناط) ===');
-            console.log('أبناط المشتري:', buyingTeamRawPoints, '+ مشروع 50:', buyingTeam50Points, '= مجموع:', buyingTeamTotalWithProject, '(<90 = خسارة)');
-            console.log('النتيجة:', finalTeam1Points, '-', finalTeam2Points);
-
-            return {
-              winningTeam: otherTeam,
-              finalTeam1Points,
-              finalTeam2Points,
-            };
-          }
+        // تحديد عتبة النجاح حسب الإعداد
+        // sun50Mode: 'with-points-40' | 'success-42' | 'success-43'
+        let successThreshold: number;
+        let hasTieRule = false;
+        let tieThreshold = 0;
+        
+        if (sun50Mode === 'with-points-40') {
+          // بالأبناط (40): 90 تعادل، 91+ فوز، <90 خسارة
+          successThreshold = 91;
+          hasTieRule = true;
+          tieThreshold = 90;
+        } else if (sun50Mode === 'success-42') {
+          // النجاح من 42: 42+50=92
+          successThreshold = 92;
         } else {
-          // وضع "بدون أبناط": المشتري يحتاج 83+ للنجاح (مع احتساب المشروع)
-          if (buyingTeamTotalWithProject < 83) {
-            // المشتري خسر - الخصم يأخذ كل النقاط
-            const otherTeam: 1 | 2 = buyingTeam === 1 ? 2 : 1;
-            const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
-            const team2ProjectsRaw = calculateSunProjectsRaw(team2Projects);
-            const totalProjectsRaw = team1ProjectsRaw + team2ProjectsRaw;
-            const grandTotal = (130 + totalProjectsRaw) * 2;
-            
-            let finalTeam1Points = Math.round((otherTeam === 1 ? grandTotal : 0) / 10);
-            let finalTeam2Points = Math.round((otherTeam === 2 ? grandTotal : 0) / 10);
+          // النجاح من 43: 43+50=93
+          successThreshold = 93;
+        }
+        
+        let winningTeam: 1 | 2;
+        let finalTeam1Points: number;
+        let finalTeam2Points: number;
 
-            // تطبيق المضاعفة
-            const multiplierFactor =
-              multiplier === 'عادي' ? 1 :
-              multiplier === 'دبل' ? 2 :
-              multiplier === '×3' ? 3 : 4;
+        if (buyingTeamTotalWithProject >= successThreshold) {
+          // المشتري فاز - كل فريق يأخذ نقاطه بالحساب الطبيعي
+          const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
+          const team2ProjectsRaw = calculateSunProjectsRaw(team2Projects);
+          
+          const team1TotalRaw = (team1RawPoints + team1ProjectsRaw) * 2;
+          const team2TotalRaw = (team2RawPoints + team2ProjectsRaw) * 2;
+          
+          finalTeam1Points = Math.round(team1TotalRaw / 10);
+          finalTeam2Points = Math.round(team2TotalRaw / 10);
 
-            if (multiplierFactor > 1) {
-              finalTeam1Points = finalTeam1Points * multiplierFactor;
-              finalTeam2Points = finalTeam2Points * multiplierFactor;
-            }
+          // تطبيق المضاعفة
+          const multiplierFactor =
+            multiplier === 'عادي' ? 1 :
+            multiplier === 'دبل' ? 2 :
+            multiplier === '×3' ? 3 : 4;
 
-            console.log('=== خسارة صن مع خمسين (بدون أبناط) ===');
-            console.log('أبناط المشتري:', buyingTeamRawPoints, '+ مشروع 50:', buyingTeam50Points, '= مجموع:', buyingTeamTotalWithProject, '(<83 = خسارة)');
-            console.log('النتيجة:', finalTeam1Points, '-', finalTeam2Points);
-
-            return {
-              winningTeam: otherTeam,
-              finalTeam1Points,
-              finalTeam2Points,
-            };
-          } else {
-            // المشتري نجح (83+) - كل فريق يأخذ نقاطه بالحساب الطبيعي
-            // لا تقريب في حالة الخمسين
-            const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
-            const team2ProjectsRaw = calculateSunProjectsRaw(team2Projects);
-            
-            const team1TotalRaw = (team1RawPoints + team1ProjectsRaw) * 2;
-            const team2TotalRaw = (team2RawPoints + team2ProjectsRaw) * 2;
-            
-            let finalTeam1Points = Math.round(team1TotalRaw / 10);
-            let finalTeam2Points = Math.round(team2TotalRaw / 10);
-
-            // تطبيق المضاعفة
-            const multiplierFactor =
-              multiplier === 'عادي' ? 1 :
-              multiplier === 'دبل' ? 2 :
-              multiplier === '×3' ? 3 : 4;
-
-            if (multiplierFactor > 1) {
-              finalTeam1Points = finalTeam1Points * multiplierFactor;
-              finalTeam2Points = finalTeam2Points * multiplierFactor;
-            }
-
-            console.log('=== نجاح صن مع خمسين (بدون أبناط) ===');
-            console.log('أبناط المشتري:', buyingTeamRawPoints, '+ مشروع 50:', buyingTeam50Points, '= مجموع:', buyingTeamTotalWithProject, '(>=83 = نجاح)');
-            console.log('النتيجة:', finalTeam1Points, '-', finalTeam2Points);
-
-            return {
-              winningTeam: buyingTeam,
-              finalTeam1Points,
-              finalTeam2Points,
-            };
+          if (multiplierFactor > 1) {
+            finalTeam1Points = finalTeam1Points * multiplierFactor;
+            finalTeam2Points = finalTeam2Points * multiplierFactor;
           }
+
+          console.log('=== نجاح صن مع خمسين ===');
+          console.log('الوضع:', sun50Mode, '| عتبة النجاح:', successThreshold);
+          console.log('أبناط المشتري:', buyingTeamRawPoints, '+ مشروع 50:', buyingTeam50Points, '= مجموع:', buyingTeamTotalWithProject);
+          console.log('النتيجة:', finalTeam1Points, '-', finalTeam2Points);
+
+          return {
+            winningTeam: buyingTeam,
+            finalTeam1Points,
+            finalTeam2Points,
+          };
+        } else if (hasTieRule && buyingTeamTotalWithProject === tieThreshold) {
+          // تعادل (فقط في وضع بالأبناط 40) - كل فريق يأخذ نقاطه
+          const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
+          const team2ProjectsRaw = calculateSunProjectsRaw(team2Projects);
+          
+          const team1TotalRaw = (team1RawPoints + team1ProjectsRaw) * 2;
+          const team2TotalRaw = (team2RawPoints + team2ProjectsRaw) * 2;
+          
+          finalTeam1Points = Math.round(team1TotalRaw / 10);
+          finalTeam2Points = Math.round(team2TotalRaw / 10);
+
+          // تطبيق المضاعفة
+          const multiplierFactor =
+            multiplier === 'عادي' ? 1 :
+            multiplier === 'دبل' ? 2 :
+            multiplier === '×3' ? 3 : 4;
+
+          if (multiplierFactor > 1) {
+            finalTeam1Points = finalTeam1Points * multiplierFactor;
+            finalTeam2Points = finalTeam2Points * multiplierFactor;
+          }
+
+          console.log('=== تعادل صن مع خمسين (بالأبناط) ===');
+          console.log('أبناط المشتري:', buyingTeamRawPoints, '+ مشروع 50:', buyingTeam50Points, '= مجموع:', buyingTeamTotalWithProject, '(تعادل = 90)');
+          console.log('النتيجة:', finalTeam1Points, '-', finalTeam2Points);
+
+          return {
+            winningTeam: buyingTeam, // للتوافق مع النظام
+            finalTeam1Points,
+            finalTeam2Points,
+          };
+        } else {
+          // المشتري خسر - الخصم يأخذ كل النقاط
+          const otherTeam: 1 | 2 = buyingTeam === 1 ? 2 : 1;
+          const team1ProjectsRaw = calculateSunProjectsRaw(team1Projects);
+          const team2ProjectsRaw = calculateSunProjectsRaw(team2Projects);
+          const totalProjectsRaw = team1ProjectsRaw + team2ProjectsRaw;
+          const grandTotal = (130 + totalProjectsRaw) * 2;
+          
+          finalTeam1Points = Math.round((otherTeam === 1 ? grandTotal : 0) / 10);
+          finalTeam2Points = Math.round((otherTeam === 2 ? grandTotal : 0) / 10);
+
+          // تطبيق المضاعفة
+          const multiplierFactor =
+            multiplier === 'عادي' ? 1 :
+            multiplier === 'دبل' ? 2 :
+            multiplier === '×3' ? 3 : 4;
+
+          if (multiplierFactor > 1) {
+            finalTeam1Points = finalTeam1Points * multiplierFactor;
+            finalTeam2Points = finalTeam2Points * multiplierFactor;
+          }
+
+          console.log('=== خسارة صن مع خمسين ===');
+          console.log('الوضع:', sun50Mode, '| عتبة النجاح:', successThreshold);
+          console.log('أبناط المشتري:', buyingTeamRawPoints, '+ مشروع 50:', buyingTeam50Points, '= مجموع:', buyingTeamTotalWithProject, '(خسارة)');
+          console.log('النتيجة:', finalTeam1Points, '-', finalTeam2Points);
+
+          return {
+            winningTeam: otherTeam,
+            finalTeam1Points,
+            finalTeam2Points,
+          };
         }
       }
 

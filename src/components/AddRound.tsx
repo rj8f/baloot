@@ -197,6 +197,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
       miyaDoubleOnly,
       allProjectsDoubleOnly,
       hokmWithoutPointsMode: settings.hokmWithoutPointsMode,
+      sun50Mode: settings.sun50Mode,
     });
 
     // Reset form
@@ -228,6 +229,7 @@ const AddRound = ({ onPreviewChange }: AddRoundProps) => {
       miyaDoubleOnly,
       allProjectsDoubleOnly,
       hokmWithoutPointsMode: settings.hokmWithoutPointsMode,
+      sun50Mode: settings.sun50Mode,
     });
   };
 

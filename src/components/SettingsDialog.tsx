@@ -143,7 +143,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
           <div className="p-3 rounded-lg bg-muted/50 space-y-2">
             <div className="flex items-center gap-2">
               <Calculator className="h-4 w-4" />
-              <Label className="text-sm">حسبة الحكم والصن</Label>
+              <Label className="text-sm">حسبة الحكم</Label>
             </div>
             <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
               <button
@@ -169,17 +169,63 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
                 بدون أبناط
               </button>
             </div>
-            <div className="text-[10px] text-muted-foreground leading-relaxed space-y-1">
+            <div className="text-[10px] text-muted-foreground leading-relaxed">
               {settings.hokmWithoutPointsMode ? (
-                <>
-                  <p><span className="font-medium">١- في الحكم:</span> لا يلزم الفريق المشتري بالأبناط وإنما يتم التقريب إلا في دبل الحكم.</p>
-                  <p><span className="font-medium">٢- في الصن:</span> إن وجد مشروع خمسين في اللعب يُلزم المشتري بعدد أبناط ٨٣ على الأقل لنجاح المشترى.</p>
-                </>
+                <p>لا يلزم المشتري بالأبناط، يتم التقريب إلا في دبل الحكم.</p>
               ) : (
-                <>
-                  <p><span className="font-medium">في الحكم:</span> على المشتري أن يتعادل بالأبناط على الأقل لنجاح المشترى</p>
-                  <p><span className="font-medium">في الصن:</span> إن وجد مشروع خمسين في اللعب يُلزم المشتري بعدد أبناط أعلى من خصمه لنجاح المشترى.</p>
-                </>
+                <p>على المشتري أن يتعادل بالأبناط على الأقل لنجاح المشترى.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Sun with 50 Project Mode */}
+          <div className="p-3 rounded-lg bg-muted/50 space-y-2">
+            <div className="flex items-center gap-2">
+              <Calculator className="h-4 w-4" />
+              <Label className="text-sm">الصن بمشروع الخمسين</Label>
+            </div>
+            <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
+              <button
+                onClick={() => updateSettings({ sun50Mode: 'with-points-40' })}
+                className={cn(
+                  "flex-1 py-2 px-2 rounded-md text-xs font-medium transition-all text-center",
+                  settings.sun50Mode === 'with-points-40' 
+                    ? "bg-background shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                بالأبناط (٤٠)
+              </button>
+              <button
+                onClick={() => updateSettings({ sun50Mode: 'success-42' })}
+                className={cn(
+                  "flex-1 py-2 px-2 rounded-md text-xs font-medium transition-all text-center",
+                  settings.sun50Mode === 'success-42' 
+                    ? "bg-background shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                النجاح من ٤٢
+              </button>
+              <button
+                onClick={() => updateSettings({ sun50Mode: 'success-43' })}
+                className={cn(
+                  "flex-1 py-2 px-2 rounded-md text-xs font-medium transition-all text-center",
+                  settings.sun50Mode === 'success-43' 
+                    ? "bg-background shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                النجاح من ٤٣
+              </button>
+            </div>
+            <div className="text-[10px] text-muted-foreground leading-relaxed">
+              {settings.sun50Mode === 'with-points-40' ? (
+                <p>٤٠ + ٥٠ = ٩٠ تعادل، ٤١+ فوز، أقل من ٤٠ خسارة.</p>
+              ) : settings.sun50Mode === 'success-42' ? (
+                <p>المشتري يحتاج ٤٢ أبناط على الأقل (٤٢ + ٥٠ = ٩٢) للنجاح.</p>
+              ) : (
+                <p>المشتري يحتاج ٤٣ أبناط على الأقل (٤٣ + ٥٠ = ٩٣) للنجاح.</p>
               )}
             </div>
           </div>
