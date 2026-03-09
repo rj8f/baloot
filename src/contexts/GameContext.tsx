@@ -943,7 +943,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // تحديث النتيجة مباشرة (للمزامنة بين الحاسبتين)
-  const setScores = (team1Score: number, team2Score: number) => {
+  const setScores = (team1Score: number, team2Score: number, pendingSimpleEntry?: SimpleHistoryEntry) => {
     if (!game) return;
     
     let winner: 1 | 2 | null = null;
@@ -960,7 +960,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setGame(updatedGame);
 
     if (winner) {
-      saveGameToHistory(updatedGame);
+      // إذا كان هناك إدخال معلق، ندمجه مع السجل قبل الحفظ
+      const historyToSave = pendingSimpleEntry 
+        ? [pendingSimpleEntry, ...simpleHistory] 
+        : simpleHistory;
+      saveGameToHistory(updatedGame, historyToSave);
     }
   };
 
