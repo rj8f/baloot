@@ -5,6 +5,12 @@ import { Button } from '@/components/ui/button';
 import { History, Trophy, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface GameRecord {
   id: string;
@@ -28,6 +34,7 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
   const [games, setGames] = useState<GameRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(expandedByDefault);
+  const [confirmGame, setConfirmGame] = useState<GameRecord | null>(null);
 
   const fetchGames = () => {
     setLoading(true);
@@ -43,7 +50,6 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
   };
 
   useEffect(() => {
-    // Fetch immediately if expanded by default
     if (expandedByDefault) {
       fetchGames();
     }
@@ -55,7 +61,6 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
     }
   }, [isOpen]);
 
-  // Listen for storage changes to update when a new game is saved
   useEffect(() => {
     const handleStorageChange = () => {
       if (isOpen || expandedByDefault) {
@@ -67,65 +72,111 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [isOpen, expandedByDefault]);
 
-  const deleteGame = (id: string) => {
+  const deleteGame = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
     const updatedGames = games.filter(g => g.id !== id);
     setGames(updatedGames);
     localStorage.setItem('baloot_match_history', JSON.stringify(updatedGames));
+  };
+
+  const handleCardClick = (game: GameRecord) => {
+    if (onRestore) {
+      setConfirmGame(game);
+    }
+  };
+
+  const handleConfirmRestore = () => {
+    if (confirmGame && onRestore) {
+      onRestore(confirmGame);
+      setConfirmGame(null);
+    }
   };
 
   const formatDate = (dateStr: string) => {
     return format(new Date(dateStr), 'd MMM yyyy - h:mm a');
   };
 
-  // If expanded by default, show content directly without collapsible
+  const renderGameCard = (game: GameRecord) => (
+    <Card key={game.id} className={cn("bg-card border", onRestore && "cursor-pointer active:scale-[0.98] transition-transform")} onClick={() => handleCardClick(game)}>
+      <CardContent className="p-3">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 text-sm">
+              <span className={game.winner === 1 ? "font-bold text-team-text" : ""}>
+                {game.team1_name}
+              </span>
+              <span className="text-xl font-black bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">
+                {game.team1_score}
+              </span>
+              <span className="text-muted-foreground font-light">—</span>
+              <span className="text-xl font-black bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">
+                {game.team2_score}
+              </span>
+              <span className={game.winner === 2 ? "font-bold text-team-text" : ""}>
+                {game.team2_name}
+              </span>
+              {game.winner && (
+                <Trophy className="h-4 w-4 text-amber-500" />
+              )}
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {formatDate(game.created_at)}
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={(e) => deleteGame(e, game.id)}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const confirmDialog = (
+    <Dialog open={confirmGame !== null} onOpenChange={() => setConfirmGame(null)}>
+      <DialogContent className="max-w-xs p-4" dir="rtl">
+        <DialogHeader className="pb-2">
+          <DialogTitle className="text-center text-base">استرجاع هذه المباراة؟</DialogTitle>
+        </DialogHeader>
+        {confirmGame && (
+          <div className="text-center text-sm text-muted-foreground mb-2">
+            {confirmGame.team1_name} {confirmGame.team1_score} — {confirmGame.team2_score} {confirmGame.team2_name}
+          </div>
+        )}
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setConfirmGame(null)}
+            className="py-5 text-lg font-bold"
+          >
+            لا
+          </Button>
+          <Button
+            onClick={handleConfirmRestore}
+            className="py-5 text-lg font-bold"
+          >
+            نعم
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
   if (expandedByDefault) {
     return (
       <div className="w-full space-y-2">
+        {confirmDialog}
         {loading ? (
           <div className="text-center py-4 text-muted-foreground">جاري التحميل...</div>
         ) : games.length === 0 ? (
           <div className="text-center py-4 text-muted-foreground">لا توجد مباريات سابقة</div>
         ) : (
           <div className="space-y-2">
-            {games.map((game) => (
-              <Card key={game.id} className={cn("bg-card border", onRestore && "cursor-pointer active:scale-[0.98] transition-transform")} onClick={() => onRestore?.(game)}>
-                <CardContent className="p-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className={game.winner === 1 ? "font-bold text-team-text" : ""}>
-                          {game.team1_name}
-                        </span>
-                        <span className="text-xl font-black bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">
-                          {game.team1_score}
-                        </span>
-                        <span className="text-muted-foreground font-light">—</span>
-                        <span className="text-xl font-black bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">
-                          {game.team2_score}
-                        </span>
-                        <span className={game.winner === 2 ? "font-bold text-team-text" : ""}>
-                          {game.team2_name}
-                        </span>
-                        {game.winner && (
-                          <Trophy className="h-4 w-4 text-amber-500" />
-                        )}
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {formatDate(game.created_at)}
-                      </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                      onClick={() => deleteGame(game.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {games.map(renderGameCard)}
           </div>
         )}
       </div>
@@ -134,6 +185,7 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
+      {confirmDialog}
       <CollapsibleTrigger asChild>
         <Button variant="ghost" className="w-full justify-between h-12 text-muted-foreground">
           <div className="flex items-center gap-2">
@@ -153,45 +205,7 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
           <div className="text-center py-4 text-muted-foreground">لا توجد مباريات سابقة</div>
         ) : (
           <div className="space-y-2">
-            {games.map((game) => (
-              <Card key={game.id} className={cn("bg-card border", onRestore && "cursor-pointer active:scale-[0.98] transition-transform")} onClick={() => onRestore?.(game)}>
-                <CardContent className="p-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className={game.winner === 1 ? "font-bold text-team-text" : ""}>
-                          {game.team1_name}
-                        </span>
-                        <span className="text-xl font-black bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">
-                          {game.team1_score}
-                        </span>
-                        <span className="text-muted-foreground font-light">—</span>
-                        <span className="text-xl font-black bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent">
-                          {game.team2_score}
-                        </span>
-                        <span className={game.winner === 2 ? "font-bold text-team-text" : ""}>
-                          {game.team2_name}
-                        </span>
-                        {game.winner && (
-                          <Trophy className="h-4 w-4 text-amber-500" />
-                        )}
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {formatDate(game.created_at)}
-                      </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                      onClick={() => deleteGame(game.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {games.map(renderGameCard)}
           </div>
         )}
       </CollapsibleContent>
