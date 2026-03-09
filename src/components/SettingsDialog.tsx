@@ -49,7 +49,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
 
         <div className="space-y-3 py-2">
           {/* Theme Mode Selection */}
-          <div className="p-3 rounded-lg bg-muted/50 space-y-2">
+          <div className="p-3 rounded-lg bg-accent space-y-2">
             <div className="flex items-center gap-2">
               {settings.themeMode === 'dark' ? <Moon className="h-4 w-4" /> : 
                settings.themeMode === 'light' ? <Sun className="h-4 w-4" /> : 
