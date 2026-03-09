@@ -97,7 +97,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
           </div>
 
           {/* Project Multiplier Mode */}
-          <div className="p-3 rounded-lg bg-muted/50 space-y-2">
+          <div className="p-3 rounded-lg bg-accent space-y-2">
             <div className="flex items-center gap-2">
               <Calculator className="h-4 w-4" />
               <Label className="text-sm">حسبة المشاريع في الثري والفور</Label>
