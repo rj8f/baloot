@@ -77,8 +77,8 @@ const WinnerModal = () => {
             {winnerScore}
           </div>
           
-          <div className="text-muted-foreground text-lg">
-            vs {loserScore}
+          <div className="text-muted-foreground text-lg tabular-nums">
+            {loserScore}
           </div>
         </div>
 
