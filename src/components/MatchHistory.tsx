@@ -28,9 +28,10 @@ interface GameRecord {
 interface MatchHistoryProps {
   expandedByDefault?: boolean;
   onRestore?: (game: GameRecord) => void;
+  onConfirmActive?: (active: boolean) => void;
 }
 
-const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedByDefault = false, onRestore }, ref) => {
+const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedByDefault = false, onRestore, onConfirmActive }, ref) => {
   const [games, setGames] = useState<GameRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(expandedByDefault);
@@ -81,7 +82,7 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
 
   const handleCardClick = (game: GameRecord) => {
     if (onRestore) {
-      setConfirmGame(game);
+      openConfirm(game);
     }
   };
 
@@ -89,7 +90,18 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
     if (confirmGame && onRestore) {
       onRestore(confirmGame);
       setConfirmGame(null);
+      onConfirmActive?.(false);
     }
+  };
+
+  const openConfirm = (game: GameRecord) => {
+    setConfirmGame(game);
+    onConfirmActive?.(true);
+  };
+
+  const closeConfirm = () => {
+    setConfirmGame(null);
+    onConfirmActive?.(false);
   };
 
   const formatDate = (dateStr: string) => {
@@ -137,7 +149,7 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
   );
 
   const confirmDialog = (
-    <Dialog open={confirmGame !== null} onOpenChange={() => setConfirmGame(null)}>
+    <Dialog open={confirmGame !== null} onOpenChange={() => closeConfirm()}>
       <DialogContent className="max-w-xs p-4" dir="rtl">
         <DialogHeader className="pb-2">
           <DialogTitle className="text-center text-base">استرجاع هذه المباراة؟</DialogTitle>
@@ -150,7 +162,7 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
         <div className="grid grid-cols-2 gap-2">
           <Button
             variant="outline"
-            onClick={() => setConfirmGame(null)}
+            onClick={() => closeConfirm()}
             className="py-5 text-lg font-bold"
           >
             لا
