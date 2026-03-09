@@ -15,6 +15,8 @@ interface GameRecord {
   winner: number | null;
   created_at: string;
   finished_at: string | null;
+  rounds?: any[];
+  simpleHistory?: any[];
 }
 
 interface MatchHistoryProps {
