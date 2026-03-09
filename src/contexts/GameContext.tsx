@@ -840,6 +840,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         team2_score: gameData.team2Score,
         winner: gameData.winner,
         rounds: gameData.rounds,
+        simpleHistory: simpleHistory,
         created_at: gameData.createdAt.toISOString(),
         finished_at: new Date().toISOString(),
       };
