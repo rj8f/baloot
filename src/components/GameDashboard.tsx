@@ -11,12 +11,12 @@ import SettingsDialog from './SettingsDialog';
 import MatchHistory from './MatchHistory';
 import { RotateCcw, History, Calculator, Home, Settings, Volume2, VolumeX } from 'lucide-react';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 import {
   Dialog,
   DialogContent,
