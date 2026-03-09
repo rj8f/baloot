@@ -56,7 +56,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
                <Monitor className="h-4 w-4" />}
               <Label className="text-sm">المظهر</Label>
             </div>
-            <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
+            <div className="flex gap-1 p-1 bg-accent/50 rounded-lg">
               <button
                 onClick={() => updateSettings({ themeMode: 'dark' })}
                 className={cn(
