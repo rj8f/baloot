@@ -84,7 +84,7 @@ const GameDashboard = () => {
               )}
             </Button>
             
-            <Drawer direction="top" open={historyOpen} onOpenChange={setHistoryOpen}>
+            <Drawer direction="top" open={historyOpen} onOpenChange={(open) => { if (!confirmActive) setHistoryOpen(open); }}>
               <DrawerTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-9 w-9">
                   <History className="h-5 w-5" />
@@ -95,7 +95,7 @@ const GameDashboard = () => {
                   <DrawerTitle>سجل المباريات</DrawerTitle>
                 </DrawerHeader>
                 <div className="overflow-auto flex-1 px-4 pb-2">
-                  <MatchHistory expandedByDefault onRestore={(record) => {
+                  <MatchHistory expandedByDefault onConfirmActive={setConfirmActive} onRestore={(record) => {
                     setHistoryOpen(false);
                     restoreGame(record);
                   }} />
