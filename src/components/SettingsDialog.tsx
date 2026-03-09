@@ -56,7 +56,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
                <Monitor className="h-4 w-4" />}
               <Label className="text-sm">المظهر</Label>
             </div>
-            <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
+            <div className="flex gap-1 p-1 bg-accent/50 rounded-lg">
               <button
                 onClick={() => updateSettings({ themeMode: 'dark' })}
                 className={cn(
@@ -102,7 +102,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
               <Calculator className="h-4 w-4" />
               <Label className="text-sm">حسبة المشاريع في الثري والفور</Label>
             </div>
-            <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
+            <div className="flex gap-1 p-1 bg-accent/50 rounded-lg">
               <button
                 onClick={() => updateSettings({ projectMultiplierMode: 'all-x2' })}
                 className={cn(
@@ -145,7 +145,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
               <Calculator className="h-4 w-4" />
               <Label className="text-sm">حسبة الحكم</Label>
             </div>
-            <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
+            <div className="flex gap-1 p-1 bg-accent/50 rounded-lg">
               <button
                 onClick={() => updateSettings({ hokmWithoutPointsMode: false })}
                 className={cn(
@@ -184,7 +184,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
               <Calculator className="h-4 w-4" />
               <Label className="text-sm">الصن بمشروع الخمسين</Label>
             </div>
-            <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
+            <div className="flex gap-1 p-1 bg-accent/50 rounded-lg">
               <button
                 onClick={() => updateSettings({ sun50Mode: 'with-points-40' })}
                 className={cn(
