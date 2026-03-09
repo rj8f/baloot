@@ -30,6 +30,7 @@ const GameDashboard = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
   const [scorePreview, setScorePreview] = useState<{ team1: number; team2: number } | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   if (!game) return null;
 
@@ -82,7 +83,7 @@ const GameDashboard = () => {
               )}
             </Button>
             
-            <Drawer direction="top">
+            <Drawer direction="top" open={historyOpen} onOpenChange={setHistoryOpen}>
               <DrawerTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-9 w-9">
                   <History className="h-5 w-5" />
@@ -94,6 +95,7 @@ const GameDashboard = () => {
                 </DrawerHeader>
                 <div className="overflow-auto flex-1 px-4 pb-2">
                   <MatchHistory expandedByDefault onRestore={(record) => {
+                    setHistoryOpen(false);
                     restoreGame(record);
                   }} />
                 </div>

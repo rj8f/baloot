@@ -63,6 +63,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const [showUndoConfirm, setShowUndoConfirm] = useState(false);
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   
   // تهيئة اللعبة عند الفتح
   useEffect(() => {
@@ -332,7 +333,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
             )}
           </Button>
           
-          <Drawer direction="top">
+          <Drawer direction="top" open={historyOpen} onOpenChange={setHistoryOpen}>
             <DrawerTrigger asChild>
               <Button variant="ghost" size="icon" className="h-9 w-9">
                 <History className="h-5 w-5" />
@@ -344,6 +345,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
               </DrawerHeader>
               <div className="overflow-auto flex-1 px-4 pb-2">
                 <MatchHistory expandedByDefault onRestore={(record) => {
+                  setHistoryOpen(false);
                   restoreGame(record);
                 }} />
               </div>
