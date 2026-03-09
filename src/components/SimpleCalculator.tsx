@@ -214,7 +214,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const unifiedHistory = getUnifiedHistory();
 
   const handleUndo = () => {
-    setShowUndoConfirm(true);
+    undoLast();
   };
 
   const saveAndReset = () => {
