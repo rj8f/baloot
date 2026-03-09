@@ -372,7 +372,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
 
       {/* Scores Display */}
       <div 
-        className="flex-shrink-0 flex justify-center items-center gap-6 py-6 cursor-pointer active:scale-[0.98] transition-transform"
+        className="flex-shrink-0 flex justify-center items-end gap-6 py-6 cursor-pointer active:scale-[0.98] transition-transform"
         onClick={() => announceScore(team1Score, team2Score)}
       >
         <div className="text-center w-28 space-y-2">
@@ -384,7 +384,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
             e.stopPropagation();
             rotateArrow();
           }}
-          className="p-3 hover:bg-muted rounded-full transition-colors flex-shrink-0 self-center"
+          className="p-3 bg-muted rounded-full transition-colors flex-shrink-0 mb-2"
         >
           <ArrowUp 
             className="h-16 w-16 text-muted-foreground transition-transform duration-300" 
