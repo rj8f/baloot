@@ -18,9 +18,10 @@ interface GameRecord {
 
 interface MatchHistoryProps {
   expandedByDefault?: boolean;
+  onRestore?: (game: GameRecord) => void;
 }
 
-const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedByDefault = false }, ref) => {
+const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedByDefault = false, onRestore }, ref) => {
   const [games, setGames] = useState<GameRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(expandedByDefault);
