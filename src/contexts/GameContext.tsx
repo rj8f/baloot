@@ -44,9 +44,10 @@ interface GameContextType {
   addRound: (round: RoundInput) => void;
   deleteRound: (roundId: string) => void;
   deleteSimpleEntry: (entryId: string) => void;
-  undoLast: () => void;  // تراجع موحد
+  undoLast: () => void;
   resetGame: () => void;
-  resetGameKeepMode: () => void;  // إعادة تعيين مع الحفاظ على نوع الحاسبة
+  resetGameKeepMode: () => void;
+  restoreGame: (gameRecord: any) => void;
   canDoubleSun: () => boolean;
   previewRoundResult: (round: RoundInput) => { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number };
   setScores: (team1Score: number, team2Score: number) => void;
