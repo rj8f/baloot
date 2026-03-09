@@ -919,7 +919,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       team2Score: gameRecord.team2_score || 0,
       winningScore: 152,
       rounds: gameRecord.rounds || [],
-      winner: gameRecord.winner || null,
+      winner: null, // لا نضع الفائز حتى لا يظهر الاحتفال
       createdAt: new Date(gameRecord.created_at),
     };
     

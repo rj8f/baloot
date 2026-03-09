@@ -32,7 +32,7 @@ const DrawerContent = React.forwardRef<
       ref={ref}
       className={cn(
         "fixed inset-x-0 z-50 flex h-auto flex-col border bg-background",
-        direction === "top" ? "top-0 rounded-b-[10px]" : "bottom-0 mt-24 rounded-t-[10px]",
+        direction === "top" ? "top-0 rounded-b-[10px] pt-[env(safe-area-inset-top)]" : "bottom-0 mt-24 rounded-t-[10px]",
         className,
       )}
       {...props}

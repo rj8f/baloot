@@ -7,7 +7,7 @@ import SettingsDialog from './SettingsDialog';
 import { Calculator, Settings2, Settings } from 'lucide-react';
 
 const GameSetup = () => {
-  const { startGame, startSimpleMode } = useGame();
+  const { startGame, startSimpleMode, restoreGame } = useGame();
   const [showSettings, setShowSettings] = useState(false);
 
   const handleStartAdvanced = () => {
@@ -61,7 +61,7 @@ const GameSetup = () => {
 
           {/* Match History */}
           <div className="flex-1 overflow-auto min-h-0 pt-4 border-t">
-            <MatchHistory />
+            <MatchHistory onRestore={(record) => restoreGame(record)} />
           </div>
         </CardContent>
       </Card>
