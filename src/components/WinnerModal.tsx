@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import confetti from 'canvas-confetti';
 import { Trophy, Star } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const WinnerModal = () => {
   const { game, resetGameKeepMode } = useGame();
