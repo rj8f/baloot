@@ -50,7 +50,7 @@ interface GameContextType {
   restoreGame: (gameRecord: any) => void;
   canDoubleSun: () => boolean;
   previewRoundResult: (round: RoundInput) => { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number };
-  setScores: (team1Score: number, team2Score: number) => void;
+  setScores: (team1Score: number, team2Score: number, pendingSimpleEntry?: SimpleHistoryEntry) => void;
   addSimpleHistoryEntry: (entry: { id: string; team1: number; team2: number }) => void;
   getUnifiedHistory: () => Array<{ type: 'simple' | 'advanced'; entry: SimpleHistoryEntry | Round; createdAt: number }>;
 }
@@ -827,7 +827,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const saveGameToHistory = (gameData: Game) => {
+  const saveGameToHistory = (gameData: Game, historySnapshot?: SimpleHistoryEntry[]) => {
     try {
       const savedHistory = localStorage.getItem('baloot_match_history');
       const history = savedHistory ? JSON.parse(savedHistory) : [];
@@ -840,7 +840,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         team2_score: gameData.team2Score,
         winner: gameData.winner,
         rounds: gameData.rounds,
-        simpleHistory: simpleHistory,
+        simpleHistory: historySnapshot ?? simpleHistory,
         created_at: gameData.createdAt.toISOString(),
         finished_at: new Date().toISOString(),
       };
@@ -943,7 +943,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // تحديث النتيجة مباشرة (للمزامنة بين الحاسبتين)
-  const setScores = (team1Score: number, team2Score: number) => {
+  const setScores = (team1Score: number, team2Score: number, pendingSimpleEntry?: SimpleHistoryEntry) => {
     if (!game) return;
     
     let winner: 1 | 2 | null = null;
@@ -960,7 +960,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setGame(updatedGame);
 
     if (winner) {
-      saveGameToHistory(updatedGame);
+      // إذا كان هناك إدخال معلق، ندمجه مع السجل قبل الحفظ
+      const historyToSave = pendingSimpleEntry 
+        ? [pendingSimpleEntry, ...simpleHistory] 
+        : simpleHistory;
+      saveGameToHistory(updatedGame, historyToSave);
     }
   };
 
