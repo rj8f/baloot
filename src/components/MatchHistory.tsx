@@ -149,7 +149,7 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
   );
 
   const confirmDialog = (
-    <Dialog open={confirmGame !== null} onOpenChange={() => setConfirmGame(null)}>
+    <Dialog open={confirmGame !== null} onOpenChange={() => closeConfirm()}>
       <DialogContent className="max-w-xs p-4" dir="rtl">
         <DialogHeader className="pb-2">
           <DialogTitle className="text-center text-base">استرجاع هذه المباراة؟</DialogTitle>
