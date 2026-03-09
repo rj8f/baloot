@@ -218,7 +218,18 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const unifiedHistory = getUnifiedHistory();
 
   const handleUndo = () => {
+    setShowUndoConfirm(true);
+  };
+
+  const confirmUndo = () => {
+    // ارجاع السهم
+    if (arrowHistory.length > 0) {
+      const lastRotation = arrowHistory[arrowHistory.length - 1];
+      setArrowRotation(prev => prev - lastRotation);
+      setArrowHistory(prev => prev.slice(0, -1));
+    }
     undoLast();
+    setShowUndoConfirm(false);
   };
 
   const saveAndReset = () => {
