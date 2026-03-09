@@ -7,7 +7,7 @@ import SettingsDialog from './SettingsDialog';
 import { Calculator, Settings2, Settings } from 'lucide-react';
 
 const GameSetup = () => {
-  const { startGame, startSimpleMode } = useGame();
+  const { startGame, startSimpleMode, restoreGame } = useGame();
   const [showSettings, setShowSettings] = useState(false);
 
   const handleStartAdvanced = () => {
