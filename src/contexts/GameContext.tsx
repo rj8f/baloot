@@ -924,8 +924,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     };
     
     setGame(restoredGame);
-    setSimpleHistory([]);
-    localStorage.removeItem('baloot_simple_history');
+    
+    // استرجاع سجل البسيط إن وجد
+    const restoredSimpleHistory = gameRecord.simpleHistory || [];
+    setSimpleHistory(restoredSimpleHistory);
+    localStorage.setItem('baloot_simple_history', JSON.stringify(restoredSimpleHistory));
     
     // تحديد الوضع بناء على وجود جولات
     if (restoredGame.rounds && restoredGame.rounds.length > 0) {
