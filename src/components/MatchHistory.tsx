@@ -1,4 +1,5 @@
 import React, { useState, useEffect, forwardRef } from 'react';
+import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { History, Trophy, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
@@ -14,13 +15,16 @@ interface GameRecord {
   winner: number | null;
   created_at: string;
   finished_at: string | null;
+  rounds?: any[];
+  simpleHistory?: any[];
 }
 
 interface MatchHistoryProps {
   expandedByDefault?: boolean;
+  onRestore?: (game: GameRecord) => void;
 }
 
-const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedByDefault = false }, ref) => {
+const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedByDefault = false, onRestore }, ref) => {
   const [games, setGames] = useState<GameRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(expandedByDefault);
@@ -84,7 +88,7 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
         ) : (
           <div className="space-y-2">
             {games.map((game) => (
-              <Card key={game.id} className="bg-card border">
+              <Card key={game.id} className={cn("bg-card border", onRestore && "cursor-pointer active:scale-[0.98] transition-transform")} onClick={() => onRestore?.(game)}>
                 <CardContent className="p-3">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
@@ -150,7 +154,7 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
         ) : (
           <div className="space-y-2">
             {games.map((game) => (
-              <Card key={game.id} className="bg-card border">
+              <Card key={game.id} className={cn("bg-card border", onRestore && "cursor-pointer active:scale-[0.98] transition-transform")} onClick={() => onRestore?.(game)}>
                 <CardContent className="p-3">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">

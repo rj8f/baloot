@@ -44,9 +44,10 @@ interface GameContextType {
   addRound: (round: RoundInput) => void;
   deleteRound: (roundId: string) => void;
   deleteSimpleEntry: (entryId: string) => void;
-  undoLast: () => void;  // تراجع موحد
+  undoLast: () => void;
   resetGame: () => void;
-  resetGameKeepMode: () => void;  // إعادة تعيين مع الحفاظ على نوع الحاسبة
+  resetGameKeepMode: () => void;
+  restoreGame: (gameRecord: any) => void;
   canDoubleSun: () => boolean;
   previewRoundResult: (round: RoundInput) => { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number };
   setScores: (team1Score: number, team2Score: number) => void;
@@ -839,6 +840,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         team2_score: gameData.team2Score,
         winner: gameData.winner,
         rounds: gameData.rounds,
+        simpleHistory: simpleHistory,
         created_at: gameData.createdAt.toISOString(),
         finished_at: new Date().toISOString(),
       };
@@ -907,6 +909,35 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // استرجاع مباراة من السجل
+  const restoreGame = (gameRecord: any) => {
+    const restoredGame: Game = {
+      id: gameRecord.id || crypto.randomUUID(),
+      team1Name: gameRecord.team1_name || 'لنا',
+      team2Name: gameRecord.team2_name || 'لهم',
+      team1Score: gameRecord.team1_score || 0,
+      team2Score: gameRecord.team2_score || 0,
+      winningScore: 152,
+      rounds: gameRecord.rounds || [],
+      winner: gameRecord.winner || null,
+      createdAt: new Date(gameRecord.created_at),
+    };
+    
+    setGame(restoredGame);
+    
+    // استرجاع سجل البسيط إن وجد
+    const restoredSimpleHistory = gameRecord.simpleHistory || [];
+    setSimpleHistory(restoredSimpleHistory);
+    localStorage.setItem('baloot_simple_history', JSON.stringify(restoredSimpleHistory));
+    
+    // تحديد الوضع بناء على وجود جولات
+    if (restoredGame.rounds && restoredGame.rounds.length > 0) {
+      setCalculatorMode('advanced');
+    } else {
+      setCalculatorMode('simple');
+    }
+  };
+
   const previewRoundResult = (roundData: RoundInput) => {
     return calculateRoundResult(roundData);
   };
@@ -949,6 +980,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       undoLast,
       resetGame,
       resetGameKeepMode,
+      restoreGame,
       canDoubleSun, 
       previewRoundResult, 
       setScores,
