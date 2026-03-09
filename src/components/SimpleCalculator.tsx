@@ -59,7 +59,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   } = useGame();
   const { settings, toggleMute } = useSettings();
   
-  const [_showUndoConfirm] = useState(false);
+  const [showUndoConfirm, setShowUndoConfirm] = useState(false);
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   
@@ -78,6 +78,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const [team1Input, setTeam1Input] = useState('');
   const [team2Input, setTeam2Input] = useState('');
   const [arrowRotation, setArrowRotation] = useState(0);
+  const [arrowHistory, setArrowHistory] = useState<number[]>([]);
   
   const team1InputRef = useRef<HTMLInputElement>(null);
   const team2InputRef = useRef<HTMLInputElement>(null);
@@ -205,6 +206,9 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     // دوران السهم فقط إذا كان المجموع 16 أو أكثر
     if (t1 + t2 >= 16) {
       rotateArrow();
+      setArrowHistory(prev => [...prev, -90]);
+    } else {
+      setArrowHistory(prev => [...prev, 0]);
     }
     
     // إعلان النتيجة صوتياً
@@ -214,7 +218,18 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const unifiedHistory = getUnifiedHistory();
 
   const handleUndo = () => {
+    setShowUndoConfirm(true);
+  };
+
+  const confirmUndo = () => {
+    // ارجاع السهم
+    if (arrowHistory.length > 0) {
+      const lastRotation = arrowHistory[arrowHistory.length - 1];
+      setArrowRotation(prev => prev - lastRotation);
+      setArrowHistory(prev => prev.slice(0, -1));
+    }
     undoLast();
+    setShowUndoConfirm(false);
   };
 
   const saveAndReset = () => {
@@ -460,6 +475,31 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
           })}
         </div>
       </div>
+
+      {/* تأكيد التراجع */}
+      <Dialog open={showUndoConfirm} onOpenChange={setShowUndoConfirm}>
+        <DialogContent className="max-w-xs p-4" dir="rtl">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="text-center text-base">تراجع؟</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowUndoConfirm(false)}
+              className="py-5 text-lg font-bold"
+            >
+              لا
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmUndo}
+              className="py-5 text-lg font-bold"
+            >
+              نعم
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={showNewGameConfirm} onOpenChange={setShowNewGameConfirm}>
         <DialogContent className="max-w-xs p-4" dir="rtl">
