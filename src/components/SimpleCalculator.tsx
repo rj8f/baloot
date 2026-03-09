@@ -336,7 +336,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
             )}
           </Button>
           
-          <Drawer direction="top" open={historyOpen} onOpenChange={setHistoryOpen}>
+          <Drawer direction="top" open={historyOpen} onOpenChange={setHistoryOpen} dismissible={true}>
             <DrawerTrigger asChild>
               <Button variant="ghost" size="icon" className="h-9 w-9">
                 <History className="h-5 w-5" />
