@@ -31,6 +31,7 @@ const GameDashboard = () => {
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
   const [scorePreview, setScorePreview] = useState<{ team1: number; team2: number } | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [confirmActive, setConfirmActive] = useState(false);
 
   if (!game) return null;
 
