@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/dialog';
 
 const GameDashboard = () => {
-  const { game, resetGameKeepMode, switchToSimple, goToSelection } = useGame();
+  const { game, resetGameKeepMode, switchToSimple, goToSelection, restoreGame } = useGame();
   const { settings, toggleMute } = useSettings();
   const [showSettings, setShowSettings] = useState(false);
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
