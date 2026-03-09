@@ -145,7 +145,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
               <Calculator className="h-4 w-4" />
               <Label className="text-sm">حسبة الحكم</Label>
             </div>
-            <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
+            <div className="flex gap-1 p-1 bg-accent/50 rounded-lg">
               <button
                 onClick={() => updateSettings({ hokmWithoutPointsMode: false })}
                 className={cn(
