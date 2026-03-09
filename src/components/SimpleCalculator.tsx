@@ -373,6 +373,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
         >
           <ArrowUp 
             className="h-12 w-12 text-muted-foreground transition-transform duration-300" 
+            strokeWidth={3}
             style={{ transform: `rotate(${arrowRotation}deg)` }}
           />
         </button>
