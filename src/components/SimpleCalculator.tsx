@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowUp, RotateCcw, Home, History, Trophy, Crown, Star, Calculator, Volume2, VolumeX, Settings, Sparkles } from 'lucide-react';
+import { ArrowUp, RotateCcw, Home, History, Trophy, Star, Calculator, Volume2, VolumeX, Settings } from 'lucide-react';
 import {
   Drawer,
   DrawerContent,
