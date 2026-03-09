@@ -28,6 +28,7 @@ interface GameRecord {
 interface MatchHistoryProps {
   expandedByDefault?: boolean;
   onRestore?: (game: GameRecord) => void;
+  onConfirmActive?: (active: boolean) => void;
 }
 
 const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedByDefault = false, onRestore }, ref) => {
