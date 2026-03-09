@@ -908,6 +908,32 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // استرجاع مباراة من السجل
+  const restoreGame = (gameRecord: any) => {
+    const restoredGame: Game = {
+      id: gameRecord.id || crypto.randomUUID(),
+      team1Name: gameRecord.team1_name || 'لنا',
+      team2Name: gameRecord.team2_name || 'لهم',
+      team1Score: gameRecord.team1_score || 0,
+      team2Score: gameRecord.team2_score || 0,
+      winningScore: 152,
+      rounds: gameRecord.rounds || [],
+      winner: gameRecord.winner || null,
+      createdAt: new Date(gameRecord.created_at),
+    };
+    
+    setGame(restoredGame);
+    setSimpleHistory([]);
+    localStorage.removeItem('baloot_simple_history');
+    
+    // تحديد الوضع بناء على وجود جولات
+    if (restoredGame.rounds && restoredGame.rounds.length > 0) {
+      setCalculatorMode('advanced');
+    } else {
+      setCalculatorMode('simple');
+    }
+  };
+
   const previewRoundResult = (roundData: RoundInput) => {
     return calculateRoundResult(roundData);
   };
