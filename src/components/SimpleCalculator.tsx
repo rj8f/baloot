@@ -206,6 +206,9 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     // دوران السهم فقط إذا كان المجموع 16 أو أكثر
     if (t1 + t2 >= 16) {
       rotateArrow();
+      setArrowHistory(prev => [...prev, -90]);
+    } else {
+      setArrowHistory(prev => [...prev, 0]);
     }
     
     // إعلان النتيجة صوتياً
