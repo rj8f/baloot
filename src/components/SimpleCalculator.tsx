@@ -461,35 +461,6 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
         </div>
       </div>
 
-      {/* تأكيد التراجع */}
-      <Dialog open={showUndoConfirm} onOpenChange={setShowUndoConfirm}>
-        <DialogContent className="max-w-xs p-4" dir="rtl">
-          <DialogHeader className="pb-2">
-            <DialogTitle className="text-center text-base">حذف؟</DialogTitle>
-          </DialogHeader>
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setShowUndoConfirm(false)}
-              className="py-5 text-lg font-bold"
-            >
-              لا
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                undoLast();
-                setShowUndoConfirm(false);
-              }}
-              className="py-5 text-lg font-bold"
-            >
-              نعم
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* تأكيد صكة جديدة */}
       <Dialog open={showNewGameConfirm} onOpenChange={setShowNewGameConfirm}>
         <DialogContent className="max-w-xs p-4" dir="rtl">
           <DialogHeader className="pb-2">
