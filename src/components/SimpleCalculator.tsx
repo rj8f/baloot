@@ -59,7 +59,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   } = useGame();
   const { settings, toggleMute } = useSettings();
   
-  const [_showUndoConfirm] = useState(false);
+  const [showUndoConfirm, setShowUndoConfirm] = useState(false);
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   
