@@ -82,21 +82,23 @@ const GameDashboard = () => {
               )}
             </Button>
             
-            <Sheet>
-              <SheetTrigger asChild>
+            <Drawer direction="top">
+              <DrawerTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-9 w-9">
                   <History className="h-5 w-5" />
                 </Button>
-              </SheetTrigger>
-              <SheetContent side="top" className="h-[70vh]">
-                <SheetHeader>
-                  <SheetTitle>سجل المباريات</SheetTitle>
-                </SheetHeader>
-                <div className="mt-4 overflow-auto h-full pb-8">
-                  <MatchHistory expandedByDefault />
+              </DrawerTrigger>
+              <DrawerContent direction="top" className="max-h-[70vh]">
+                <DrawerHeader>
+                  <DrawerTitle>سجل المباريات</DrawerTitle>
+                </DrawerHeader>
+                <div className="overflow-auto flex-1 px-4 pb-2">
+                  <MatchHistory expandedByDefault onRestore={(record) => {
+                    restoreGame(record);
+                  }} />
                 </div>
-              </SheetContent>
-            </Sheet>
+              </DrawerContent>
+            </Drawer>
             
             <Button 
               variant="ghost" 
