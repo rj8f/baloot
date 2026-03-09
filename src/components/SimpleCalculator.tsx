@@ -64,6 +64,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [confirmActive, setConfirmActive] = useState(false);
   
   // تهيئة اللعبة عند الفتح
   useEffect(() => {
