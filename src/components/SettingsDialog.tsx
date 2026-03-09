@@ -49,14 +49,14 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
 
         <div className="space-y-3 py-2">
           {/* Theme Mode Selection */}
-          <div className="p-3 rounded-lg bg-accent space-y-2">
+          <div className="p-3 rounded-lg bg-muted/50 space-y-2">
             <div className="flex items-center gap-2">
               {settings.themeMode === 'dark' ? <Moon className="h-4 w-4" /> : 
                settings.themeMode === 'light' ? <Sun className="h-4 w-4" /> : 
                <Monitor className="h-4 w-4" />}
               <Label className="text-sm">المظهر</Label>
             </div>
-            <div className="flex gap-1 p-1 bg-accent/50 rounded-lg">
+            <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
               <button
                 onClick={() => updateSettings({ themeMode: 'dark' })}
                 className={cn(
@@ -97,12 +97,12 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
           </div>
 
           {/* Project Multiplier Mode */}
-          <div className="p-3 rounded-lg bg-accent space-y-2">
+          <div className="p-3 rounded-lg bg-muted/50 space-y-2">
             <div className="flex items-center gap-2">
               <Calculator className="h-4 w-4" />
               <Label className="text-sm">حسبة المشاريع في الثري والفور</Label>
             </div>
-            <div className="flex gap-1 p-1 bg-accent/50 rounded-lg">
+            <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
               <button
                 onClick={() => updateSettings({ projectMultiplierMode: 'all-x2' })}
                 className={cn(
@@ -140,12 +140,12 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
           </div>
 
           {/* Hokm Calculation Mode */}
-          <div className="p-3 rounded-lg bg-accent space-y-2">
+          <div className="p-3 rounded-lg bg-muted/50 space-y-2">
             <div className="flex items-center gap-2">
               <Calculator className="h-4 w-4" />
               <Label className="text-sm">حسبة الحكم</Label>
             </div>
-            <div className="flex gap-1 p-1 bg-accent/50 rounded-lg">
+            <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
               <button
                 onClick={() => updateSettings({ hokmWithoutPointsMode: false })}
                 className={cn(
@@ -179,12 +179,12 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
           </div>
 
           {/* Sun with 50 Project Mode */}
-          <div className="p-3 rounded-lg bg-accent space-y-2">
+          <div className="p-3 rounded-lg bg-muted/50 space-y-2">
             <div className="flex items-center gap-2">
               <Calculator className="h-4 w-4" />
               <Label className="text-sm">الصن بمشروع الخمسين</Label>
             </div>
-            <div className="flex gap-1 p-1 bg-accent/50 rounded-lg">
+            <div className="flex gap-1 p-1 bg-background/50 rounded-lg">
               <button
                 onClick={() => updateSettings({ sun50Mode: 'with-points-40' })}
                 className={cn(
@@ -231,7 +231,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
           </div>
 
           {/* Install App Guide Button */}
-          <div className="p-3 rounded-lg bg-accent space-y-2">
+          <div className="p-3 rounded-lg bg-muted/50 space-y-2">
             <Button 
               variant="outline" 
               size="sm"
