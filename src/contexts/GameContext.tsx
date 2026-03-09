@@ -976,7 +976,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       undoLast,
       resetGame,
       resetGameKeepMode,
-      canDoubleSun, 
+      restoreGame, 
       previewRoundResult, 
       setScores,
       addSimpleHistoryEntry,
