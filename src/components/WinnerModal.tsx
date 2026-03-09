@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import confetti from 'canvas-confetti';
-import { Trophy, Crown, Star, Sparkles } from 'lucide-react';
+import { Trophy, Star } from 'lucide-react';
 
 const WinnerModal = () => {
   const { game, resetGameKeepMode } = useGame();
