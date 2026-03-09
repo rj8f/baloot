@@ -231,7 +231,7 @@ const SettingsDialog = ({ open, onOpenChange, isFirstTime = false }: SettingsDia
           </div>
 
           {/* Install App Guide Button */}
-          <div className="p-3 rounded-lg bg-muted/50 space-y-2">
+          <div className="p-3 rounded-lg bg-accent space-y-2">
             <Button 
               variant="outline" 
               size="sm"
