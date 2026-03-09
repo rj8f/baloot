@@ -930,12 +930,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setSimpleHistory(restoredSimpleHistory);
     localStorage.setItem('baloot_simple_history', JSON.stringify(restoredSimpleHistory));
     
-    // تحديد الوضع بناء على وجود جولات
-    if (restoredGame.rounds && restoredGame.rounds.length > 0) {
-      setCalculatorMode('advanced');
-    } else {
-      setCalculatorMode('simple');
-    }
+    // لا نغير الوضع - نبقي المستخدم في نفس الحاسبة التي كان فيها
   };
 
   const previewRoundResult = (roundData: RoundInput) => {

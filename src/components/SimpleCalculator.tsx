@@ -286,8 +286,8 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
               {winner === 1 ? team1Score : team2Score}
             </div>
             
-            <div className="text-muted-foreground text-lg">
-              vs {winner === 1 ? team2Score : team1Score}
+            <div className="text-muted-foreground text-lg tabular-nums">
+              {winner === 1 ? team2Score : team1Score}
             </div>
           </div>
 
