@@ -87,7 +87,7 @@ const WinnerModal = () => {
             onClick={resetGameKeepMode} 
             className="flex-1 text-lg py-6 font-bold btn-press bg-gradient-to-r from-team-start to-team-end hover:opacity-90 shadow-xl"
           >
-            لعبة جديدة
+            صكة جديدة
           </Button>
         </div>
       </DialogContent>
