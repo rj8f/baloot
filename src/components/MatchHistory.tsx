@@ -82,7 +82,7 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
 
   const handleCardClick = (game: GameRecord) => {
     if (onRestore) {
-      setConfirmGame(game);
+      openConfirm(game);
     }
   };
 
