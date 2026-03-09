@@ -59,7 +59,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   } = useGame();
   const { settings, toggleMute } = useSettings();
   
-  const [showUndoConfirm, setShowUndoConfirm] = useState(false);
+  const [_showUndoConfirm] = useState(false);
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   
@@ -214,7 +214,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const unifiedHistory = getUnifiedHistory();
 
   const handleUndo = () => {
-    setShowUndoConfirm(true);
+    undoLast();
   };
 
   const saveAndReset = () => {
@@ -373,6 +373,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
         >
           <ArrowUp 
             className="h-12 w-12 text-muted-foreground transition-transform duration-300" 
+            strokeWidth={3}
             style={{ transform: `rotate(${arrowRotation}deg)` }}
           />
         </button>
@@ -460,35 +461,6 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
         </div>
       </div>
 
-      {/* تأكيد التراجع */}
-      <Dialog open={showUndoConfirm} onOpenChange={setShowUndoConfirm}>
-        <DialogContent className="max-w-xs p-4" dir="rtl">
-          <DialogHeader className="pb-2">
-            <DialogTitle className="text-center text-base">حذف؟</DialogTitle>
-          </DialogHeader>
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setShowUndoConfirm(false)}
-              className="py-5 text-lg font-bold"
-            >
-              لا
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                undoLast();
-                setShowUndoConfirm(false);
-              }}
-              className="py-5 text-lg font-bold"
-            >
-              نعم
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* تأكيد صكة جديدة */}
       <Dialog open={showNewGameConfirm} onOpenChange={setShowNewGameConfirm}>
         <DialogContent className="max-w-xs p-4" dir="rtl">
           <DialogHeader className="pb-2">
