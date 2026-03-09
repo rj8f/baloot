@@ -78,6 +78,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
   const [team1Input, setTeam1Input] = useState('');
   const [team2Input, setTeam2Input] = useState('');
   const [arrowRotation, setArrowRotation] = useState(0);
+  const [arrowHistory, setArrowHistory] = useState<number[]>([]);
   
   const team1InputRef = useRef<HTMLInputElement>(null);
   const team2InputRef = useRef<HTMLInputElement>(null);
