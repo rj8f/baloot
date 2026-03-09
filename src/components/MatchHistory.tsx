@@ -162,7 +162,7 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
         <div className="grid grid-cols-2 gap-2">
           <Button
             variant="outline"
-            onClick={() => setConfirmGame(null)}
+            onClick={() => closeConfirm()}
             className="py-5 text-lg font-bold"
           >
             لا
