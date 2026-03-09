@@ -190,18 +190,19 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     
     if (t1 === 0 && t2 === 0) return;
     
-    const newEntry = {
+    const newEntry: SimpleHistoryEntry = {
       id: crypto.randomUUID(),
       team1: t1,
       team2: t2,
+      createdAt: Date.now(),
     };
     
     const newTeam1Score = team1Score + t1;
     const newTeam2Score = team2Score + t2;
     
-    // تحديث النتيجة عبر GameContext
-    setScores(newTeam1Score, newTeam2Score);
+    // إضافة السجل أولاً ثم تحديث النتيجة مع تمرير الإدخال المعلق
     addSimpleHistoryEntry(newEntry);
+    setScores(newTeam1Score, newTeam2Score, newEntry);
     setTeam1Input('');
     setTeam2Input('');
     

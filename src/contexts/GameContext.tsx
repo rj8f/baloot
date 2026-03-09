@@ -50,7 +50,7 @@ interface GameContextType {
   restoreGame: (gameRecord: any) => void;
   canDoubleSun: () => boolean;
   previewRoundResult: (round: RoundInput) => { winningTeam: 1 | 2; finalTeam1Points: number; finalTeam2Points: number };
-  setScores: (team1Score: number, team2Score: number) => void;
+  setScores: (team1Score: number, team2Score: number, pendingSimpleEntry?: SimpleHistoryEntry) => void;
   addSimpleHistoryEntry: (entry: { id: string; team1: number; team2: number }) => void;
   getUnifiedHistory: () => Array<{ type: 'simple' | 'advanced'; entry: SimpleHistoryEntry | Round; createdAt: number }>;
 }
