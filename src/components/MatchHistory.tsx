@@ -31,7 +31,7 @@ interface MatchHistoryProps {
   onConfirmActive?: (active: boolean) => void;
 }
 
-const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedByDefault = false, onRestore }, ref) => {
+const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedByDefault = false, onRestore, onConfirmActive }, ref) => {
   const [games, setGames] = useState<GameRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(expandedByDefault);
