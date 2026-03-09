@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import confetti from 'canvas-confetti';
 import { Trophy, Star } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const WinnerModal = () => {
   const { game, resetGameKeepMode } = useGame();
@@ -58,12 +59,22 @@ const WinnerModal = () => {
           </div>
           
           <div className="flex items-center justify-center gap-3">
-            <span className="text-7xl font-black tabular-nums bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent drop-shadow-sm">
-              {winnerScore}
+            <span className={cn(
+              "text-7xl font-black tabular-nums",
+              game.winner === 1
+                ? "bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent drop-shadow-sm"
+                : "text-muted-foreground/60"
+            )}>
+              {game.team1Score}
             </span>
             <span className="text-3xl font-light text-muted-foreground">—</span>
-            <span className="text-7xl font-black tabular-nums text-muted-foreground/60">
-              {loserScore}
+            <span className={cn(
+              "text-7xl font-black tabular-nums",
+              game.winner === 2
+                ? "bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent drop-shadow-sm"
+                : "text-muted-foreground/60"
+            )}>
+              {game.team2Score}
             </span>
           </div>
         </div>
