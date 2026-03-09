@@ -56,6 +56,7 @@ const SimpleCalculator = ({ onBack }: SimpleCalculatorProps) => {
     addSimpleHistoryEntry,
     getUnifiedHistory,
     undoLast,
+    restoreGame,
   } = useGame();
   const { settings, toggleMute } = useSettings();
   
