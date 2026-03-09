@@ -73,12 +73,14 @@ const WinnerModal = () => {
             <Star className="h-6 w-6 fill-amber-400 text-amber-400" />
           </div>
           
-          <div className="text-8xl font-black mb-2 tabular-nums bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent drop-shadow-sm">
-            {winnerScore}
-          </div>
-          
-          <div className="text-muted-foreground text-lg tabular-nums">
-            {loserScore}
+          <div className="flex items-center justify-center gap-3">
+            <span className="text-7xl font-black tabular-nums bg-gradient-to-b from-team-start to-team-end bg-clip-text text-transparent drop-shadow-sm">
+              {winnerScore}
+            </span>
+            <span className="text-3xl font-light text-muted-foreground">—</span>
+            <span className="text-7xl font-black tabular-nums text-muted-foreground/60">
+              {loserScore}
+            </span>
           </div>
         </div>
 
