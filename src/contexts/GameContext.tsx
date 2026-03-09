@@ -827,7 +827,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const saveGameToHistory = (gameData: Game) => {
+  const saveGameToHistory = (gameData: Game, historySnapshot?: SimpleHistoryEntry[]) => {
     try {
       const savedHistory = localStorage.getItem('baloot_match_history');
       const history = savedHistory ? JSON.parse(savedHistory) : [];
@@ -840,7 +840,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         team2_score: gameData.team2Score,
         winner: gameData.winner,
         rounds: gameData.rounds,
-        simpleHistory: simpleHistory,
+        simpleHistory: historySnapshot ?? simpleHistory,
         created_at: gameData.createdAt.toISOString(),
         finished_at: new Date().toISOString(),
       };
