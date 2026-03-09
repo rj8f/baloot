@@ -90,7 +90,18 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
     if (confirmGame && onRestore) {
       onRestore(confirmGame);
       setConfirmGame(null);
+      onConfirmActive?.(false);
     }
+  };
+
+  const openConfirm = (game: GameRecord) => {
+    setConfirmGame(game);
+    onConfirmActive?.(true);
+  };
+
+  const closeConfirm = () => {
+    setConfirmGame(null);
+    onConfirmActive?.(false);
   };
 
   const formatDate = (dateStr: string) => {
