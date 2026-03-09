@@ -85,7 +85,7 @@ const MatchHistory = forwardRef<HTMLDivElement, MatchHistoryProps>(({ expandedBy
         ) : (
           <div className="space-y-2">
             {games.map((game) => (
-              <Card key={game.id} className="bg-card border">
+              <Card key={game.id} className={cn("bg-card border", onRestore && "cursor-pointer active:scale-[0.98] transition-transform")} onClick={() => onRestore?.(game)}>
                 <CardContent className="p-3">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
