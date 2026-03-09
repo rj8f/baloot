@@ -61,7 +61,7 @@ const GameSetup = () => {
 
           {/* Match History */}
           <div className="flex-1 overflow-auto min-h-0 pt-4 border-t">
-            <MatchHistory />
+            <MatchHistory onRestore={(record) => restoreGame(record)} />
           </div>
         </CardContent>
       </Card>
